@@ -1,15 +1,19 @@
+import Image from "next/image";
 import * as motion from "motion/react-client";
 
 const HeroSection = ({ heroImage }: { heroImage: string }) => {
     return (
         <section id="hero" className="relative h-screen w-full overflow-hidden p-2.5">
             <div className="absolute inset-0">
-                <img
+                <Image
                     src={heroImage}
                     alt=""
-                    className="w-full h-full object-cover"
+                    fill
+                    priority
+                    sizes="100vw"
+                    className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/60" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/30 via-black/10 to-black/60" />
             </div>
             <div className="relative z-10 h-full flex flex-col justify-end pb-20 md:pb-28 px-8 md:px-20">
                 <motion.div

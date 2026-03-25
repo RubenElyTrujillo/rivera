@@ -1,17 +1,20 @@
+import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import { Download } from 'lucide-react';
 
-const CATALOG_URL = 'https://media.base44.com/files/public/user_69c17a5ecbceb8347eee03aa/b2ff29caf_CRCATALOGO.pdf';
+const CATALOG_URL = '/CR%20CATALOGO.pdf';
 
 const CatalogSection = ({ textureImage }: { textureImage: string }) => {
     return (
         <section id="catalogo" className="relative py-24 md:py-36 overflow-hidden">
             {/* Background */}
             <div className="absolute inset-0">
-                <img
+                <Image
                     src={textureImage}
                     alt="Textura de madera de ingeniería en detalle macro mostrando la calidad del material"
-                    className="w-full h-full object-cover opacity-20"
+                    fill
+                    sizes="100vw"
+                    className="object-cover opacity-20"
                 />
                 <div className="absolute inset-0 bg-foreground/90" />
             </div>

@@ -4,8 +4,9 @@ import * as motion from 'motion/react-client';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import type { IContactInfo } from '@/interfaces';
 
-const surfaceTypes = [
+const DEFAULT_SURFACE_TYPES = [
     'Piso de Madera de Ingeniería',
     'Piso Laminado',
     'Piso Vinílico SPC',
@@ -17,8 +18,13 @@ const surfaceTypes = [
     'Otro',
 ];
 
-export default function ContactSection() {
+export default function ContactSection({ contact }: { contact?: IContactInfo | null }) {
+    const whatsappPhone = contact?.whatsappPhone ?? '525629671869';
+    const surfaceOptions = contact?.surfaceOptions?.length ? contact.surfaceOptions : DEFAULT_SURFACE_TYPES;
+
     const [step, setStep] = useState(0);
+    const [submitted, setSubmitted] = useState(false);
+    const [sending, setSending] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -32,9 +38,24 @@ export default function ContactSection() {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const whatsappUrl = `https://wa.me/525629671869?text=${encodeURIComponent(
+    const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(
         `Hola, me interesa cotizar: ${formData.surface || 'un servicio'}. Área aprox: ${formData.area || 'por definir'}. ${formData.message || ''}`
     )}`;
+
+    async function handleSubmit() {
+        setSending(true);
+        try {
+            await fetch('/api/quotation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+        } catch {
+            // Si falla, no bloqueamos al usuario — puede usar WhatsApp como respaldo
+        }
+        setSending(false);
+        setSubmitted(true);
+    }
 
     const steps = [
         // Step 0: Type
@@ -45,7 +66,7 @@ export default function ContactSection() {
                     <SelectValue placeholder="Selecciona el tipo de superficie" />
                 </SelectTrigger>
                 <SelectContent>
-                    {surfaceTypes.map((type) => (
+                    {surfaceOptions.map((type) => (
                         <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
                 </SelectContent>
@@ -132,54 +153,73 @@ export default function ContactSection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                    {/* Progress */}
-                    <div className="flex gap-2 mb-8">
-                        {[0, 1, 2].map((s) => (
-                            <div
-                                key={s}
-                                className={`h-1 flex-1 transition-colors duration-300 ${s <= step ? 'bg-primary' : 'bg-border'
-                                    }`}
-                            />
-                        ))}
-                    </div>
-
-                    <p className="text-xs text-muted-foreground tracking-wider uppercase mb-6">
-                        Paso {step + 1} de 3
-                    </p>
-
-                    {steps[step]}
-
-                    {/* Navigation */}
-                    <div className="flex justify-between mt-8">
-                        <button
-                            onClick={() => setStep((prev) => Math.max(0, prev - 1))}
-                            disabled={step === 0}
-                            className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
-                        >
-                            <ArrowLeft size={16} />
-                            Anterior
-                        </button>
-
-                        {step < 2 ? (
-                            <button
-                                onClick={() => setStep((prev) => prev + 1)}
-                                className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors"
-                            >
-                                Siguiente
-                                <ArrowRight size={16} />
-                            </button>
-                        ) : (
+                    {submitted ? (
+                        <div className="py-12 text-center space-y-4">
+                            <p className="text-2xl font-bold tracking-tight text-foreground">¡Mensaje enviado!</p>
+                            <p className="text-muted-foreground text-sm leading-relaxed">
+                                Recibimos tu solicitud. Te contactaremos pronto.
+                            </p>
                             <a
                                 href={whatsappUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 bg-foreground text-background px-6 py-3 text-sm font-bold tracking-wider hover:bg-primary transition-colors"
+                                className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 text-sm font-bold tracking-wider hover:bg-[#20bd5a] transition-colors mt-4"
                             >
-                                ENVIAR
-                                <ArrowRight size={16} />
+                                <MessageCircle size={18} />
+                                También puedes escribirnos por WhatsApp
                             </a>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Progress */}
+                            <div className="flex gap-2 mb-8">
+                                {[0, 1, 2].map((s) => (
+                                    <div
+                                        key={s}
+                                        className={`h-1 flex-1 transition-colors duration-300 ${s <= step ? 'bg-primary' : 'bg-border'
+                                            }`}
+                                    />
+                                ))}
+                            </div>
+
+                            <p className="text-xs text-muted-foreground tracking-wider uppercase mb-6">
+                                Paso {step + 1} de 3
+                            </p>
+
+                            {steps[step]}
+
+                            {/* Navigation */}
+                            <div className="flex justify-between mt-8">
+                                <button
+                                    onClick={() => setStep((prev) => Math.max(0, prev - 1))}
+                                    disabled={step === 0}
+                                    className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
+                                >
+                                    <ArrowLeft size={16} />
+                                    Anterior
+                                </button>
+
+                                {step < 2 ? (
+                                    <button
+                                        onClick={() => setStep((prev) => prev + 1)}
+                                        className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                                    >
+                                        Siguiente
+                                        <ArrowRight size={16} />
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => void handleSubmit()}
+                                        disabled={sending}
+                                        className="flex items-center gap-2 bg-foreground text-background px-6 py-3 text-sm font-bold tracking-wider hover:bg-primary transition-colors disabled:opacity-50"
+                                    >
+                                        {sending ? 'ENVIANDO...' : 'ENVIAR'}
+                                        <ArrowRight size={16} />
+                                    </button>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </motion.div>
             </div>
         </section>

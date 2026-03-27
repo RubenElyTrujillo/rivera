@@ -2,8 +2,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
+import type { ISpaceProject } from "@/interfaces";
 
-const filters = ['Todos', 'Residencial', 'Comercial', 'Exterior'];
+const FILTERS = ['Todos', 'Residencial', 'Comercial', 'Exterior'];
 
 type SpacesImages = {
     wallCladding: string;
@@ -12,19 +13,27 @@ type SpacesImages = {
     blinds: string;
 };
 
-const SpacesSection = ({ images }: { images: SpacesImages }) => {
+interface SpacesSectionProps {
+    images: SpacesImages;
+    spaces?: ISpaceProject[] | null;
+}
+
+const SpacesSection = ({ images, spaces }: SpacesSectionProps) => {
     const [activeFilter, setActiveFilter] = useState('Todos');
 
-    const spaces = [
-        { title: 'Pisos de Ingeniería', category: 'Residencial', image: images.wallCladding },
-        { title: 'Deck Exterior', category: 'Exterior', image: images.deck },
-        { title: 'Restauración', category: 'Comercial', image: images.restoration },
-        { title: 'Persianas y Cortinas', category: 'Residencial', image: images.blinds },
+    const defaultSpaces: ISpaceProject[] = [
+        { id: 1, title: 'Pisos de Ingeniería', category: 'Residencial', imageUrl: images.wallCladding, order: 0 },
+        { id: 2, title: 'Deck Exterior', category: 'Exterior', imageUrl: images.deck, order: 1 },
+        { id: 3, title: 'Restauración', category: 'Comercial', imageUrl: images.restoration, order: 2 },
+        { id: 4, title: 'Persianas y Cortinas', category: 'Residencial', imageUrl: images.blinds, order: 3 },
     ];
 
+    const list = spaces && spaces.length > 0 ? spaces : defaultSpaces;
+    const allCategories = ['Todos', ...Array.from(new Set(list.map((s) => s.category)))];
+
     const filtered = activeFilter === 'Todos'
-        ? spaces
-        : spaces.filter((s) => s.category === activeFilter);
+        ? list
+        : list.filter((s) => s.category === activeFilter);
 
     return (
         <section id="espacios" className="py-24 md:py-36 px-8 md:px-20 bg-card">
@@ -45,7 +54,7 @@ const SpacesSection = ({ images }: { images: SpacesImages }) => {
 
             {/* Filters */}
             <div className="flex gap-6 mb-12 overflow-x-auto hide-scrollbar">
-                {filters.map((filter) => (
+                {allCategories.map((filter) => (
                     <button
                         key={filter}
                         onClick={() => setActiveFilter(filter)}
@@ -64,7 +73,7 @@ const SpacesSection = ({ images }: { images: SpacesImages }) => {
                 <AnimatePresence mode="wait">
                     {filtered.map((space, i) => (
                         <motion.div
-                            key={space.title}
+                            key={space.id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
@@ -72,7 +81,7 @@ const SpacesSection = ({ images }: { images: SpacesImages }) => {
                             className="group relative aspect-4/3 overflow-hidden bg-muted"
                         >
                             <Image
-                                src={space.image}
+                                src={space.imageUrl}
                                 alt={`${space.title} — proyecto de acabados interiores por Comercializadora Rivera`}
                                 fill
                                 sizes="(max-width: 768px) 100vw, 50vw"

@@ -1,41 +1,22 @@
 import * as motion from "motion/react-client";
-import { Layers, Wrench, Palette, Columns3, Zap } from 'lucide-react';
+import { Layers, Wrench, Palette, Columns3, Zap, Hammer, Star, Home, Package, Shield } from 'lucide-react';
+import type { IService } from "@/interfaces";
 
-const services = [
-    {
-        icon: Layers,
-        title: 'PISOS Y RECUBRIMIENTOS',
-        subtitle: 'Venta e instalación profesional',
-        desc: 'Madera sólida, ingeniería, laminados, vinílicos SPC y deck sintético para interiores y exteriores.',
-    },
-    {
-        icon: Wrench,
-        title: 'RESTAURACIÓN',
-        subtitle: 'Madera, granito, mármol y decks',
-        desc: 'Recuperamos la vida de sus superficies existentes. Pulido, lijado, barnizado y mantenimiento profesional.',
-    },
-    {
-        icon: Palette,
-        title: 'DECORACIÓN',
-        subtitle: 'Persianas, follaje y tapices',
-        desc: 'Soluciones decorativas que aportan confort, privacidad y naturaleza a sus espacios.',
-    },
-    {
-        icon: Columns3,
-        title: 'MOLDURAS Y ACABADOS',
-        subtitle: 'MDF y madera sólida',
-        desc: 'Fabricamos la moldura exacta que tu proyecto necesita. Personalización total en medidas y colores.',
-    },
-    {
-        icon: Zap,
-        title: 'TECNOLOGÍA Y CONFORT',
-        subtitle: 'Repisas y puertos ocultos',
-        desc: 'Integramos tecnología en tu mobiliario: multicontactos empotrados, consolas traseras y más.',
-    },
+const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>> = {
+    Layers, Wrench, Palette, Columns3, Zap, Hammer, Star, Home, Package, Shield,
+};
+
+const DEFAULT_SERVICES: IService[] = [
+    { id: 1, icon: "Layers", title: "PISOS Y RECUBRIMIENTOS", subtitle: "Venta e instalación profesional", desc: "Madera sólida, ingeniería, laminados, vinílicos SPC y deck sintético para interiores y exteriores.", order: 0 },
+    { id: 2, icon: "Wrench", title: "RESTAURACIÓN", subtitle: "Madera, granito, mármol y decks", desc: "Recuperamos la vida de sus superficies existentes. Pulido, lijado, barnizado y mantenimiento profesional.", order: 1 },
+    { id: 3, icon: "Palette", title: "DECORACIÓN", subtitle: "Persianas, follaje y tapices", desc: "Soluciones decorativas que aportan confort, privacidad y naturaleza a sus espacios.", order: 2 },
+    { id: 4, icon: "Columns3", title: "MOLDURAS Y ACABADOS", subtitle: "MDF y madera sólida", desc: "Fabricamos la moldura exacta que tu proyecto necesita. Personalización total en medidas y colores.", order: 3 },
+    { id: 5, icon: "Zap", title: "TECNOLOGÍA Y CONFORT", subtitle: "Repisas y puertos ocultos", desc: "Integramos tecnología en tu mobiliario: multicontactos empotrados, consolas traseras y más.", order: 4 },
 ];
 
+const ServicesSection = ({ services }: { services?: IService[] | null }) => {
+    const list = services && services.length > 0 ? services : DEFAULT_SERVICES;
 
-const ServicesSection = () => {
     return (
         <section id="servicios" className="py-24 md:py-36 px-8 md:px-20 bg-card">
             <motion.div
@@ -56,11 +37,11 @@ const ServicesSection = () => {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
-                {services.map((service, i) => {
-                    const Icon = service.icon;
+                {list.map((service, i) => {
+                    const Icon = ICON_MAP[service.icon] ?? Layers;
                     return (
                         <motion.div
-                            key={service.title}
+                            key={service.id}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}

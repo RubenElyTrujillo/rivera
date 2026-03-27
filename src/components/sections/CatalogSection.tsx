@@ -1,10 +1,17 @@
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import { Download } from 'lucide-react';
+import type { ICatalogContent } from "@/interfaces";
 
-const CATALOG_URL = '/CR%20CATALOGO.pdf';
+const DEFAULTS: ICatalogContent = {
+    title: "Catálogo completo",
+    description: "Descarga nuestro catálogo con especificaciones técnicas, colecciones de pisos, colores y fichas de cada producto.",
+    pdfUrl: "/CR%20CATALOGO.pdf",
+    buttonText: "DESCARGAR CATÁLOGO PDF",
+};
 
-const CatalogSection = ({ textureImage }: { textureImage: string }) => {
+const CatalogSection = ({ textureImage, content }: { textureImage: string; content?: ICatalogContent | null }) => {
+    const c = content ?? DEFAULTS;
     return (
         <section id="catalogo" className="relative py-24 md:py-36 overflow-hidden">
             {/* Background */}
@@ -30,20 +37,20 @@ const CatalogSection = ({ textureImage }: { textureImage: string }) => {
                         FICHA TÉCNICA
                     </p>
                     <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-background leading-tight mb-6">
-                        Catálogo completo
+                        {c.title}
                     </h2>
                     <p className="text-background/60 text-base md:text-lg leading-relaxed mb-12 max-w-lg mx-auto">
-                        Descarga nuestro catálogo con especificaciones técnicas, colecciones de pisos, colores y fichas de cada producto.
+                        {c.description}
                     </p>
 
                     <a
-                        href={CATALOG_URL}
+                        href={c.pdfUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-10 py-4 text-sm font-bold tracking-widest uppercase hover:bg-primary/90 transition-colors"
                     >
                         <Download size={18} />
-                        DESCARGAR CATÁLOGO PDF
+                        {c.buttonText}
                     </a>
                 </motion.div>
             </div>

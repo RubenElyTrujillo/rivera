@@ -1,12 +1,24 @@
 import Image from "next/image";
 import * as motion from "motion/react-client";
+import type { IHeroContent } from "@/interfaces";
 
-const HeroSection = ({ heroImage }: { heroImage: string }) => {
+interface HeroSectionProps {
+    heroImage: string;
+    content?: IHeroContent | null;
+}
+
+const HeroSection = ({ heroImage, content }: HeroSectionProps) => {
+    const subtitle = content?.subtitle ?? "Soluciones integrales en acabados";
+    const titleLine1 = content?.titleLine1 ?? "SUPERFICIES";
+    const titleLine2 = content?.titleLine2 ?? "SIN LÍMITE";
+    const description = content?.description ?? "Transformamos la base de sus espacios con el catálogo más completo en pisos, muros y acabados de alta gama.";
+    const image = content?.imageUrl ?? heroImage;
+
     return (
         <section id="hero" className="relative h-screen w-full overflow-hidden p-2.5">
             <div className="absolute inset-0">
                 <Image
-                    src={heroImage}
+                    src={image}
                     alt=""
                     fill
                     priority
@@ -22,15 +34,15 @@ const HeroSection = ({ heroImage }: { heroImage: string }) => {
                     transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
                     <p className="text-white/70 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 font-medium">
-                        Soluciones integrales en acabados
+                        {subtitle}
                     </p>
                     <h1 className="text-white text-5xl md:text-7xl lg:text-[6rem] font-bold leading-[0.9] tracking-tight max-w-4xl">
-                        SUPERFICIES
+                        {titleLine1}
                         <br />
-                        <span className="text-amber-700">SIN LÍMITE</span>
+                        <span className="text-amber-700">{titleLine2}</span>
                     </h1>
                     <p className="text-white/60 text-base md:text-lg mt-6 max-w-lg font-light leading-relaxed">
-                        Transformamos la base de sus espacios con el catálogo más completo en pisos, muros y acabados de alta gama.
+                        {description}
                     </p>
                 </motion.div>
             </div>

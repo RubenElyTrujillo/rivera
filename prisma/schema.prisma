@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+// ─── Contenido del sitio ──────────────────────────────────────────────────────
+
+model HeroContent {
+  id          Int    @id @default(autoincrement())
+  subtitle    String
+  titleLine1  String
+  titleLine2  String
+  description String
+  imageUrl    String
+}
+
+model Service {
+  id       Int    @id @default(autoincrement())
+  icon     String
+  title    String
+  subtitle String
+  desc     String
+  order    Int    @default(0)
+}
+
+model Material {
+  id          Int              @id @default(autoincrement())
+  name        String
+  subtitle    String
+  desc        String
+  spec        String
+  coverImage  String           @default("")
+  collections String           @default("[]") // JSON array de strings
+  order       Int              @default(0)
+  finishes    MaterialFinish[]
+}
+
+model MaterialFinish {
+  id         Int      @id @default(autoincrement())
+  materialId Int
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  name       String
+  code       String
+  collection String   @default("")
+  image      String
+  dims       String   @default("")
+  order      Int      @default(0)
+}
+
+model SpaceProject {
+  id       Int    @id @default(autoincrement())
+  title    String
+  category String
+  imageUrl String
+  order    Int    @default(0)
+}
+
+model CatalogContent {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  pdfUrl      String
+  buttonText  String @default("DESCARGAR CATÁLOGO PDF")
+}
+
+model ContactInfo {
+  id             Int    @id @default(autoincrement())
+  whatsappPhone  String
+  phone1         String
+  phone2         String @default("")
+  email          String
+  hoursText      String
+  surfaceOptions String @default("[]") // JSON array de strings
+}
+
+model FooterContent {
+  id       Int    @id @default(autoincrement())
+  tagline  String
+  services String @default("[]") // JSON array de strings
+}
+
+model SeoSettings {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  keywords    String
+  ogImageUrl  String @default("")
+}
+
+// ─── Media ───────────────────────────────────────────────────────────────────
+
+model Media {
+  id        Int      @id @default(autoincrement())
+  filename  String
+  url       String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+}

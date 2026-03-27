@@ -1,47 +1,29 @@
 import { useRef } from 'react';
+import Link from 'next/link';
 import * as motion from 'motion/react-client';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import type { IMaterial } from "@/interfaces";
+import { MATERIALS_DATA } from "@/lib/materialsData";
 
-const materials = [
-    {
-        name: 'MADERA DE INGENIERÍA',
-        subtitle: '7 colecciones únicas',
-        desc: 'Piso natural pre-acabado con vetas y tonos irrepetibles. Colecciones: Loft Life, Bamboo, Les Terres, Vitare, Loft Mate, True Toro y Utopia.',
-        spec: 'APLICACIÓN: RESIDENCIAL',
-    },
-    {
-        name: 'LAMINADOS',
-        subtitle: '4 colecciones',
-        desc: 'Fibras de madera con resinas de alta resistencia. Ambiente cálido y moderno. Colecciones: Splash, Clásico, Select y Vintage.',
-        spec: 'ABRASIÓN: AC3–AC4',
-    },
-    {
-        name: 'VINÍLICOS SPC',
-        subtitle: 'WPC · LVT · SPC',
-        desc: 'Recubrimiento de PVC de última generación. Bajo costo, alta resistencia a impactos y abrasión. Fácil instalación con sistema clic.',
-        spec: 'RESISTENCIA: AGUA',
-    },
-    {
-        name: 'DECK SINTÉTICO',
-        subtitle: 'Residencial y comercial',
-        desc: 'Compuesto de madera y plástico (WPC) para exteriores. Alta durabilidad, poco mantenimiento, diseño tipo tablón natural.',
-        spec: 'USO: EXTERIOR',
-    },
-    {
-        name: 'LAMBRINES',
-        subtitle: 'PVC y madera natural',
-        desc: 'Textura, volumen y confort acústico para el plano vertical. Madera auténtica o PVC de cero mantenimiento.',
-        spec: 'TIPO: VERTICAL',
-    },
-    {
-        name: 'MUROS FORRADOS',
-        subtitle: 'Continuidad visual',
-        desc: 'El mismo material del piso sube al muro. Integración total para espacios más amplios y cohesivos.',
-        spec: 'EFECTO: MONOLÍTICO',
-    },
+// Busca el slug en MATERIALS_DATA por nombre normalizado
+function getSlug(name: string): string | null {
+    const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+    const normalized = normalize(name);
+    const match = MATERIALS_DATA.find((m) => normalize(m.name) === normalized || normalize(m.shortName) === normalized);
+    return match?.id ?? null;
+}
+
+const DEFAULT_MATERIALS: IMaterial[] = [
+    { id: 1, name: 'MADERA DE INGENIERÍA', subtitle: '7 colecciones únicas', desc: 'Piso natural pre-acabado con vetas y tonos irrepetibles. Colecciones: Loft Life, Bamboo, Les Terres, Vitare, Loft Mate, True Toro y Utopia.', spec: 'APLICACIÓN: RESIDENCIAL', coverImage: '', collections: [], finishes: [], order: 0 },
+    { id: 2, name: 'LAMINADOS', subtitle: '4 colecciones', desc: 'Fibras de madera con resinas de alta resistencia. Ambiente cálido y moderno. Colecciones: Splash, Clásico, Select y Vintage.', spec: 'ABRASIÓN: AC3–AC4', coverImage: '', collections: [], finishes: [], order: 1 },
+    { id: 3, name: 'VINÍLICOS SPC', subtitle: 'WPC · LVT · SPC', desc: 'Recubrimiento de PVC de última generación. Bajo costo, alta resistencia a impactos y abrasión. Fácil instalación con sistema clic.', spec: 'RESISTENCIA: AGUA', coverImage: '', collections: [], finishes: [], order: 2 },
+    { id: 4, name: 'DECK SINTÉTICO', subtitle: 'Residencial y comercial', desc: 'Compuesto de madera y plástico (WPC) para exteriores. Alta durabilidad, poco mantenimiento, diseño tipo tablón natural.', spec: 'USO: EXTERIOR', coverImage: '', collections: [], finishes: [], order: 3 },
+    { id: 5, name: 'LAMBRINES', subtitle: 'PVC y madera natural', desc: 'Textura, volumen y confort acústico para el plano vertical. Madera auténtica o PVC de cero mantenimiento.', spec: 'TIPO: VERTICAL', coverImage: '', collections: [], finishes: [], order: 4 },
+    { id: 6, name: 'MUROS FORRADOS', subtitle: 'Continuidad visual', desc: 'El mismo material del piso sube al muro. Integración total para espacios más amplios y cohesivos.', spec: 'EFECTO: MONOLÍTICO', coverImage: '', collections: [], finishes: [], order: 5 },
 ];
 
-const MaterialLabSection = ({ textureImage }: { textureImage: string }) => {
+const MaterialLabSection = ({ textureImage, materials }: { textureImage: string; materials?: IMaterial[] | null }) => {
+    const list = materials && materials.length > 0 ? materials : DEFAULT_MATERIALS;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: string) => {
@@ -91,9 +73,9 @@ const MaterialLabSection = ({ textureImage }: { textureImage: string }) => {
                 ref={scrollRef}
                 className="flex gap-px overflow-x-auto hide-scrollbar pl-8 md:pl-20"
             >
-                {materials.map((mat, i) => (
+                {list.map((mat, i) => (
                     <motion.div
-                        key={mat.name}
+                        key={mat.id}
                         initial={{ opacity: 0, x: 40 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
@@ -114,10 +96,21 @@ const MaterialLabSection = ({ textureImage }: { textureImage: string }) => {
                                 {mat.desc}
                             </p>
                         </div>
-                        <div className="mt-8 pt-6 border-t border-background/10">
+                        <div className="mt-8 pt-6 border-t border-background/10 flex items-center justify-between">
                             <p className="text-xs tracking-[0.2em] text-background/40 font-mono">
                                 {mat.spec}
                             </p>
+                            {(() => {
+                                const slug = getSlug(mat.name);
+                                return slug ? (
+                                    <Link
+                                        href={`/materiales/${slug}`}
+                                        className="text-xs font-semibold tracking-[0.15em] uppercase text-primary hover:text-background transition-colors flex items-center gap-1"
+                                    >
+                                        Ver acabados <ArrowRight size={12} />
+                                    </Link>
+                                ) : null;
+                            })()}
                         </div>
                     </motion.div>
                 ))}

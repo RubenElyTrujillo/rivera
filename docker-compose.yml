@@ -1,0 +1,36 @@
+services:
+  web:
+    build: .
+    container_name: rivera_web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - web_data:/app/data
+      - web_uploads:/app/public/uploads
+    depends_on:
+      - n8n
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: rivera_n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${DOMAIN:-localhost}:5678/
+      - GENERIC_TIMEZONE=America/Mexico_City
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  web_data:
+  web_uploads:
+  n8n_data:

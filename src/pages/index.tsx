@@ -1,11 +1,14 @@
+import type { GetStaticProps } from "next";
 import Head from "next/head";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import MaterialLabSection from "@/components/sections/MaterialLabSection";
+import ShowroomSection from "@/components/sections/ShowroomSection";
 import SpacesSection from "@/components/sections/SpacesSection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
+import type { IPageData } from "@/interfaces";
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -14,6 +17,47 @@ const IMAGES = {
   deck: '/images/fc7bd1af6_generated_345964df.png',
   restoration: '/images/6a78b550c_generated_281d3b94.png',
   blinds: '/images/0ebc9e79a_generated_56d5f617.png',
+};
+
+export const getStaticProps: GetStaticProps<{ pageData: IPageData }> = async () => {
+  const pageData: IPageData = {
+    hero: {
+      subtitle: "Soluciones integrales en acabados",
+      titleLine1: "SUPERFICIES",
+      titleLine2: "SIN LÍMITE",
+      description: "Transformamos la base de sus espacios con el catálogo más completo en pisos, muros y acabados de alta gama.",
+      imageUrl: IMAGES.hero,
+    },
+    services: [],
+    materials: [],
+    spaces: [],
+    catalog: {
+      title: "Catálogo completo",
+      description: "Descarga nuestro catálogo con especificaciones técnicas, colecciones de pisos, colores y fichas de cada producto.",
+      pdfUrl: "/CR%20CATALOGO.pdf",
+      buttonText: "DESCARGAR CATÁLOGO PDF",
+    },
+    contact: {
+      whatsappPhone: "525629671869",
+      phone1: "+52 56 29 67 18 69",
+      phone2: "+52 55 79 16 78 44",
+      email: "jorgeri_1990@hotmail.com",
+      hoursText: "Lunes a Viernes\n9:00 AM — 10:00 PM",
+      surfaceOptions: [],
+    },
+    footer: {
+      tagline: "Soluciones integrales en acabados y decoración de interiores.",
+      services: [],
+    },
+    seo: {
+      title: "Comercializadora Rivera | Pisos, Recubrimientos y Restauracion en CDMX",
+      description: "Especialistas en pisos y acabados en CDMX: madera solida, madera de ingenieria, laminados, vinilicos SPC, deck sintetico, persianas, muros forrados, mantenimiento y restauracion profesional.",
+      keywords: "pisos y recubrimientos, pisos de madera, madera de ingenieria, pisos laminados, pisos vinilicos spc, deck sintetico, lambrines, muros forrados, persianas y cortinas, mantenimiento de pisos, restauracion de pisos, pulido de madera, pulido de marmol y granito, molduras y acabados, instalacion de pisos en cdmx",
+      ogImageUrl: "",
+    },
+  };
+
+  return { props: { pageData } };
 };
 
 const SEO_TITLE =
@@ -40,10 +84,17 @@ const SEO_KEYWORDS = [
   "instalacion de pisos en cdmx",
 ].join(", ");
 
-export default function Home() {
+export default function Home({ pageData }: { pageData: IPageData }) {
+  const { hero, services, materials, spaces, catalog, contact, footer, seo } = pageData;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const pageUrl = siteUrl ? `${siteUrl}/` : undefined;
-  const ogImage = siteUrl ? `${siteUrl}${IMAGES.hero}` : IMAGES.hero;
+  const ogImageSrc = seo.ogImageUrl || IMAGES.hero;
+  const ogImage = siteUrl && ogImageSrc.startsWith("/") ? `${siteUrl}${ogImageSrc}` : ogImageSrc;
+
+  const seoTitle = seo.title || SEO_TITLE;
+  const seoDescription = seo.description || SEO_DESCRIPTION;
+  const seoKeywords = seo.keywords || SEO_KEYWORDS;
+  const heroImageUrl = hero.imageUrl || IMAGES.hero;
 
   const seoGraph = {
     "@context": "https://schema.org",
@@ -52,11 +103,11 @@ export default function Home() {
         "@type": "LocalBusiness",
         "@id": pageUrl ? `${pageUrl}#localbusiness` : "#localbusiness",
         name: "Comercializadora Rivera",
-        description: SEO_DESCRIPTION,
+        description: seoDescription,
         image: ogImage,
         url: pageUrl,
-        telephone: ["+525629671869", "+525579167844"],
-        email: "jorgeri_1990@hotmail.com",
+        telephone: [contact.whatsappPhone ? `+${contact.whatsappPhone}` : "+525629671869"],
+        email: contact.email,
         address: {
           "@type": "PostalAddress",
           addressLocality: "Ciudad de Mexico",
@@ -66,13 +117,7 @@ export default function Home() {
         openingHoursSpecification: [
           {
             "@type": "OpeningHoursSpecification",
-            dayOfWeek: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-            ],
+            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
             opens: "09:00",
             closes: "22:00",
           },
@@ -98,12 +143,10 @@ export default function Home() {
         hasOfferCatalog: {
           "@type": "OfferCatalog",
           name: "Servicios",
-          itemListElement: [
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Pisos y recubrimientos" } },
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Mantenimiento y restauracion" } },
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Persianas y cortinas" } },
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Molduras y acabados" } },
-          ],
+          itemListElement: services.map((s) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: s.title },
+          })),
         },
       },
       {
@@ -149,25 +192,25 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>{SEO_TITLE}</title>
-        <meta name="description" content={SEO_DESCRIPTION} />
-        <meta name="keywords" content={SEO_KEYWORDS} />
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <meta name="keywords" content={seoKeywords} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Comercializadora Rivera" />
-        <meta property="og:title" content={SEO_TITLE} />
-        <meta property="og:description" content={SEO_DESCRIPTION} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
         <meta property="og:image" content={ogImage} />
         {pageUrl ? <meta property="og:url" content={pageUrl} /> : null}
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={SEO_TITLE} />
-        <meta name="twitter:description" content={SEO_DESCRIPTION} />
+        <meta name="twitter:title" content={seoTitle} />
+        <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={ogImage} />
 
         {pageUrl ? <link rel="canonical" href={pageUrl} /> : null}
-        <link rel="preload" as="image" href={IMAGES.hero} />
+        <link rel="preload" as="image" href={heroImageUrl} />
 
         <script
           type="application/ld+json"
@@ -175,13 +218,14 @@ export default function Home() {
         />
       </Head>
 
-      <HeroSection heroImage={IMAGES.hero} />
-      <ServicesSection />
-      <MaterialLabSection textureImage={IMAGES.texture} />
-      <SpacesSection images={IMAGES} />
-      <CatalogSection textureImage={IMAGES.texture} />
-      <ContactSection />
-      <FooterSection />
+      <HeroSection heroImage={heroImageUrl} content={hero} />
+      <ServicesSection services={services} />
+      <MaterialLabSection textureImage={IMAGES.texture} materials={materials} />
+      <ShowroomSection />
+      <SpacesSection images={IMAGES} spaces={spaces} />
+      <CatalogSection textureImage={IMAGES.texture} content={catalog} />
+      <ContactSection contact={contact} />
+      <FooterSection contact={contact} footer={footer} />
     </>
   );
 }

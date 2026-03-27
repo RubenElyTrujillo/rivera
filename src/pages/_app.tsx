@@ -6,8 +6,9 @@ import "@/styles/globals.css";
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const isAdmin = router.pathname.startsWith("/admin");
+  const isGallery = router.pathname.startsWith("/materiales");
 
-  if (isAdmin) {
+  if (isAdmin || isGallery) {
     return <Component {...pageProps} />;
   }
 

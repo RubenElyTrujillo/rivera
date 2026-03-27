@@ -14,6 +14,27 @@ interface Props {
     material: IMaterialsData;
 }
 
+function GalleryHeader({ name }: { name: string }) {
+    return (
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
+            <div className="px-6 md:px-16 py-5 flex items-center justify-between">
+                <Link
+                    href="/#materiales"
+                    className="flex items-center gap-2 text-sm font-semibold tracking-wider text-foreground/50 hover:text-foreground transition-colors"
+                >
+                    <ArrowLeft size={16} />
+                    VOLVER
+                </Link>
+                <div className="text-center">
+                    <p className="text-xs text-primary tracking-[0.2em] uppercase font-bold">GALERÍA</p>
+                    <h1 className="text-sm md:text-base font-bold tracking-tight">{name}</h1>
+                </div>
+                <div className="w-16" />
+            </div>
+        </div>
+    );
+}
+
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) => {
     const slug = params?.id as string;
     const material = MATERIALS_DATA.find((m) => m.id === slug);
@@ -32,23 +53,7 @@ export default function MaterialGallery({ material }: Props) {
 
     return (
         <div className="min-h-screen bg-background">
-            {/* Header */}
-            <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
-                <div className="px-6 md:px-16 py-5 flex items-center justify-between">
-                    <Link
-                        href="/#materiales"
-                        className="flex items-center gap-2 text-sm font-semibold tracking-wider text-foreground/50 hover:text-foreground transition-colors"
-                    >
-                        <ArrowLeft size={16} />
-                        VOLVER
-                    </Link>
-                    <div className="text-center">
-                        <p className="text-xs text-primary tracking-[0.2em] uppercase font-bold">GALERÍA</p>
-                        <h1 className="text-sm md:text-base font-bold tracking-tight">{material.name}</h1>
-                    </div>
-                    <div className="w-16" />
-                </div>
-            </div>
+            <GalleryHeader name={material.name} />
 
             {/* Hero strip */}
             <div className="relative h-40 md:h-56 overflow-hidden bg-foreground">

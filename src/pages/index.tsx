@@ -226,7 +226,6 @@ export default function Home({ pageData }: { pageData: IPageData }) {
       <CatalogSection textureImage={IMAGES.texture} content={catalog} />
       <ContactSection contact={contact} />
       <FooterSection contact={contact} footer={footer} />
-      hola
     </>
   );
 }

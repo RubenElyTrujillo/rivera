@@ -35,3 +35,4 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rivera_web:latest
           cache-from: type=gha
           cache-to: type=inline
+          

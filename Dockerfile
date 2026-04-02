@@ -41,7 +41,6 @@ COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
 COPY --from=builder /app/src/generated ./src/generated
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 # Entrypoint script
 COPY docker-entrypoint.sh ./

@@ -37,12 +37,14 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # 1. Crear red si no existe
+            # 1. Asegurar que la red existe
             docker network create app-network 2>/dev/null || true
 
-            # 2. Levantar PostgreSQL si no está corriendo
-            if ! docker ps --format '{{.Names}}' | grep -q '^rivera_postgres$'; then
-              docker rm -f rivera_postgres 2>/dev/null || true
+            # 2. Asegurar que Nginx esté en la red (Vital para quitar el 502)
+            docker network connect app-network nginx-app-1 2>/dev/null || true
+
+            # 3. Levantar PostgreSQL si no está (con contraseña del Secret)
+            if ! docker ps -a --format '{{.Names}}' | grep -q '^rivera_postgres$'; then
               docker run -d \
                 --name rivera_postgres \
                 --restart unless-stopped \
@@ -52,32 +54,24 @@ jobs:
                 -e POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
                 -v rivera_postgres_data:/var/lib/postgresql/data \
                 postgres:16-alpine
-              echo "Esperando a que PostgreSQL esté listo..."
-              sleep 8
+              sleep 10
             fi
 
-            # 3. Bajar la imagen nueva
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/rivera_web:latest
-
-            # 4. Detener el contenedor anterior
+            # 4. Limpiar versiones viejas de la web
             docker stop rivera_web 2>/dev/null || true
             docker rm rivera_web 2>/dev/null || true
 
-            # 5. Crear volumen de uploads si no existe
-            docker volume create rivera_uploads 2>/dev/null || true
-
-            # 6. Correr el nuevo contenedor
+            # 5. Correr la nueva versión con HOSTNAME 0.0.0.0
             docker run -d \
               --name rivera_web \
               --restart unless-stopped \
               --network app-network \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
-              -e ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
-              -e ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}" \
-              -e NODE_ENV=production \
+              -e HOSTNAME="0.0.0.0" \
+              -e PORT=3000 \
               -v rivera_uploads:/app/public/uploads \
-              ${{ secrets.DOCKER_HUB_USERNAME }}/rivera_web:latest
+              5h0k3r/rivera_web:latest
 
-            # 7. Limpiar imágenes antiguas
+            # 6. Limpieza de imágenes huérfanas
             docker image prune -f

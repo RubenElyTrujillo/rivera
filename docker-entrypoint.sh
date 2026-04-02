@@ -2,10 +2,10 @@
 set -e
 
 echo "▶ Aplicando migraciones..."
-npx prisma migrate deploy
+node_modules/.bin/prisma migrate deploy
 
 echo "▶ Ejecutando seed inicial..."
-dotenv -e .env -- npx tsx --tsconfig tsconfig.json prisma/seed.ts
+npx tsx --tsconfig tsconfig.json prisma/seed.ts
 
 echo "▶ Iniciando Next.js..."
 exec node server.js

@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "db:seed": "dotenv -e .env -- npx tsx --tsconfig tsconfig.json prisma/seed.ts",
-    "db:migrate": "prisma migrate deploy"
+    "db:migrate": "dotenv -e .env -- prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",

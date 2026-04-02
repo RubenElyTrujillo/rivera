@@ -24,8 +24,8 @@ ENV NODE_ENV=production
 # OpenSSL required by Prisma on Alpine
 RUN apk add --no-cache openssl
 
-# Install tsx and dotenv-cli for migrations/seed at startup
-RUN npm install -g tsx dotenv-cli
+# Install CLI tools for migrations/seed at startup
+RUN npm install -g tsx prisma@7.5.0
 
 # Copy standalone build
 COPY --from=builder /app/.next/standalone ./
@@ -33,8 +33,6 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # Copy Prisma files needed for runtime
-COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/pg ./node_modules/pg
 COPY --from=builder /app/node_modules/pg-pool ./node_modules/pg-pool

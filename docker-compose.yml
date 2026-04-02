@@ -1,4 +1,20 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rivera_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rivera}
+      POSTGRES_USER: ${POSTGRES_USER:-rivera}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rivera} -d ${POSTGRES_DB:-rivera}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   web:
     build: .
     container_name: rivera_web
@@ -10,27 +26,11 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - web_data:/app/data
       - web_uploads:/app/public/uploads
     depends_on:
-      - n8n
-
-  n8n:
-    image: n8nio/n8n:latest
-    container_name: rivera_n8n
-    restart: unless-stopped
-    ports:
-      - "5678:5678"
-    environment:
-      - N8N_HOST=0.0.0.0
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=https
-      - WEBHOOK_URL=https://${DOMAIN:-localhost}:5678/
-      - GENERIC_TIMEZONE=America/Mexico_City
-    volumes:
-      - n8n_data:/home/node/.n8n
+      postgres:
+        condition: service_healthy
 
 volumes:
-  web_data:
+  postgres_data:
   web_uploads:
-  n8n_data:

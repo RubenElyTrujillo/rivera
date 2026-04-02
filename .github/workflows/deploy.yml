@@ -22,7 +22,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/web-amigo:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rivera_web:latest
           cache-from: type=gha
           cache-to: type=inline
 
@@ -57,18 +57,18 @@ jobs:
             fi
 
             # 3. Bajar la imagen nueva
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/web-amigo:latest
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/rivera_web:latest
 
             # 4. Detener el contenedor anterior
-            docker stop web-amigo 2>/dev/null || true
-            docker rm web-amigo 2>/dev/null || true
+            docker stop rivera_web 2>/dev/null || true
+            docker rm rivera_web 2>/dev/null || true
 
             # 5. Crear volumen de uploads si no existe
             docker volume create rivera_uploads 2>/dev/null || true
 
             # 6. Correr el nuevo contenedor
             docker run -d \
-              --name web-amigo \
+              --name rivera_web \
               --restart unless-stopped \
               --network app-network \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
@@ -77,7 +77,7 @@ jobs:
               -e ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}" \
               -e NODE_ENV=production \
               -v rivera_uploads:/app/public/uploads \
-              ${{ secrets.DOCKER_HUB_USERNAME }}/web-amigo:latest
+              ${{ secrets.DOCKER_HUB_USERNAME }}/rivera_web:latest
 
             # 7. Limpiar imágenes antiguas
             docker image prune -f

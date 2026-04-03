@@ -4,11 +4,11 @@ set -e
 echo "▶ Aplicando migraciones..."
 # Crear config temporal en /tmp para que Prisma no detecte el de /app
 cat > /tmp/prisma.config.mjs << EOF
-import { defineConfig } from 'prisma/config';
+import { defineConfig } from '/usr/local/lib/node_modules/prisma/config.js';
 export default defineConfig({
   schema: '/app/prisma/schema.prisma',
   migrations: { path: '/app/prisma/migrations' },
-  datasource: { url: '${DATABASE_URL}' },
+  datasource: { url: process.env.DATABASE_URL },
 });
 EOF
 

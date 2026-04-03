@@ -54,8 +54,18 @@ jobs:
                 -e POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
                 -v rivera_postgres_data:/var/lib/postgresql/data \
                 postgres:16-alpine
-              sleep 10
             fi
+
+            # Esperar a que PostgreSQL acepte conexiones (máx 60s)
+            echo "Esperando a que PostgreSQL esté listo..."
+            for i in $(seq 1 20); do
+              if docker exec rivera_postgres pg_isready -U rivera -d rivera -q; then
+                echo "PostgreSQL listo."
+                break
+              fi
+              echo "  intento $i/20..."
+              sleep 3
+            done
 
             # 4. Limpiar versiones viejas de la web
             docker stop rivera_web 2>/dev/null || true

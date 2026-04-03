@@ -47,7 +47,7 @@ COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
 
 # Garantizar que prisma.config.ts nunca este presente (causa error en runtime)
-RUN rm -f prisma.config.ts
+RUN rm -f prisma.config.ts prisma.config.mjs
 
 EXPOSE 3000
 ENTRYPOINT ["./docker-entrypoint.sh"]

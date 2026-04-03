@@ -1,4 +1,4 @@
-import type { GetStaticProps } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
@@ -9,6 +9,7 @@ import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
 import type { IPageData } from "@/interfaces";
+import { db } from "@/lib/db";
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -19,40 +20,60 @@ const IMAGES = {
   blinds: '/images/0ebc9e79a_generated_56d5f617.png',
 };
 
-export const getStaticProps: GetStaticProps<{ pageData: IPageData }> = async () => {
+export const getServerSideProps: GetServerSideProps<{ pageData: IPageData }> = async () => {
+  const [hero, services, materials, spaces, catalog, contact, footer, seo] = await Promise.all([
+    db.heroContent.findFirst(),
+    db.service.findMany({ orderBy: { order: "asc" } }),
+    db.material.findMany({ orderBy: { order: "asc" }, include: { finishes: { orderBy: { order: "asc" } } } }),
+    db.spaceProject.findMany({ orderBy: { order: "asc" } }),
+    db.catalogContent.findFirst(),
+    db.contactInfo.findFirst(),
+    db.footerContent.findFirst(),
+    db.seoSettings.findFirst(),
+  ]);
+
   const pageData: IPageData = {
-    hero: {
+    hero: hero ?? {
       subtitle: "Soluciones integrales en acabados",
       titleLine1: "SUPERFICIES",
       titleLine2: "SIN LÍMITE",
       description: "Transformamos la base de sus espacios con el catálogo más completo en pisos, muros y acabados de alta gama.",
       imageUrl: IMAGES.hero,
     },
-    services: [],
-    materials: [],
-    spaces: [],
-    catalog: {
+    services: services ?? [],
+    materials: materials
+      ? materials.map((m) => ({
+          ...m,
+          collections: (() => { try { return JSON.parse(m.collections) as string[]; } catch { return []; } })(),
+        }))
+      : [],
+    spaces: spaces ?? [],
+    catalog: catalog ?? {
       title: "Catálogo completo",
       description: "Descarga nuestro catálogo con especificaciones técnicas, colecciones de pisos, colores y fichas de cada producto.",
       pdfUrl: "/CR%20CATALOGO.pdf",
       buttonText: "DESCARGAR CATÁLOGO PDF",
     },
-    contact: {
-      whatsappPhone: "525629671869",
-      phone1: "+52 56 29 67 18 69",
-      phone2: "+52 55 79 16 78 44",
-      email: "jorgeri_1990@hotmail.com",
-      hoursText: "Lunes a Viernes\n9:00 AM — 10:00 PM",
-      surfaceOptions: [],
-    },
-    footer: {
-      tagline: "Soluciones integrales en acabados y decoración de interiores.",
-      services: [],
-    },
-    seo: {
+    contact: contact
+      ? { ...contact, surfaceOptions: (() => { try { return JSON.parse(contact.surfaceOptions) as string[]; } catch { return []; } })() }
+      : {
+          whatsappPhone: "525629671869",
+          phone1: "+52 56 29 67 18 69",
+          phone2: "+52 55 79 16 78 44",
+          email: "jorgeri_1990@hotmail.com",
+          hoursText: "Lunes a Viernes\n9:00 AM — 10:00 PM",
+          surfaceOptions: [],
+        },
+    footer: footer
+      ? { ...footer, services: (() => { try { return JSON.parse(footer.services) as string[]; } catch { return []; } })() }
+      : {
+          tagline: "Soluciones integrales en acabados y decoración de interiores.",
+          services: [],
+        },
+    seo: seo ?? {
       title: "Comercializadora Rivera | Pisos, Recubrimientos y Restauracion en CDMX",
       description: "Especialistas en pisos y acabados en CDMX: madera solida, madera de ingenieria, laminados, vinilicos SPC, deck sintetico, persianas, muros forrados, mantenimiento y restauracion profesional.",
-      keywords: "pisos y recubrimientos, pisos de madera, madera de ingenieria, pisos laminados, pisos vinilicos spc, deck sintetico, lambrines, muros forrados, persianas y cortinas, mantenimiento de pisos, restauracion de pisos, pulido de madera, pulido de marmol y granito, molduras y acabados, instalacion de pisos en cdmx",
+      keywords: "pisos y recubrimientos, pisos de madera",
       ogImageUrl: "",
     },
   };

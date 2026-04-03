@@ -2,10 +2,17 @@
 set -e
 
 echo "▶ Aplicando migraciones..."
-# Ejecutar desde /tmp para que Prisma no detecte prisma.config.ts en /app
-cd /tmp && prisma migrate deploy \
-  --datasource-url "$DATABASE_URL" \
-  --schema /app/prisma/schema.prisma
+# Crear config temporal en /tmp para que Prisma no detecte el de /app
+cat > /tmp/prisma.config.mjs << EOF
+import { defineConfig } from 'prisma/config';
+export default defineConfig({
+  schema: '/app/prisma/schema.prisma',
+  migrations: { path: '/app/prisma/migrations' },
+  datasource: { url: '${DATABASE_URL}' },
+});
+EOF
+
+prisma migrate deploy --config /tmp/prisma.config.mjs
 
 echo "▶ Ejecutando seed inicial..."
 cd /app && npx tsx --tsconfig tsconfig.json prisma/seed.ts

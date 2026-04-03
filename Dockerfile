@@ -46,5 +46,8 @@ COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
 
+# Garantizar que prisma.config.ts nunca este presente (causa error en runtime)
+RUN rm -f prisma.config.ts
+
 EXPOSE 3000
 ENTRYPOINT ["./docker-entrypoint.sh"]

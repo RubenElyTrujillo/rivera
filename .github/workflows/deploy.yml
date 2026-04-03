@@ -82,6 +82,8 @@ jobs:
               --network app-network \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+              -e ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
+              -e ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}" \
               -e HOSTNAME="0.0.0.0" \
               -e PORT=3000 \
               -v rivera_uploads:/app/public/uploads \

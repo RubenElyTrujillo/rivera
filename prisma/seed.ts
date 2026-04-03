@@ -15,7 +15,7 @@ async function main() {
 
   await db.user.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: { passwordHash },
     create: { email: adminEmail, passwordHash },
   });
   console.log(`✅ Admin: ${adminEmail}`);

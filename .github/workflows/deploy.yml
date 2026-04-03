@@ -68,6 +68,9 @@ jobs:
               sleep 3
             done
 
+            docker pull 5h0k3r/rivera_web:latest
+            docker pull postgres:16-alpine
+
             # 4. Limpiar versiones viejas de la web
             docker stop rivera_web 2>/dev/null || true
             docker rm rivera_web 2>/dev/null || true

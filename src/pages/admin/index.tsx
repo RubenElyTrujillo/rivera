@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Link from "next/link";
-import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminAuth, PageHeader } from "@/components/admin/adminUtils";
 import {
   ImageIcon,
@@ -28,12 +27,11 @@ const SECTIONS = [
 
 export default function AdminDashboard() {
   const { checking } = useAdminAuth();
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Dashboard — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader
           title="Panel de administración"
           subtitle="Edita el contenido de cada sección del sitio web"
@@ -64,7 +62,6 @@ export default function AdminDashboard() {
             Ver sitio público →
           </a>
         </div>
-      </AdminLayout>
     </>
   );
 }

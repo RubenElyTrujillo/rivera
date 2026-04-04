@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
   AdminInput, AdminTextarea, SaveButton, useToast,
@@ -82,12 +81,11 @@ export default function AdminMaterialsPage() {
     show("Acabado eliminado");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Materiales — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="Materiales" subtitle="Tipos de pisos y recubrimientos. Agrega acabados a cada material para la galería." />
         <div className="space-y-4">
           {materials.map((mat, idx) => (
@@ -195,7 +193,6 @@ export default function AdminMaterialsPage() {
           </button>
           <SaveButton saving={saving} onClick={save} />
         </div>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

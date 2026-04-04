@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
   AdminInput, SaveButton, useToast,
@@ -70,12 +69,11 @@ export default function AdminContactPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Contacto — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="Información de Contacto" subtitle="Datos de contacto y opciones del formulario de cotización" />
         <FormCard>
           <Field label="WhatsApp (número limpio, solo dígitos)" hint="Ej: 525629671869">
@@ -124,7 +122,6 @@ export default function AdminContactPage() {
         <div className="mt-6">
           <SaveButton saving={saving} onClick={save} />
         </div>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

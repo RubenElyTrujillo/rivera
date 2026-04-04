@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth, PageHeader, useToast,
 } from "@/components/admin/adminUtils";
@@ -56,12 +55,11 @@ export default function AdminMediaPage() {
     setTimeout(() => setCopied(null), 2000);
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Medios — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader
           title="Gestión de Medios"
           subtitle="Sube imágenes y PDFs para usar en las secciones del sitio"
@@ -131,7 +129,6 @@ export default function AdminMediaPage() {
             ))}
           </div>
         )}
-      </AdminLayout>
       {ToastComponent}
     </>
   );

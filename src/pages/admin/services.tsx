@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth,
   PageHeader,
@@ -67,12 +66,11 @@ export default function AdminServicesPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Servicios — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="Servicios" subtitle="Tarjetas de servicios en la segunda sección" />
         <div className="space-y-4">
           {services.map((service, idx) => (
@@ -124,7 +122,6 @@ export default function AdminServicesPage() {
 
           <SaveButton saving={saving} onClick={save} />
         </div>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

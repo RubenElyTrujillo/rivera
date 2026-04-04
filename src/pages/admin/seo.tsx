@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
   AdminInput, AdminTextarea, SaveButton, useToast,
@@ -42,12 +41,11 @@ export default function AdminSeoPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>SEO — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="SEO" subtitle="Metadatos para buscadores y redes sociales" />
         <FormCard>
           <Field label="Título de la página" hint="Aparece en la pestaña del navegador y resultados de Google. Máx. 60 caracteres.">
@@ -66,7 +64,6 @@ export default function AdminSeoPage() {
           </Field>
           <SaveButton saving={saving} onClick={save} />
         </FormCard>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

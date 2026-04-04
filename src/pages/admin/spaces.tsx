@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
   AdminInput, SaveButton, useToast,
@@ -63,12 +62,11 @@ export default function AdminSpacesPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Espacios — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="Galería de Espacios" subtitle="Proyectos mostrados en la sección de galería filtrable" />
         <div className="space-y-4">
           {spaces.map((space, idx) => (
@@ -133,7 +131,6 @@ export default function AdminSpacesPage() {
           </button>
           <SaveButton saving={saving} onClick={save} />
         </div>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

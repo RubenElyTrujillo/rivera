@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
   AdminInput, SaveButton, useToast,
@@ -57,12 +56,11 @@ export default function AdminFooterPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Footer — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="Footer" subtitle="Tagline y lista de servicios en el pie de página" />
         <FormCard>
           <Field label="Tagline (descripción breve de la empresa)">
@@ -93,7 +91,6 @@ export default function AdminFooterPage() {
         <div className="mt-6">
           <SaveButton saving={saving} onClick={save} />
         </div>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
   AdminInput, AdminTextarea, SaveButton, useToast,
@@ -55,12 +54,11 @@ export default function AdminCatalogPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Catálogo — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="Sección Catálogo" subtitle="Texto y PDF descargable" />
         <FormCard>
           <Field label="Título">
@@ -97,7 +95,6 @@ export default function AdminCatalogPage() {
           </Field>
           <SaveButton saving={saving} onClick={save} />
         </FormCard>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

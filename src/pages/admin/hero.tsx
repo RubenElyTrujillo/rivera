@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import AdminLayout from "@/components/admin/AdminLayout";
 import {
   useAdminAuth,
   PageHeader,
@@ -50,12 +49,11 @@ export default function AdminHeroPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return null;
+  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
 
   return (
     <>
       <Head><title>Hero — Admin Rivera</title></Head>
-      <AdminLayout>
         <PageHeader title="Sección Hero" subtitle="La primera sección visible en el sitio" />
         <FormCard>
           <Field label="Subtítulo (texto pequeño sobre el título)">
@@ -75,7 +73,6 @@ export default function AdminHeroPage() {
           </Field>
           <SaveButton saving={saving} onClick={save} />
         </FormCard>
-      </AdminLayout>
       {ToastComponent}
     </>
   );

@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { withErrorHandling } from "@/lib/apiHandler";
 
-export default async function handler(
+export default withErrorHandling(async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -17,4 +18,4 @@ export default async function handler(
   if (!user) return res.status(401).json({ error: "Usuario no encontrado" });
 
   return res.status(200).json({ id: user.id, email: user.email });
-}
+});

@@ -13,12 +13,15 @@ async function main() {
   const adminPassword = process.env.ADMIN_PASSWORD ?? "Rivera2024!";
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
-  await db.user.upsert({
-    where: { email: adminEmail },
-    update: { passwordHash },
-    create: { email: adminEmail, passwordHash },
-  });
-  console.log(`✅ Admin: ${adminEmail}`);
+  // Only create admin user if it doesn't already exist.
+  // This prevents overwriting the password on every container restart.
+  const existingAdmin = await db.user.findUnique({ where: { email: adminEmail } });
+  if (!existingAdmin) {
+    await db.user.create({ data: { email: adminEmail, passwordHash } });
+    console.log(`✅ Admin created: ${adminEmail}`);
+  } else {
+    console.log(`✅ Admin already exists: ${adminEmail} (skipping)`);
+  }
 
   // ─── Hero ──────────────────────────────────────────────────────────────────
   const heroCount = await db.heroContent.count();

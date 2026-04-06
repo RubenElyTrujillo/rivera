@@ -3,8 +3,9 @@ import fs from "fs";
 import path from "path";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import { withErrorHandling } from "@/lib/apiHandler";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     const auth = requireAuth(req, res);
     if (!auth) return;
@@ -23,7 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const media = await db.media.findUnique({ where: { id } });
     if (!media) return res.status(404).json({ error: "No encontrado" });
 
-    // Eliminar archivo físico
     const filepath = path.join(process.cwd(), "public", media.url);
     if (fs.existsSync(filepath)) {
       fs.unlinkSync(filepath);
@@ -34,4 +34,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   return res.status(405).json({ error: "Método no permitido" });
-}
+});

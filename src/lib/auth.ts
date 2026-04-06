@@ -34,7 +34,9 @@ export function setAuthCookie(res: NextApiResponse, token: string): void {
 export function clearAuthCookie(res: NextApiResponse): void {
   res.setHeader(
     "Set-Cookie",
-    `${COOKIE_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`
+    `${COOKIE_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax${
+      process.env.NODE_ENV === "production" ? "; Secure" : ""
+    }`
   );
 }
 

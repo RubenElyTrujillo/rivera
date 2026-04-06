@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import { withErrorHandling } from "@/lib/apiHandler";
 
 export const config = {
   api: { bodyParser: false },
@@ -11,7 +12,7 @@ export const config = {
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido" });
   }
@@ -56,4 +57,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   });
 
   return res.status(200).json(media);
-}
+});

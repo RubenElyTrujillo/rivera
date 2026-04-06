@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
   images: {
-    domains: ["media.base44.com", "images.unsplash.com"],
+    remotePatterns: [
+      { protocol: "https", hostname: "media.base44.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
   },
   async rewrites() {
     return [

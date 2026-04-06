@@ -1,23 +1,27 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
+import { withErrorHandling } from "@/lib/apiHandler";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default withErrorHandling(function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
-    return res.status(405).end();
+    res.status(405).end();
+    return;
   }
 
   const filename = req.query.filename as string;
   if (!filename || filename.includes("..") || filename.includes("/")) {
-    return res.status(400).end();
+    res.status(400).end();
+    return;
   }
 
   const filepath = path.join(UPLOAD_DIR, filename);
 
   if (!fs.existsSync(filepath)) {
-    return res.status(404).end();
+    res.status(404).end();
+    return;
   }
 
   const ext = path.extname(filename).toLowerCase();
@@ -38,4 +42,4 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const stream = fs.createReadStream(filepath);
   stream.pipe(res);
-}
+});

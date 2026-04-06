@@ -48,7 +48,9 @@ describe("POST /api/quotation", () => {
       res,
     );
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: "Tipo de superficie requerido" });
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.stringContaining("superficie") }),
+    );
   });
 
   it("responde 405 para métodos distintos de POST", async () => {

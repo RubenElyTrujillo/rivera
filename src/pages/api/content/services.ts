@@ -1,8 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import { withErrorHandling } from "@/lib/apiHandler";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const ServiceSchema = z.object({
+  icon: z.string().min(1).max(100),
+  title: z.string().min(1).max(200),
+  subtitle: z.string().max(300),
+  desc: z.string().max(2000),
+  order: z.number().int().min(0),
+});
+
+export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     const rows = await db.service.findMany({ orderBy: { order: "asc" } });
     return res.status(200).json(rows);
@@ -12,28 +22,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const auth = requireAuth(req, res);
     if (!auth) return;
 
-    // Reemplaza todos los servicios (array completo)
-    const services = req.body as Array<{
-      id?: number;
-      icon: string;
-      title: string;
-      subtitle: string;
-      desc: string;
-      order: number;
-    }>;
+    const parsed = z.array(ServiceSchema).safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Datos de servicios inválidos", details: parsed.error.flatten() });
+    }
 
-    await db.service.deleteMany();
-    const created = await db.service.createMany({ data: services.map((s) => ({
-      icon: s.icon,
-      title: s.title,
-      subtitle: s.subtitle,
-      desc: s.desc,
-      order: s.order,
-    }))});
+    const result = await db.$transaction(async (tx) => {
+      await tx.service.deleteMany();
+      await tx.service.createMany({
+        data: parsed.data.map((s) => ({
+          icon: s.icon,
+          title: s.title,
+          subtitle: s.subtitle,
+          desc: s.desc,
+          order: s.order,
+        })),
+      });
+      return tx.service.findMany({ orderBy: { order: "asc" } });
+    });
 
-    const result = await db.service.findMany({ orderBy: { order: "asc" } });
     return res.status(200).json(result);
   }
 
   return res.status(405).json({ error: "Método no permitido" });
-}
+});

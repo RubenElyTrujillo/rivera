@@ -14,7 +14,10 @@ EOF
 
 prisma migrate deploy --config /tmp/prisma.config.mjs
 
-echo "▶ Ejecutando seed inicial..."
+# Seed runs on every start but is idempotent:
+# - Admin user: only creates if not exists (password is never overwritten)
+# - All other content: only seeds if tables are empty
+echo "▶ Ejecutando seed (idempotente)..."
 cd /app && npx tsx --tsconfig tsconfig.json prisma/seed.ts
 
 echo "▶ Iniciando Next.js..."

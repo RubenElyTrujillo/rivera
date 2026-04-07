@@ -3,6 +3,7 @@ import Head from "next/head";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
   AdminInput, AdminTextarea, SaveButton, useToast,
+  AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Upload } from "lucide-react";
 import type { ICatalogContent } from "@/interfaces";
@@ -54,7 +55,7 @@ export default function AdminCatalogPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
+  if (checking) return <AdminPageSkeleton />;
 
   return (
     <>

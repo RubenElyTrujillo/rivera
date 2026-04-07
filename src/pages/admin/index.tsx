@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useAdminAuth, PageHeader } from "@/components/admin/adminUtils";
+import { useAdminAuth, PageHeader, AdminDashboardSkeleton } from "@/components/admin/adminUtils";
 import {
   ImageIcon,
   Wrench,
@@ -27,7 +27,7 @@ const SECTIONS = [
 
 export default function AdminDashboard() {
   const { checking } = useAdminAuth();
-  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
+  if (checking) return <AdminDashboardSkeleton />;
 
   return (
     <>

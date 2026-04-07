@@ -9,6 +9,7 @@ import {
   AdminTextarea,
   SaveButton,
   useToast,
+  AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Plus, GripVertical } from "lucide-react";
 import type { IService } from "@/interfaces";
@@ -66,7 +67,7 @@ export default function AdminServicesPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
+  if (checking) return <AdminPageSkeleton />;
 
   return (
     <>

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import {
   useAdminAuth, PageHeader, useToast,
+  AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Upload, FileText } from "lucide-react";
 import type { IMedia } from "@/interfaces";
@@ -55,7 +56,7 @@ export default function AdminMediaPage() {
     setTimeout(() => setCopied(null), 2000);
   }
 
-  if (checking) return <div className="p-8 text-foreground/30 text-sm">Cargando…</div>;
+  if (checking) return <AdminPageSkeleton />;
 
   return (
     <>

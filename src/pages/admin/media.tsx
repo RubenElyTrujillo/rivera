@@ -80,7 +80,7 @@ export default function AdminMediaPage() {
           <p className="text-sm font-medium text-[hsl(0,0%,40%)]">
             {uploading ? "Subiendo..." : "Haz clic o arrastra archivos aquí"}
           </p>
-          <p className="text-xs text-[hsl(0,0%,60%)] mt-1">Imágenes y PDFs · Máx. 20 MB</p>
+          <p className="text-xs text-[hsl(0,0%,60%)] mt-1">Imágenes → WebP automático · PDFs · Máx. 20 MB</p>
           <input
             type="file"
             multiple

@@ -12,6 +12,7 @@ import {
   Search,
   LogOut,
   Upload,
+  Settings,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { href: "/admin/footer", label: "Footer", icon: Layout },
   { href: "/admin/seo", label: "SEO", icon: Search },
   { href: "/admin/media", label: "Medios", icon: Upload },
+  { href: "/admin/site", label: "Configuración", icon: Settings },
 ];
 
 async function handleLogout() {

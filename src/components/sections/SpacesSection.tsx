@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import * as motion from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
+import { ArrowRight } from 'lucide-react';
 import type { ISpaceProject } from "@/domain/types";
-
-const FILTERS = ['Todos', 'Residencial', 'Comercial', 'Exterior'];
 
 type SpacesImages = {
     wallCladding: string;
@@ -22,10 +22,10 @@ const SpacesSection = ({ images, spaces }: SpacesSectionProps) => {
     const [activeFilter, setActiveFilter] = useState('Todos');
 
     const defaultSpaces: ISpaceProject[] = [
-        { id: 1, title: 'Pisos de Ingeniería', category: 'Residencial', imageUrl: images.wallCladding, order: 0 },
-        { id: 2, title: 'Deck Exterior', category: 'Exterior', imageUrl: images.deck, order: 1 },
-        { id: 3, title: 'Restauración', category: 'Comercial', imageUrl: images.restoration, order: 2 },
-        { id: 4, title: 'Persianas y Cortinas', category: 'Residencial', imageUrl: images.blinds, order: 3 },
+        { id: 1, title: 'Pisos de Ingeniería', category: 'Residencial', imageUrl: images.wallCladding, description: '', order: 0 },
+        { id: 2, title: 'Deck Exterior', category: 'Exterior', imageUrl: images.deck, description: '', order: 1 },
+        { id: 3, title: 'Restauración', category: 'Comercial', imageUrl: images.restoration, description: '', order: 2 },
+        { id: 4, title: 'Persianas y Cortinas', category: 'Residencial', imageUrl: images.blinds, description: '', order: 3 },
     ];
 
     const list = spaces && spaces.length > 0 ? spaces : defaultSpaces;
@@ -78,24 +78,35 @@ const SpacesSection = ({ images, spaces }: SpacesSectionProps) => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.5, delay: i * 0.1 }}
-                            className="group relative aspect-4/3 overflow-hidden bg-muted"
                         >
-                            <Image
-                                src={space.imageUrl}
-                                alt={`${space.title} — proyecto de acabados interiores por Comercializadora Rivera`}
-                                fill
-                                sizes="(max-width: 768px) 100vw, 50vw"
-                                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-                            <div className="absolute bottom-0 left-0 p-6 md:p-8">
-                                <p className="text-white/50 text-xs tracking-[0.2em] uppercase mb-1">
-                                    {space.category}
-                                </p>
-                                <h3 className="text-white text-xl md:text-2xl font-bold tracking-tight">
-                                    {space.title}
-                                </h3>
-                            </div>
+                            <Link
+                                href={`/espacios/proyecto/${space.id}`}
+                                className="group relative aspect-4/3 overflow-hidden bg-muted block"
+                            >
+                                <div className="relative aspect-4/3 overflow-hidden">
+                                    <Image
+                                        src={space.imageUrl}
+                                        alt={`${space.title} — proyecto de acabados interiores por Comercializadora Rivera`}
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
+                                    <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 flex items-end justify-between">
+                                        <div>
+                                            <p className="text-white/50 text-xs tracking-[0.2em] uppercase mb-1">
+                                                {space.category}
+                                            </p>
+                                            <h3 className="text-white text-xl md:text-2xl font-bold tracking-tight">
+                                                {space.title}
+                                            </h3>
+                                        </div>
+                                        <span className="flex items-center gap-1 text-white/70 text-xs font-semibold tracking-widest uppercase group-hover:text-white transition-colors">
+                                            Ver <ArrowRight size={12} />
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
                         </motion.div>
                     ))}
                 </AnimatePresence>
@@ -105,3 +116,4 @@ const SpacesSection = ({ images, spaces }: SpacesSectionProps) => {
 }
 
 export default SpacesSection;
+

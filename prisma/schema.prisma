@@ -61,11 +61,22 @@ model MaterialFinish {
 }
 
 model SpaceProject {
-  id       Int    @id @default(autoincrement())
-  title    String
-  category String
-  imageUrl String
-  order    Int    @default(0)
+  id          Int                 @id @default(autoincrement())
+  title       String
+  category    String
+  imageUrl    String
+  description String              @default("")
+  order       Int                 @default(0)
+  images      SpaceProjectImage[]
+}
+
+model SpaceProjectImage {
+  id             Int          @id @default(autoincrement())
+  spaceProjectId Int
+  spaceProject   SpaceProject @relation(fields: [spaceProjectId], references: [id], onDelete: Cascade)
+  url            String
+  caption        String       @default("")
+  order          Int          @default(0)
 }
 
 model CatalogContent {
@@ -100,7 +111,13 @@ model SeoSettings {
   ogImageUrl  String @default("")
 }
 
-// ─── Media ───────────────────────────────────────────────────────────────────
+// ─── Config del sitio ────────────────────────────────────────────────────────
+
+model SiteConfig {
+  id              Int     @id @default(autoincrement())
+  showMaterials   Boolean @default(true)
+  showShowroom    Boolean @default(true)
+}
 
 model Media {
   id        Int      @id @default(autoincrement())

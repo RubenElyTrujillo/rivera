@@ -35,6 +35,21 @@ export const materialRepository = {
   },
 
   /**
+   * Busca un material por su ID numérico con todos sus acabados.
+   *
+   * @param id - ID del material.
+   * @returns Material con acabados o null si no existe.
+   */
+  async findById(id: number): Promise<IMaterial | null> {
+    const m = await db.material.findUnique({
+      where: { id },
+      include: { finishes: { orderBy: { order: "asc" } } },
+    });
+    if (!m) return null;
+    return { ...m, collections: parseCollections(m.collections) };
+  },
+
+  /**
    * Reemplaza toda la lista de materiales en una sola transacción.
    * Los acabados existentes se eliminan en cascada (definido en el schema Prisma).
    *

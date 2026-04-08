@@ -5,6 +5,7 @@ import {
   AdminInput, AdminTextarea, SaveButton, useToast,
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
+import { ImageUploadField } from "@/components/admin/forms/ImageUploadField";
 import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import type { IMaterial, IMaterialFinish } from "@/domain/types";
 
@@ -114,8 +115,12 @@ export default function AdminMaterialsPage() {
                 <Field label="Especificación (ej: ABRASIÓN: AC3–AC4)">
                   <AdminInput value={mat.spec} onChange={(v) => update(idx, "spec", v)} />
                 </Field>
-                <Field label="Imagen de portada (URL)" hint="Para la galería">
-                  <AdminInput value={mat.coverImage ?? ""} onChange={(v) => update(idx, "coverImage", v)} placeholder="/uploads/..." />
+                <Field label="Imagen de portada" hint="Para la galería">
+                  <ImageUploadField
+                    value={mat.coverImage ?? ""}
+                    onChange={(v) => update(idx, "coverImage", v)}
+                    aspect="landscape"
+                  />
                 </Field>
               </div>
               <Field label="Colecciones (una por línea)" hint="Opcional">
@@ -172,8 +177,12 @@ export default function AdminMaterialsPage() {
                             <AdminInput value={newFinish[mat.id]?.dims ?? ""} onChange={(v) => updateNewFinish(mat.id, "dims", v)} placeholder="120×20cm" />
                           </Field>
                         </div>
-                        <Field label="URL de imagen">
-                          <AdminInput value={newFinish[mat.id]?.image ?? ""} onChange={(v) => updateNewFinish(mat.id, "image", v)} placeholder="/uploads/..." />
+                        <Field label="Imagen del acabado">
+                          <ImageUploadField
+                            value={newFinish[mat.id]?.image ?? ""}
+                            onChange={(v) => updateNewFinish(mat.id, "image", v)}
+                            aspect="square"
+                          />
                         </Field>
                         <button
                           onClick={() => addFinish(mat.id)}

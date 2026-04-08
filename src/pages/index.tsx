@@ -10,6 +10,7 @@ import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
 import type { IPageData } from "@/domain/types";
 import { db } from "@/lib/db";
+import { siteConfigRepository, type ISiteConfig } from "@/repositories/siteConfig.repository";
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -20,8 +21,8 @@ const IMAGES = {
   blinds: '/images/0ebc9e79a_generated_56d5f617.png',
 };
 
-export const getServerSideProps: GetServerSideProps<{ pageData: IPageData }> = async () => {
-  const [hero, services, materials, spaces, catalog, contact, footer, seo] = await Promise.all([
+export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteConfig: ISiteConfig }> = async () => {
+  const [hero, services, materials, spaces, catalog, contact, footer, seo, siteConfig] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
     db.material.findMany({ orderBy: { order: "asc" }, include: { finishes: { orderBy: { order: "asc" } } } }),
@@ -30,6 +31,7 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData }> = a
     db.contactInfo.findFirst(),
     db.footerContent.findFirst(),
     db.seoSettings.findFirst(),
+    siteConfigRepository.get(),
   ]);
 
   const pageData: IPageData = {
@@ -78,7 +80,7 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData }> = a
     },
   };
 
-  return { props: { pageData } };
+  return { props: { pageData, siteConfig } };
 };
 
 const SEO_TITLE =
@@ -105,7 +107,7 @@ const SEO_KEYWORDS = [
   "instalacion de pisos en cdmx",
 ].join(", ");
 
-export default function Home({ pageData }: { pageData: IPageData }) {
+export default function Home({ pageData, siteConfig }: { pageData: IPageData; siteConfig: ISiteConfig }) {
   const { hero, services, materials, spaces, catalog, contact, footer, seo } = pageData;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const pageUrl = siteUrl ? `${siteUrl}/` : undefined;
@@ -241,8 +243,8 @@ export default function Home({ pageData }: { pageData: IPageData }) {
 
       <HeroSection heroImage={heroImageUrl} content={hero} />
       <ServicesSection services={services} />
-      <MaterialLabSection textureImage={IMAGES.texture} materials={materials} />
-      <ShowroomSection />
+      {siteConfig.showMaterials && <MaterialLabSection textureImage={IMAGES.texture} materials={materials} />}
+      {siteConfig.showShowroom && <ShowroomSection />}
       <SpacesSection images={IMAGES} spaces={spaces} />
       <CatalogSection textureImage={IMAGES.texture} content={catalog} />
       <ContactSection contact={contact} />

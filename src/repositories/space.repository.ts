@@ -2,30 +2,120 @@ import { db } from "@/infrastructure/db/client";
 import type { ISpaceProject } from "@/domain/types/space";
 import type { SpaceInput } from "@/domain/schemas/space.schema";
 
+/** Include clause compartido: siempre trae imágenes ordenadas. */
+const WITH_IMAGES = { images: { orderBy: { order: "asc" as const } } };
+
 /**
  * Repositorio para los proyectos de la galería Espacios.
- * Abstrae todas las operaciones de base de datos relacionadas con `SpaceProject`.
+ * Abstrae todas las operaciones de base de datos relacionadas con
+ * `SpaceProject` y `SpaceProjectImage`.
  */
 export const spaceRepository = {
   /**
-   * Obtiene todos los proyectos ordenados por su campo `order`.
-   * @returns Lista de proyectos.
+   * Obtiene todos los proyectos ordenados por su campo `order`,
+   * incluyendo sus imágenes adicionales.
+   *
+   * @returns Lista de proyectos con imágenes.
    */
   async findAll(): Promise<ISpaceProject[]> {
-    return db.spaceProject.findMany({ orderBy: { order: "asc" } });
+    return db.spaceProject.findMany({
+      orderBy: { order: "asc" },
+      include: WITH_IMAGES,
+    });
+  },
+
+  /**
+   * Busca un proyecto por su ID numérico.
+   *
+   * @param id - ID del proyecto.
+   * @returns Proyecto con imágenes o null si no existe.
+   */
+  async findById(id: number): Promise<ISpaceProject | null> {
+    return db.spaceProject.findUnique({
+      where: { id },
+      include: WITH_IMAGES,
+    });
+  },
+
+  /**
+   * Obtiene todos los proyectos de una categoría específica,
+   * ordenados por `order`.
+   *
+   * @param category - Nombre exacto de la categoría.
+   * @returns Lista de proyectos filtrados.
+   */
+  async findByCategory(category: string): Promise<ISpaceProject[]> {
+    return db.spaceProject.findMany({
+      where: { category },
+      orderBy: { order: "asc" },
+      include: WITH_IMAGES,
+    });
+  },
+
+  /**
+   * Obtiene las categorías únicas de proyectos.
+   *
+   * @returns Array de strings con las categorías.
+   */
+  async findCategories(): Promise<string[]> {
+    const rows = await db.spaceProject.findMany({
+      select: { category: true },
+      distinct: ["category"],
+      orderBy: { category: "asc" },
+    });
+    return rows.map((r) => r.category);
   },
 
   /**
    * Reemplaza toda la lista de proyectos en una sola transacción atómica.
+   * Las imágenes existentes se eliminan en cascada (onDelete: Cascade en schema).
    *
-   * @param spaces - Lista completa de proyectos a guardar.
+   * @param spaces - Lista completa de proyectos a guardar (con imágenes).
    * @returns La nueva lista de proyectos ordenada.
    */
   async replaceAll(spaces: SpaceInput[]): Promise<ISpaceProject[]> {
     return db.$transaction(async (tx) => {
       await tx.spaceProject.deleteMany();
-      await tx.spaceProject.createMany({ data: spaces });
-      return tx.spaceProject.findMany({ orderBy: { order: "asc" } });
+      for (const s of spaces) {
+        const { images, ...rest } = s;
+        await tx.spaceProject.create({
+          data: {
+            ...rest,
+            images: images?.length
+              ? { create: images.map(({ id: _id, ...img }) => img) }
+              : undefined,
+          },
+        });
+      }
+      return tx.spaceProject.findMany({
+        orderBy: { order: "asc" },
+        include: WITH_IMAGES,
+      });
+    });
+  },
+
+  /**
+   * Actualiza un proyecto individual con sus imágenes.
+   * Elimina las imágenes anteriores y recrea las nuevas en la misma transacción.
+   *
+   * @param id     - ID del proyecto a actualizar.
+   * @param data   - Datos nuevos del proyecto.
+   * @returns Proyecto actualizado.
+   */
+  async update(id: number, data: SpaceInput): Promise<ISpaceProject> {
+    const { images, ...rest } = data;
+    return db.$transaction(async (tx) => {
+      await tx.spaceProjectImage.deleteMany({ where: { spaceProjectId: id } });
+      return tx.spaceProject.update({
+        where: { id },
+        data: {
+          ...rest,
+          images: images?.length
+            ? { create: images.map(({ id: _id, ...img }) => img) }
+            : undefined,
+        },
+        include: WITH_IMAGES,
+      });
     });
   },
 };

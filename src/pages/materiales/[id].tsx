@@ -6,13 +6,11 @@ import type { GetServerSideProps } from 'next';
 import * as motion from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
 import { ArrowLeft, X } from 'lucide-react';
-import { MATERIALS_DATA } from '@/lib/materialsData';
-import type { IMaterialsData } from '@/interfaces/materialsData';
-
-type Finish = IMaterialsData['finishes'][number];
+import { materialRepository } from '@/repositories/material.repository';
+import type { IMaterial, IMaterialFinish } from '@/domain/types';
 
 interface Props {
-    material: IMaterialsData;
+    material: IMaterial;
     siteUrl: string;
 }
 
@@ -38,9 +36,13 @@ function GalleryHeader({ name }: { name: string }) {
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) => {
-    const slug = params?.id as string;
-    const material = MATERIALS_DATA.find((m) => m.id === slug);
+    const raw = params?.id as string;
+    const id = parseInt(raw, 10);
+    if (isNaN(id)) return { notFound: true };
+
+    const material = await materialRepository.findById(id);
     if (!material) return { notFound: true };
+
     return {
         props: {
             material,
@@ -50,7 +52,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
 };
 
 export default function MaterialGallery({ material, siteUrl }: Props) {
-    const [selectedFinish, setSelectedFinish] = useState<Finish | null>(null);
+    const [selectedFinish, setSelectedFinish] = useState<IMaterialFinish | null>(null);
     const [activeCollection, setActiveCollection] = useState('Todos');
 
     const collections = ['Todos', ...Array.from(new Set(material.finishes.map((f) => f.collection).filter(Boolean)))];
@@ -64,7 +66,7 @@ export default function MaterialGallery({ material, siteUrl }: Props) {
         : material.coverImage;
 
     const seoTitle = `${material.name} — Pisos y Acabados | Comercializadora Rivera`;
-    const seoDescription = `${material.description} ${material.spec}. Ver ${material.finishes.length} acabados disponibles. Instalación profesional en CDMX.`;
+    const seoDescription = `${material.desc ?? ''} ${material.spec ?? ''}. Ver ${material.finishes.length} acabados disponibles. Instalación profesional en CDMX.`;
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -72,7 +74,7 @@ export default function MaterialGallery({ material, siteUrl }: Props) {
             {
                 '@type': 'Product',
                 name: material.name,
-                description: material.description,
+                description: material.desc,
                 image: ogImage,
                 url: pageUrl,
                 brand: { '@type': 'Brand', name: 'Comercializadora Rivera' },

@@ -8,7 +8,7 @@
 export type { IHeroContent } from "./hero";
 export type { IService } from "./service";
 export type { IMaterial, IMaterialFinish } from "./material";
-export type { ISpaceProject } from "./space";
+export type { ISpaceProject, ISpaceProjectImage } from "./space";
 export type { ICatalogContent } from "./catalog";
 export type { IContactInfo } from "./contact";
 export type { IFooterContent } from "./footer";

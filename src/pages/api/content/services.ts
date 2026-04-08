@@ -1,47 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { z } from "zod";
-import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { ServicesListSchema } from "@/domain/schemas/service.schema";
+import { serviceRepository } from "@/repositories/service.repository";
+import { requireAuth } from "@/infrastructure/auth/middleware";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
-const ServiceSchema = z.object({
-  icon: z.string().min(1).max(100),
-  title: z.string().min(1).max(200),
-  subtitle: z.string().max(300),
-  desc: z.string().max(2000),
-  order: z.number().int().min(0),
-});
-
+/**
+ * GET  /api/content/services  → Devuelve todos los servicios ordenados.
+ * PUT  /api/content/services  → Reemplaza la lista completa (requiere auth).
+ */
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const rows = await db.service.findMany({ orderBy: { order: "asc" } });
-    return res.status(200).json(rows);
+    const data = await serviceRepository.findAll();
+    return res.status(200).json(data);
   }
 
   if (req.method === "PUT") {
-    const auth = requireAuth(req, res);
-    if (!auth) return;
+    if (!requireAuth(req, res)) return;
 
-    const parsed = z.array(ServiceSchema).safeParse(req.body);
+    const parsed = ServicesListSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Datos de servicios inválidos", details: parsed.error.flatten() });
     }
 
-    const result = await db.$transaction(async (tx) => {
-      await tx.service.deleteMany();
-      await tx.service.createMany({
-        data: parsed.data.map((s) => ({
-          icon: s.icon,
-          title: s.title,
-          subtitle: s.subtitle,
-          desc: s.desc,
-          order: s.order,
-        })),
-      });
-      return tx.service.findMany({ orderBy: { order: "asc" } });
-    });
-
-    return res.status(200).json(result);
+    const data = await serviceRepository.replaceAll(parsed.data);
+    return res.status(200).json(data);
   }
 
   return res.status(405).json({ error: "Método no permitido" });

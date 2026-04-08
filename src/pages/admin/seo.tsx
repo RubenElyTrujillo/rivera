@@ -5,7 +5,7 @@ import {
   AdminInput, AdminTextarea, SaveButton, useToast,
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
-import type { ISeoSettings } from "@/interfaces";
+import type { ISeoSettings } from "@/domain/types";
 
 const DEFAULTS: ISeoSettings = {
   title: "Comercializadora Rivera | Pisos, Recubrimientos y Restauracion en CDMX",

@@ -1,16 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { z } from "zod";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { QuotationSchema } from "@/domain/schemas/quotation.schema";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
-const QuotationSchema = z.object({
-  name: z.string().max(200).default(""),
-  phone: z.string().max(50).default(""),
-  surface: z.string().min(1, "Tipo de superficie requerido").max(200),
-  area: z.string().max(100).default(""),
-  location: z.string().max(300).default(""),
-  message: z.string().max(2000).default(""),
-});
-
+/**
+ * POST /api/quotation
+ *
+ * Recibe una solicitud de cotización del formulario público y la reenvía
+ * al webhook de n8n configurado en la variable de entorno N8N_QUOTATION_WEBHOOK_URL.
+ *
+ * Si el webhook no está configurado, la petición se acepta igualmente (modo silencioso).
+ */
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido" });
@@ -21,22 +20,21 @@ export default withErrorHandling(async function handler(req: NextApiRequest, res
     return res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Datos inválidos" });
   }
 
-  const { name, phone, surface, area, location, message } = parsed.data;
-  const n8nWebhookUrl = process.env.N8N_QUOTATION_WEBHOOK_URL;
+  const webhookUrl = process.env.N8N_QUOTATION_WEBHOOK_URL;
 
-  if (n8nWebhookUrl) {
+  if (webhookUrl) {
     try {
-      const response = await fetch(n8nWebhookUrl, {
+      const response = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, surface, area, location, message }),
+        body: JSON.stringify(parsed.data),
       });
 
       if (!response.ok) {
-        console.error("n8n webhook error:", response.status, await response.text());
+        console.error("[quotation] n8n webhook error:", response.status, await response.text());
       }
     } catch (err) {
-      console.error("Error enviando a n8n:", err);
+      console.error("[quotation] Error enviando a n8n:", err);
     }
   }
 

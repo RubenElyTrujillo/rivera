@@ -5,7 +5,7 @@ import {
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Upload, FileText } from "lucide-react";
-import type { IMedia } from "@/interfaces";
+import type { IMedia } from "@/domain/types";
 
 export function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;

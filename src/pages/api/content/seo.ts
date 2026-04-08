@@ -1,37 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { z } from "zod";
-import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { SeoSchema } from "@/domain/schemas/seo.schema";
+import { seoRepository } from "@/repositories/seo.repository";
+import { requireAuth } from "@/infrastructure/auth/middleware";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
-const SeoSchema = z.object({
-  title: z.string().min(1).max(200),
-  description: z.string().max(500),
-  keywords: z.string().max(1000),
-  ogImageUrl: z.string().max(1000).default(""),
-});
-
+/**
+ * GET  /api/content/seo  → Devuelve la configuración SEO.
+ * PUT  /api/content/seo  → Actualiza la configuración SEO (requiere auth).
+ */
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const row = await db.seoSettings.findFirst();
-    return res.status(200).json(row);
+    const data = await seoRepository.findOne();
+    return res.status(200).json(data);
   }
 
   if (req.method === "PUT") {
-    const auth = requireAuth(req, res);
-    if (!auth) return;
+    if (!requireAuth(req, res)) return;
 
     const parsed = SeoSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Datos SEO inválidos", details: parsed.error.flatten() });
     }
 
-    const existing = await db.seoSettings.findFirst();
-    const row = existing
-      ? await db.seoSettings.update({ where: { id: existing.id }, data: parsed.data })
-      : await db.seoSettings.create({ data: parsed.data });
-
-    return res.status(200).json(row);
+    const data = await seoRepository.upsert(parsed.data);
+    return res.status(200).json(data);
   }
 
   return res.status(405).json({ error: "Método no permitido" });

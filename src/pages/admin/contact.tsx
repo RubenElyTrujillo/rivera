@@ -6,7 +6,7 @@ import {
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Plus } from "lucide-react";
-import type { IContactInfo } from "@/interfaces";
+import type { IContactInfo } from "@/domain/types";
 
 const DEFAULTS: IContactInfo = {
   whatsappPhone: "525629671869",

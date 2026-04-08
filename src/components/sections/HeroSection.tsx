@@ -1,6 +1,6 @@
 import Image from "next/image";
 import * as motion from "motion/react-client";
-import type { IHeroContent } from "@/interfaces";
+import type { IHeroContent } from "@/domain/types";
 
 interface HeroSectionProps {
     heroImage: string;

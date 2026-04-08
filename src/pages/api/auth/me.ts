@@ -1,21 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { requireAuth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { requireAuth } from "@/infrastructure/auth/middleware";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
-export default withErrorHandling(async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+/**
+ * GET /api/auth/me
+ *
+ * Verifica si el usuario tiene una sesión activa válida.
+ * Usado por el hook `useAdminAuth` en el cliente para proteger las páginas del admin.
+ *
+ * @returns 200 con el payload del JWT si está autenticado, 401 si no.
+ */
+export default withErrorHandling(function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
-  const payload = requireAuth(req, res);
-  if (!payload) return;
+  const auth = requireAuth(req, res);
+  if (!auth) return;
 
-  const user = await db.user.findUnique({ where: { id: payload.userId } });
-  if (!user) return res.status(401).json({ error: "Usuario no encontrado" });
-
-  return res.status(200).json({ id: user.id, email: user.email });
+  return res.status(200).json({ userId: auth.userId, email: auth.email });
 });

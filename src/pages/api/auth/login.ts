@@ -1,44 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
-import { z } from "zod";
-import { db } from "@/lib/db";
-import { signToken, setAuthCookie } from "@/lib/auth";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { LoginSchema } from "@/domain/schemas/auth.schema";
+import { userRepository } from "@/repositories/user.repository";
+import { signToken } from "@/infrastructure/auth/jwt";
+import { setAuthCookie } from "@/infrastructure/auth/cookies";
+import { checkRateLimit, clearRateLimit } from "@/infrastructure/auth/rateLimit";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
-const LoginSchema = z.object({
-  email: z.string().email("Email inválido"),
-  password: z.string().min(1, "Contraseña requerida"),
-});
-
-// In-memory rate limiter (works in Docker standalone; resets on restart)
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
-const loginAttempts = new Map<string, RateLimitEntry>();
-const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = loginAttempts.get(ip);
-  if (!entry || entry.resetAt < now) {
-    loginAttempts.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT_MAX) return false;
-  entry.count++;
-  return true;
-}
-
-function clearRateLimit(ip: string): void {
-  loginAttempts.delete(ip);
-}
-
-export default withErrorHandling(async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+/**
+ * POST /api/auth/login
+ *
+ * Autentica al administrador por email y contraseña.
+ * Aplica rate limiting por IP (5 intentos en 15 minutos).
+ * En caso de éxito, establece una cookie HttpOnly con el JWT.
+ */
+export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido" });
   }
@@ -61,7 +37,7 @@ export default withErrorHandling(async function handler(
 
   const { email, password } = parsed.data;
 
-  const user = await db.user.findUnique({ where: { email } });
+  const user = await userRepository.findByEmail(email);
   if (!user) {
     return res.status(401).json({ error: "Credenciales inválidas" });
   }

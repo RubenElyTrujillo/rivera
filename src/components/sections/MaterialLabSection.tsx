@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import * as motion from 'motion/react-client';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import type { IMaterial } from "@/interfaces";
+import type { IMaterial } from "@/domain/types";
 import { MATERIALS_DATA } from "@/lib/materialsData";
 
 // Busca el slug en MATERIALS_DATA por nombre normalizado

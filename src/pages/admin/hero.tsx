@@ -11,7 +11,7 @@ import {
   useToast,
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
-import type { IHeroContent } from "@/interfaces";
+import type { IHeroContent } from "@/domain/types";
 
 const DEFAULTS: IHeroContent = {
   subtitle: "Soluciones integrales en acabados",

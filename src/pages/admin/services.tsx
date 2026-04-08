@@ -12,7 +12,7 @@ import {
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Plus, GripVertical } from "lucide-react";
-import type { IService } from "@/interfaces";
+import type { IService } from "@/domain/types";
 
 const ICON_OPTIONS = [
   "Layers", "Wrench", "Palette", "Columns3", "Zap",

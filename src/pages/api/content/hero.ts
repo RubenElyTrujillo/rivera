@@ -1,38 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { z } from "zod";
-import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { HeroSchema } from "@/domain/schemas/hero.schema";
+import { heroRepository } from "@/repositories/hero.repository";
+import { requireAuth } from "@/infrastructure/auth/middleware";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
-const HeroSchema = z.object({
-  subtitle: z.string().min(1).max(300),
-  titleLine1: z.string().min(1).max(200),
-  titleLine2: z.string().min(1).max(200),
-  description: z.string().max(1000),
-  imageUrl: z.string().max(1000),
-});
-
+/**
+ * GET  /api/content/hero  → Devuelve el contenido actual del Hero.
+ * PUT  /api/content/hero  → Actualiza el contenido del Hero (requiere auth).
+ */
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const row = await db.heroContent.findFirst();
-    return res.status(200).json(row);
+    const data = await heroRepository.findOne();
+    return res.status(200).json(data);
   }
 
   if (req.method === "PUT") {
-    const auth = requireAuth(req, res);
-    if (!auth) return;
+    if (!requireAuth(req, res)) return;
 
     const parsed = HeroSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Datos del hero inválidos", details: parsed.error.flatten() });
     }
 
-    const existing = await db.heroContent.findFirst();
-    const row = existing
-      ? await db.heroContent.update({ where: { id: existing.id }, data: parsed.data })
-      : await db.heroContent.create({ data: parsed.data });
-
-    return res.status(200).json(row);
+    const data = await heroRepository.upsert(parsed.data);
+    return res.status(200).json(data);
   }
 
   return res.status(405).json({ error: "Método no permitido" });

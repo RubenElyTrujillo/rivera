@@ -6,7 +6,7 @@ import {
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
-import type { IMaterial, IMaterialFinish } from "@/interfaces";
+import type { IMaterial, IMaterialFinish } from "@/domain/types";
 
 const EMPTY_MAT: IMaterial = { id: 0, name: "", subtitle: "", desc: "", spec: "", coverImage: "", collections: [], order: 0, finishes: [] };
 const EMPTY_FINISH = { name: "", code: "", collection: "", image: "", dims: "" };

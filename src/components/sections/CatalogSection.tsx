@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import { Download } from 'lucide-react';
-import type { ICatalogContent } from "@/interfaces";
+import type { ICatalogContent } from "@/domain/types";
 
 const DEFAULTS: ICatalogContent = {
     title: "Catálogo completo",

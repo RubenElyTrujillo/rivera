@@ -1,6 +1,6 @@
 import * as motion from "motion/react-client";
 import { Layers, Wrench, Palette, Columns3, Zap, Hammer, Star, Home, Package, Shield } from 'lucide-react';
-import type { IService } from "@/interfaces";
+import type { IService } from "@/domain/types";
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>> = {
     Layers, Wrench, Palette, Columns3, Zap, Hammer, Star, Home, Package, Shield,

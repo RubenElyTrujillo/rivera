@@ -1,0 +1,18 @@
+/**
+ * Barrel de tipos de dominio.
+ * Importa desde aquí para acceder a cualquier interfaz sin conocer su ubicación exacta.
+ *
+ * @example
+ *   import type { IHeroContent, IService } from "@/domain/types";
+ */
+export type { IHeroContent } from "./hero";
+export type { IService } from "./service";
+export type { IMaterial, IMaterialFinish } from "./material";
+export type { ISpaceProject } from "./space";
+export type { ICatalogContent } from "./catalog";
+export type { IContactInfo } from "./contact";
+export type { IFooterContent } from "./footer";
+export type { ISeoSettings } from "./seo";
+export type { IMedia } from "./media";
+export type { JwtPayload } from "./auth";
+export type { IPageData } from "./page";

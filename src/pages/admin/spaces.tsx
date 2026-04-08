@@ -6,7 +6,7 @@ import {
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Plus, Upload } from "lucide-react";
-import type { ISpaceProject } from "@/interfaces";
+import type { ISpaceProject } from "@/domain/types";
 
 const CATEGORIES = ["Residencial", "Comercial", "Exterior"];
 

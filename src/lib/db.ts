@@ -1,15 +1,6 @@
-import { PrismaClient } from "@/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+/**
+ * @deprecated Importa directamente desde "@/infrastructure/db/client".
+ * Este archivo existe solo para compatibilidad durante la migración.
+ */
+export { db } from "@/infrastructure/db/client";
 
-function createDb() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
-  return new PrismaClient({ adapter });
-}
-
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
-
-export const db = globalForPrisma.prisma ?? createDb();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = db;
-}

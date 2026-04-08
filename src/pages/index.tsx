@@ -8,7 +8,7 @@ import SpacesSection from "@/components/sections/SpacesSection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
-import type { IPageData } from "@/interfaces";
+import type { IPageData } from "@/domain/types";
 import { db } from "@/lib/db";
 
 const IMAGES = {

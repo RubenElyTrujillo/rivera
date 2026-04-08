@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
-import type { ISpaceProject } from "@/interfaces";
+import type { ISpaceProject } from "@/domain/types";
 
 const FILTERS = ['Todos', 'Residencial', 'Comercial', 'Exterior'];
 

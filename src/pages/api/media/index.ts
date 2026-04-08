@@ -1,35 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import fs from "fs";
 import path from "path";
-import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { mediaRepository } from "@/repositories/media.repository";
+import { requireAuth } from "@/infrastructure/auth/middleware";
+import { removeFileIfExists, UPLOAD_DIR } from "@/infrastructure/storage/fileSystem";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
+/**
+ * GET    /api/media     → Lista todos los archivos subidos (requiere auth).
+ * DELETE /api/media?id= → Elimina un archivo del disco y de la DB (requiere auth).
+ */
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const auth = requireAuth(req, res);
-    if (!auth) return;
-
-    const media = await db.media.findMany({ orderBy: { createdAt: "desc" } });
-    return res.status(200).json(media);
+    if (!requireAuth(req, res)) return;
+    const data = await mediaRepository.findAll();
+    return res.status(200).json(data);
   }
 
   if (req.method === "DELETE") {
-    const auth = requireAuth(req, res);
-    if (!auth) return;
+    if (!requireAuth(req, res)) return;
 
     const id = Number(req.query.id);
     if (!id) return res.status(400).json({ error: "ID requerido" });
 
-    const media = await db.media.findUnique({ where: { id } });
+    const media = await mediaRepository.findById(id);
     if (!media) return res.status(404).json({ error: "No encontrado" });
 
-    const filepath = path.join(process.cwd(), "public", media.url);
-    if (fs.existsSync(filepath)) {
-      fs.unlinkSync(filepath);
-    }
+    removeFileIfExists(path.join(UPLOAD_DIR, path.basename(media.url)));
+    await mediaRepository.delete(id);
 
-    await db.media.delete({ where: { id } });
     return res.status(200).json({ ok: true });
   }
 

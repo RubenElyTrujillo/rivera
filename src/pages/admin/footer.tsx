@@ -6,7 +6,7 @@ import {
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
 import { Trash2, Plus } from "lucide-react";
-import type { IFooterContent } from "@/interfaces";
+import type { IFooterContent } from "@/domain/types";
 
 const DEFAULTS: IFooterContent = {
   tagline: "Soluciones integrales en acabados y decoración de interiores.",

@@ -1,38 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { z } from "zod";
-import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
-import { withErrorHandling } from "@/lib/apiHandler";
+import { SpacesListSchema } from "@/domain/schemas/space.schema";
+import { spaceRepository } from "@/repositories/space.repository";
+import { requireAuth } from "@/infrastructure/auth/middleware";
+import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
-const SpaceSchema = z.object({
-  title: z.string().min(1).max(200),
-  category: z.string().min(1).max(100),
-  imageUrl: z.string().max(1000),
-  order: z.number().int().min(0),
-});
-
+/**
+ * GET  /api/content/spaces  → Devuelve todos los proyectos de la galería.
+ * PUT  /api/content/spaces  → Reemplaza la lista completa (requiere auth).
+ */
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const rows = await db.spaceProject.findMany({ orderBy: { order: "asc" } });
-    return res.status(200).json(rows);
+    const data = await spaceRepository.findAll();
+    return res.status(200).json(data);
   }
 
   if (req.method === "PUT") {
-    const auth = requireAuth(req, res);
-    if (!auth) return;
+    if (!requireAuth(req, res)) return;
 
-    const parsed = z.array(SpaceSchema).safeParse(req.body);
+    const parsed = SpacesListSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Datos de espacios inválidos", details: parsed.error.flatten() });
     }
 
-    const result = await db.$transaction(async (tx) => {
-      await tx.spaceProject.deleteMany();
-      await tx.spaceProject.createMany({ data: parsed.data });
-      return tx.spaceProject.findMany({ orderBy: { order: "asc" } });
-    });
-
-    return res.status(200).json(result);
+    const data = await spaceRepository.replaceAll(parsed.data);
+    return res.status(200).json(data);
   }
 
   return res.status(405).json({ error: "Método no permitido" });

@@ -23,6 +23,8 @@ export interface ISpaceProject {
   imageUrl: string;
   /** Descripción del proyecto (HTML o texto plano). */
   description?: string;
+  /** Fecha de finalización del proyecto (ISO string). */
+  completedAt?: string | null;
   order: number;
   /** Imágenes adicionales del proyecto (galería). */
   images?: ISpaceProjectImage[];

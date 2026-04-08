@@ -11,6 +11,7 @@ import {
   useToast,
   AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
+import { ImageUploadField } from "@/components/admin/forms/ImageUploadField";
 import type { IHeroContent } from "@/domain/types";
 
 const DEFAULTS: IHeroContent = {
@@ -69,8 +70,13 @@ export default function AdminHeroPage() {
           <Field label="Descripción">
             <AdminTextarea value={data.description} onChange={set("description")} />
           </Field>
-          <Field label="URL de la imagen de fondo" hint="Ej: /uploads/mi-imagen.jpg — sube la imagen en la sección Medios primero">
-            <AdminInput value={data.imageUrl} onChange={set("imageUrl")} />
+          <Field label="Imagen de fondo">
+            <ImageUploadField
+              value={data.imageUrl}
+              onChange={set("imageUrl")}
+              aspect="landscape"
+              placeholder="/uploads/hero.webp"
+            />
           </Field>
           <SaveButton saving={saving} onClick={save} />
         </FormCard>

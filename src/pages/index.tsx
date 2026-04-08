@@ -8,9 +8,10 @@ import SpacesSection from "@/components/sections/SpacesSection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
-import type { IPageData } from "@/domain/types";
+import type { IPageData, ISpaceCategory } from "@/domain/types";
 import { db } from "@/lib/db";
 import { siteConfigRepository, type ISiteConfig } from "@/repositories/siteConfig.repository";
+import { spaceCategoryRepository } from "@/repositories/spaceCategory.repository";
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -21,17 +22,17 @@ const IMAGES = {
   blinds: '/images/0ebc9e79a_generated_56d5f617.png',
 };
 
-export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteConfig: ISiteConfig }> = async () => {
-  const [hero, services, materials, spaces, catalog, contact, footer, seo, siteConfig] = await Promise.all([
+export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[] }> = async () => {
+  const [hero, services, materials, catalog, contact, footer, seo, siteConfig, spaceCategories] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
     db.material.findMany({ orderBy: { order: "asc" }, include: { finishes: { orderBy: { order: "asc" } } } }),
-    db.spaceProject.findMany({ orderBy: { order: "asc" } }),
     db.catalogContent.findFirst(),
     db.contactInfo.findFirst(),
     db.footerContent.findFirst(),
     db.seoSettings.findFirst(),
     siteConfigRepository.get(),
+    spaceCategoryRepository.findAll(),
   ]);
 
   const pageData: IPageData = {
@@ -49,7 +50,6 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteC
           collections: (() => { try { return JSON.parse(m.collections) as string[]; } catch { return []; } })(),
         }))
       : [],
-    spaces: spaces ?? [],
     catalog: catalog ?? {
       title: "Catálogo completo",
       description: "Descarga nuestro catálogo con especificaciones técnicas, colecciones de pisos, colores y fichas de cada producto.",
@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteC
     },
   };
 
-  return { props: { pageData, siteConfig } };
+  return { props: { pageData, siteConfig, spaceCategories } };
 };
 
 const SEO_TITLE =
@@ -107,8 +107,8 @@ const SEO_KEYWORDS = [
   "instalacion de pisos en cdmx",
 ].join(", ");
 
-export default function Home({ pageData, siteConfig }: { pageData: IPageData; siteConfig: ISiteConfig }) {
-  const { hero, services, materials, spaces, catalog, contact, footer, seo } = pageData;
+export default function Home({ pageData, siteConfig, spaceCategories }: { pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[] }) {
+  const { hero, services, materials, catalog, contact, footer, seo } = pageData;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const pageUrl = siteUrl ? `${siteUrl}/` : undefined;
   const ogImageSrc = seo.ogImageUrl || IMAGES.hero;
@@ -245,7 +245,7 @@ export default function Home({ pageData, siteConfig }: { pageData: IPageData; si
       <ServicesSection services={services} />
       {siteConfig.showMaterials && <MaterialLabSection textureImage={IMAGES.texture} materials={materials} />}
       {siteConfig.showShowroom && <ShowroomSection />}
-      <SpacesSection images={IMAGES} spaces={spaces} />
+      <SpacesSection categories={spaceCategories} />
       <CatalogSection textureImage={IMAGES.texture} content={catalog} />
       <ContactSection contact={contact} />
       <FooterSection contact={contact} footer={footer} />

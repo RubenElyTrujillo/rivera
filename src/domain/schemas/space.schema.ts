@@ -19,6 +19,7 @@ export const SpaceSchema = z.object({
   category:    z.string().min(1).max(100),
   imageUrl:    z.string().max(1000),
   description: z.string().max(5000).default(""),
+  completedAt: z.string().nullable().optional(),
   order:       z.number().int().min(0),
   images:      z.array(SpaceProjectImageSchema).default([]),
 });

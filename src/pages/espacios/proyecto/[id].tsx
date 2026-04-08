@@ -5,13 +5,18 @@ import Link from 'next/link';
 import type { GetServerSideProps } from 'next';
 import * as motion from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
-import { ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, X, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { spaceRepository } from '@/repositories/space.repository';
 import type { ISpaceProject, ISpaceProjectImage } from '@/domain/types';
 
 interface Props {
   project: ISpaceProject;
   siteUrl: string;
+}
+
+/** Formatea una fecha ISO a texto legible en español. */
+function formatDate(iso: string): string {
+  return new Intl.DateTimeFormat('es-MX', { year: 'numeric', month: 'long' }).format(new Date(iso));
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) => {
@@ -182,17 +187,25 @@ export default function SpaceProjectDetail({ project, siteUrl }: Props) {
         </div>
 
         <div className="px-6 md:px-16 py-12 max-w-6xl mx-auto">
-          {/* Descripción */}
-          {project.description && (
-            <div className="mb-12 max-w-2xl">
-              <p className="text-xs text-primary tracking-[0.2em] uppercase font-bold mb-4">
-                SOBRE ESTE PROYECTO
-              </p>
-              <p className="text-foreground/70 leading-relaxed">
-                {project.description}
-              </p>
-            </div>
-          )}
+          {/* Fecha + Descripción */}
+          <div className="mb-12 max-w-2xl">
+            {project.completedAt && (
+              <span className="inline-flex items-center gap-1.5 text-xs text-foreground/40 font-mono mb-4">
+                <CalendarDays size={12} />
+                {formatDate(project.completedAt)}
+              </span>
+            )}
+            {project.description && (
+              <>
+                <p className="text-xs text-primary tracking-[0.2em] uppercase font-bold mb-4">
+                  SOBRE ESTE PROYECTO
+                </p>
+                <p className="text-foreground/70 leading-relaxed">
+                  {project.description}
+                </p>
+              </>
+            )}
+          </div>
 
           {/* Galería */}
           {allImages.length > 1 && (

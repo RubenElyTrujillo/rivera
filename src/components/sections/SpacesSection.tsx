@@ -1,119 +1,88 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import * as motion from 'motion/react-client';
-import { AnimatePresence } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import type { ISpaceProject } from "@/domain/types";
-
-type SpacesImages = {
-    wallCladding: string;
-    deck: string;
-    restoration: string;
-    blinds: string;
-};
+import type { ISpaceCategory } from "@/domain/types";
 
 interface SpacesSectionProps {
-    images: SpacesImages;
-    spaces?: ISpaceProject[] | null;
+  categories?: ISpaceCategory[] | null;
 }
 
-const SpacesSection = ({ images, spaces }: SpacesSectionProps) => {
-    const [activeFilter, setActiveFilter] = useState('Todos');
+const DEFAULT_CATEGORIES: ISpaceCategory[] = [
+  { id: 1, name: 'Residencial', slug: 'residencial', coverImage: '', order: 0 },
+  { id: 2, name: 'Comercial',   slug: 'comercial',   coverImage: '', order: 1 },
+  { id: 3, name: 'Exterior',    slug: 'exterior',    coverImage: '', order: 2 },
+];
 
-    const defaultSpaces: ISpaceProject[] = [
-        { id: 1, title: 'Pisos de Ingeniería', category: 'Residencial', imageUrl: images.wallCladding, description: '', order: 0 },
-        { id: 2, title: 'Deck Exterior', category: 'Exterior', imageUrl: images.deck, description: '', order: 1 },
-        { id: 3, title: 'Restauración', category: 'Comercial', imageUrl: images.restoration, description: '', order: 2 },
-        { id: 4, title: 'Persianas y Cortinas', category: 'Residencial', imageUrl: images.blinds, description: '', order: 3 },
-    ];
+const SpacesSection = ({ categories }: SpacesSectionProps) => {
+  const list = categories && categories.length > 0 ? categories : DEFAULT_CATEGORIES;
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-    const list = spaces && spaces.length > 0 ? spaces : defaultSpaces;
-    const allCategories = ['Todos', ...Array.from(new Set(list.map((s) => s.category)))];
+  return (
+    <section id="espacios" className="py-24 md:py-36 bg-card">
+      <div className="px-8 md:px-20 mb-12 md:mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <p className="text-primary text-xs tracking-[0.3em] uppercase font-semibold mb-3">
+            GALERÍA DE ESPACIOS
+          </p>
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-tight">
+            Nuestro trabajo
+          </h2>
+        </motion.div>
+      </div>
 
-    const filtered = activeFilter === 'Todos'
-        ? list
-        : list.filter((s) => s.category === activeFilter);
-
-    return (
-        <section id="espacios" className="py-24 md:py-36 px-8 md:px-20 bg-card">
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="mb-12 md:mb-16"
+      {/* Grid de categorías */}
+      <div
+        ref={scrollRef}
+        className="px-8 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+      >
+        {list.map((cat, i) => (
+          <motion.div
+            key={cat.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+          >
+            <Link
+              href={`/espacios/${cat.slug}`}
+              className="group relative aspect-[4/3] overflow-hidden bg-foreground/10 block"
             >
-                <p className="text-primary text-xs tracking-[0.3em] uppercase font-semibold mb-3">
-                    GALERÍA DE ESPACIOS
-                </p>
-                <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-tight">
-                    Nuestro trabajo
-                </h2>
-            </motion.div>
-
-            {/* Filters */}
-            <div className="flex gap-6 mb-12 overflow-x-auto hide-scrollbar">
-                {allCategories.map((filter) => (
-                    <button
-                        key={filter}
-                        onClick={() => setActiveFilter(filter)}
-                        className={`text-xs tracking-[0.2em] uppercase font-semibold pb-2 border-b-2 transition-all whitespace-nowrap ${activeFilter === filter
-                                ? 'border-primary text-foreground'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        {filter}
-                    </button>
-                ))}
-            </div>
-
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <AnimatePresence mode="wait">
-                    {filtered.map((space, i) => (
-                        <motion.div
-                            key={space.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.5, delay: i * 0.1 }}
-                        >
-                            <Link
-                                href={`/espacios/proyecto/${space.id}`}
-                                className="group relative aspect-4/3 overflow-hidden bg-muted block"
-                            >
-                                <div className="relative aspect-4/3 overflow-hidden">
-                                    <Image
-                                        src={space.imageUrl}
-                                        alt={`${space.title} — proyecto de acabados interiores por Comercializadora Rivera`}
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
-                                    <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 flex items-end justify-between">
-                                        <div>
-                                            <p className="text-white/50 text-xs tracking-[0.2em] uppercase mb-1">
-                                                {space.category}
-                                            </p>
-                                            <h3 className="text-white text-xl md:text-2xl font-bold tracking-tight">
-                                                {space.title}
-                                            </h3>
-                                        </div>
-                                        <span className="flex items-center gap-1 text-white/70 text-xs font-semibold tracking-widest uppercase group-hover:text-white transition-colors">
-                                            Ver <ArrowRight size={12} />
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-            </div>
-        </section>
-    );
-}
+              <div className="relative aspect-[4/3] overflow-hidden">
+                {cat.coverImage ? (
+                  <Image
+                    src={cat.coverImage}
+                    alt={`Proyectos ${cat.name} — Comercializadora Rivera`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-foreground/20" />
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between">
+                  <h3 className="text-white text-2xl md:text-3xl font-bold tracking-tight">
+                    {cat.name}
+                  </h3>
+                  <span className="flex items-center gap-1 text-white/70 text-xs font-semibold tracking-widest uppercase group-hover:text-white transition-colors">
+                    Ver <ArrowRight size={12} />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+};
 
 export default SpacesSection;
 

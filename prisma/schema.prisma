@@ -60,12 +60,21 @@ model MaterialFinish {
   order      Int      @default(0)
 }
 
+model SpaceCategory {
+  id         Int    @id @default(autoincrement())
+  name       String
+  slug       String @unique
+  coverImage String @default("")
+  order      Int    @default(0)
+}
+
 model SpaceProject {
   id          Int                 @id @default(autoincrement())
   title       String
   category    String
   imageUrl    String
   description String              @default("")
+  completedAt DateTime?
   order       Int                 @default(0)
   images      SpaceProjectImage[]
 }

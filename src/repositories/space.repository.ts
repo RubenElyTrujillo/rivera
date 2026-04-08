@@ -5,6 +5,15 @@ import type { SpaceInput } from "@/domain/schemas/space.schema";
 /** Include clause compartido: siempre trae imágenes ordenadas. */
 const WITH_IMAGES = { images: { orderBy: { order: "asc" as const } } };
 
+/** Convierte un registro DB (con DateTime) al tipo de dominio (con string ISO). */
+function serializeProject(row: Record<string, unknown> & { completedAt: Date | null }): ISpaceProject {
+  const { completedAt, ...rest } = row;
+  return {
+    ...(rest as unknown as ISpaceProject),
+    completedAt: completedAt ? completedAt.toISOString() : null,
+  };
+}
+
 /**
  * Repositorio para los proyectos de la galería Espacios.
  * Abstrae todas las operaciones de base de datos relacionadas con
@@ -18,10 +27,11 @@ export const spaceRepository = {
    * @returns Lista de proyectos con imágenes.
    */
   async findAll(): Promise<ISpaceProject[]> {
-    return db.spaceProject.findMany({
+    const rows = await db.spaceProject.findMany({
       orderBy: { order: "asc" },
       include: WITH_IMAGES,
     });
+    return rows.map(serializeProject);
   },
 
   /**
@@ -31,10 +41,11 @@ export const spaceRepository = {
    * @returns Proyecto con imágenes o null si no existe.
    */
   async findById(id: number): Promise<ISpaceProject | null> {
-    return db.spaceProject.findUnique({
+    const row = await db.spaceProject.findUnique({
       where: { id },
       include: WITH_IMAGES,
     });
+    return row ? serializeProject(row) : null;
   },
 
   /**
@@ -45,11 +56,12 @@ export const spaceRepository = {
    * @returns Lista de proyectos filtrados.
    */
   async findByCategory(category: string): Promise<ISpaceProject[]> {
-    return db.spaceProject.findMany({
+    const rows = await db.spaceProject.findMany({
       where: { category },
       orderBy: { order: "asc" },
       include: WITH_IMAGES,
     });
+    return rows.map(serializeProject);
   },
 
   /**
@@ -74,13 +86,14 @@ export const spaceRepository = {
    * @returns La nueva lista de proyectos ordenada.
    */
   async replaceAll(spaces: SpaceInput[]): Promise<ISpaceProject[]> {
-    return db.$transaction(async (tx) => {
+    const rows = await db.$transaction(async (tx) => {
       await tx.spaceProject.deleteMany();
       for (const s of spaces) {
-        const { images, ...rest } = s;
+        const { images, completedAt, ...rest } = s;
         await tx.spaceProject.create({
           data: {
             ...rest,
+            completedAt: completedAt ? new Date(completedAt) : null,
             images: images?.length
               ? { create: images.map(({ id: _id, ...img }) => img) }
               : undefined,
@@ -92,6 +105,7 @@ export const spaceRepository = {
         include: WITH_IMAGES,
       });
     });
+    return rows.map(serializeProject);
   },
 
   /**
@@ -103,13 +117,14 @@ export const spaceRepository = {
    * @returns Proyecto actualizado.
    */
   async update(id: number, data: SpaceInput): Promise<ISpaceProject> {
-    const { images, ...rest } = data;
-    return db.$transaction(async (tx) => {
+    const { images, completedAt, ...rest } = data;
+    const row = await db.$transaction(async (tx) => {
       await tx.spaceProjectImage.deleteMany({ where: { spaceProjectId: id } });
       return tx.spaceProject.update({
         where: { id },
         data: {
           ...rest,
+          completedAt: completedAt ? new Date(completedAt) : null,
           images: images?.length
             ? { create: images.map(({ id: _id, ...img }) => img) }
             : undefined,
@@ -117,5 +132,6 @@ export const spaceRepository = {
         include: WITH_IMAGES,
       });
     });
+    return serializeProject(row);
   },
 };

@@ -7,31 +7,30 @@ import {
 } from "@/components/admin/adminUtils";
 import { ImageUploadField } from "@/components/admin/forms/ImageUploadField";
 import { Trash2, Plus, Images } from "lucide-react";
-import type { ISpaceProject, ISpaceProjectImage } from "@/domain/types";
-
-const CATEGORIES = ["Residencial", "Comercial", "Exterior"];
-
-const DEFAULT_SPACES: ISpaceProject[] = [
-  { id: 1, title: "Pisos de Ingeniería", category: "Residencial", imageUrl: "/images/7219abb30_generated_c7c0b4a0.png", description: "", order: 0 },
-  { id: 2, title: "Deck Exterior", category: "Exterior", imageUrl: "/images/fc7bd1af6_generated_345964df.png", description: "", order: 1 },
-  { id: 3, title: "Restauración", category: "Comercial", imageUrl: "/images/6a78b550c_generated_281d3b94.png", description: "", order: 2 },
-  { id: 4, title: "Persianas y Cortinas", category: "Residencial", imageUrl: "/images/0ebc9e79a_generated_56d5f617.png", description: "", order: 3 },
-];
+import type { ISpaceProject, ISpaceProjectImage, ISpaceCategory } from "@/domain/types";
 
 export default function AdminSpacesPage() {
   const { checking } = useAdminAuth();
   const { show, ToastComponent } = useToast();
-  const [spaces, setSpaces] = useState<ISpaceProject[]>(DEFAULT_SPACES);
+  const [spaces, setSpaces] = useState<ISpaceProject[]>([]);
+  const [categories, setCategories] = useState<ISpaceCategory[]>([]);
   const [saving, setSaving] = useState(false);
   const [expandedImages, setExpandedImages] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    fetch("/api/content/spaces")
-      .then((r) => r.json())
-      .then((d: ISpaceProject[] | null) => {
-        if (d && d.length > 0) setSpaces(d);
-      });
+    Promise.all([
+      fetch("/api/content/spaces").then((r) => r.json()),
+      fetch("/api/content/space-categories").then((r) => r.json()),
+    ]).then(([spacesData, catsData]: [ISpaceProject[], ISpaceCategory[]]) => {
+      if (spacesData?.length) setSpaces(spacesData);
+      if (catsData?.length) setCategories(catsData);
+    });
   }, []);
+
+  /** Lista de nombres de categorías disponibles. */
+  const categoryNames = categories.length > 0
+    ? categories.map((c) => c.name)
+    : ["Residencial", "Comercial", "Exterior"];
 
   /** Actualiza un campo escalar de un proyecto. */
   const updateField = (idx: number, key: keyof ISpaceProject, value: string) =>
@@ -44,7 +43,16 @@ export default function AdminSpacesPage() {
   const add = () =>
     setSpaces((prev) => [
       ...prev,
-      { id: Date.now(), title: "", category: "Residencial", imageUrl: "", description: "", order: prev.length, images: [] },
+      {
+        id: Date.now(),
+        title: "",
+        category: categoryNames[0] ?? "Residencial",
+        imageUrl: "",
+        description: "",
+        completedAt: null,
+        order: prev.length,
+        images: [],
+      },
     ]);
 
   /** Actualiza una imagen adicional de un proyecto. */
@@ -82,10 +90,11 @@ export default function AdminSpacesPage() {
   async function save() {
     setSaving(true);
     const payload = spaces.map((s, i) => ({
-      title: s.title,
-      category: s.category,
-      imageUrl: s.imageUrl,
+      title:       s.title,
+      category:    s.category,
+      imageUrl:    s.imageUrl,
       description: s.description ?? "",
+      completedAt: s.completedAt ?? null,
       order: i,
       images: (s.images ?? []).map((img, j) => ({
         url: img.url,
@@ -107,7 +116,19 @@ export default function AdminSpacesPage() {
   return (
     <>
       <Head><title>Espacios — Admin Rivera</title></Head>
-      <PageHeader title="Galería de Espacios" subtitle="Proyectos mostrados en la sección de galería filtrable" />
+      <PageHeader
+        title="Proyectos de Espacios"
+        subtitle="Cada proyecto pertenece a una categoría. Las categorías se gestionan en la sección Categorías."
+      />
+      {categories.length === 0 && (
+        <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded text-sm text-amber-700">
+          No hay categorías creadas aún.{" "}
+          <a href="/admin/space-categories" className="font-semibold underline">
+            Crea categorías primero
+          </a>{" "}
+          para poder asignarlas a los proyectos.
+        </div>
+      )}
       <div className="space-y-4">
         {spaces.map((space, idx) => (
           <FormCard key={space.id}>
@@ -121,10 +142,10 @@ export default function AdminSpacesPage() {
               </button>
             </div>
 
-            {/* Título + Categoría */}
+            {/* Título + Categoría + Fecha */}
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <Field label="Título">
-                <AdminInput value={space.title} onChange={(v) => updateField(idx, "title", v)} />
+              <Field label="Título del trabajo">
+                <AdminInput value={space.title} onChange={(v) => updateField(idx, "title", v)} placeholder="Piso de madera en sala" />
               </Field>
               <Field label="Categoría">
                 <select
@@ -132,8 +153,16 @@ export default function AdminSpacesPage() {
                   onChange={(e) => updateField(idx, "category", e.target.value)}
                   className="w-full border border-[hsl(0,0%,80%)] rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)]"
                 >
-                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                  {categoryNames.map((c) => <option key={c}>{c}</option>)}
                 </select>
+              </Field>
+              <Field label="Fecha de realización" hint="Opcional">
+                <input
+                  type="date"
+                  value={space.completedAt ? space.completedAt.slice(0, 10) : ""}
+                  onChange={(e) => updateField(idx, "completedAt", e.target.value ? new Date(e.target.value).toISOString() : "")}
+                  className="w-full border border-[hsl(0,0%,80%)] rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)]"
+                />
               </Field>
             </div>
 

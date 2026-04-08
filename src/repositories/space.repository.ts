@@ -57,7 +57,7 @@ export const spaceRepository = {
    */
   async findByCategory(category: string): Promise<ISpaceProject[]> {
     const rows = await db.spaceProject.findMany({
-      where: { category },
+      where: { category: { equals: category, mode: 'insensitive' } },
       orderBy: { order: "asc" },
       include: WITH_IMAGES,
     });

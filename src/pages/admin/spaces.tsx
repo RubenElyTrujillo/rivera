@@ -15,6 +15,7 @@ export default function AdminSpacesPage() {
   const [spaces, setSpaces] = useState<ISpaceProject[]>([]);
   const [categories, setCategories] = useState<ISpaceCategory[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [expandedImages, setExpandedImages] = useState<Set<number>>(new Set());
 
   useEffect(() => {
@@ -24,13 +25,12 @@ export default function AdminSpacesPage() {
     ]).then(([spacesData, catsData]: [ISpaceProject[], ISpaceCategory[]]) => {
       if (spacesData?.length) setSpaces(spacesData);
       if (catsData?.length) setCategories(catsData);
-    });
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
-  /** Lista de nombres de categorías disponibles. */
-  const categoryNames = categories.length > 0
-    ? categories.map((c) => c.name)
-    : ["Residencial", "Comercial", "Exterior"];
+  /** Lista de nombres de categorías disponibles — nunca usa fallbacks hardcodeados. */
+  const categoryNames = categories.map((c) => c.name);
 
   /** Actualiza un campo escalar de un proyecto. */
   const updateField = (idx: number, key: keyof ISpaceProject, value: string) =>
@@ -39,14 +39,14 @@ export default function AdminSpacesPage() {
   /** Elimina un proyecto de la lista. */
   const remove = (idx: number) => setSpaces((prev) => prev.filter((_, i) => i !== idx));
 
-  /** Añade un proyecto vacío. */
+  /** Añade un proyecto vacío — solo disponible cuando las categorías están cargadas. */
   const add = () =>
     setSpaces((prev) => [
       ...prev,
       {
         id: Date.now(),
         title: "",
-        category: categoryNames[0] ?? "Residencial",
+        category: categoryNames[0] ?? "",
         imageUrl: "",
         description: "",
         completedAt: null,
@@ -111,7 +111,7 @@ export default function AdminSpacesPage() {
     show("¡Guardado!");
   }
 
-  if (checking) return <AdminPageSkeleton />;
+  if (checking || loading) return <AdminPageSkeleton />;
 
   return (
     <>
@@ -153,7 +153,13 @@ export default function AdminSpacesPage() {
                   onChange={(e) => updateField(idx, "category", e.target.value)}
                   className="w-full border border-[hsl(0,0%,80%)] rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)]"
                 >
-                  {categoryNames.map((c) => <option key={c}>{c}</option>)}
+                  {/* Si la categoría guardada no está en la lista, la mostramos como opción deshabilitada */}
+                  {space.category && !categoryNames.includes(space.category) && (
+                    <option value={space.category} disabled>
+                      {space.category} (categoría no encontrada)
+                    </option>
+                  )}
+                  {categoryNames.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </Field>
               <Field label="Fecha de realización" hint="Opcional">

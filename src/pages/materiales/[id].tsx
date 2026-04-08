@@ -7,6 +7,7 @@ import * as motion from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
 import { ArrowLeft, X } from 'lucide-react';
 import { materialRepository } from '@/repositories/material.repository';
+import { MATERIALS_DATA } from '@/lib/materialsData';
 import type { IMaterial, IMaterialFinish } from '@/domain/types';
 
 interface Props {
@@ -37,18 +38,42 @@ function GalleryHeader({ name }: { name: string }) {
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) => {
     const raw = params?.id as string;
-    const id = parseInt(raw, 10);
-    if (isNaN(id)) return { notFound: true };
+    const numId = parseInt(raw, 10);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
 
-    const material = await materialRepository.findById(id);
-    if (!material) return { notFound: true };
+    // Numeric ID → DB lookup
+    if (!isNaN(numId)) {
+        const material = await materialRepository.findById(numId);
+        if (!material) return { notFound: true };
+        return { props: { material, siteUrl } };
+    }
 
-    return {
-        props: {
-            material,
-            siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? '',
-        },
+    // String slug → static data lookup
+    const staticMat = MATERIALS_DATA.find((m) => m.id === raw);
+    if (!staticMat) return { notFound: true };
+
+    const material: IMaterial = {
+        id: 0,
+        name: staticMat.name,
+        subtitle: staticMat.shortName,
+        desc: staticMat.description,
+        spec: staticMat.spec,
+        coverImage: staticMat.coverImage,
+        collections: [...new Set(staticMat.finishes.map((f) => f.collection))],
+        order: 0,
+        finishes: staticMat.finishes.map<IMaterialFinish>((f, i) => ({
+            id: i,
+            materialId: 0,
+            name: f.name,
+            code: f.code,
+            collection: f.collection,
+            image: f.image,
+            dims: f.dims,
+            order: i,
+        })),
     };
+
+    return { props: { material, siteUrl } };
 };
 
 export default function MaterialGallery({ material, siteUrl }: Props) {

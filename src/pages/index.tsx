@@ -2,16 +2,18 @@ import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
-import MaterialLabSection from "@/components/sections/MaterialLabSection";
-import ShowroomSection from "@/components/sections/ShowroomSection";
+import ProductsSection from "@/components/sections/ShowroomSection";
+import FeaturedProjectsSection from "@/components/sections/FeaturedProjectsSection";
+import CTASection from "@/components/sections/CTASection";
 import SpacesSection from "@/components/sections/SpacesSection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
-import type { IPageData, ISpaceCategory } from "@/domain/types";
+import type { IPageData, ISpaceCategory, ISpaceProject } from "@/domain/types";
 import { db } from "@/lib/db";
 import { siteConfigRepository, type ISiteConfig } from "@/repositories/siteConfig.repository";
 import { spaceCategoryRepository } from "@/repositories/spaceCategory.repository";
+import { spaceRepository } from "@/repositories/space.repository";
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -22,8 +24,8 @@ const IMAGES = {
   blinds: '/images/0ebc9e79a_generated_56d5f617.png',
 };
 
-export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[] }> = async () => {
-  const [hero, services, materials, catalog, contact, footer, seo, siteConfig, spaceCategories] = await Promise.all([
+export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[]; featuredProjects: ISpaceProject[] }> = async () => {
+  const [hero, services, materials, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
     db.material.findMany({ orderBy: { order: "asc" }, include: { finishes: { orderBy: { order: "asc" } } } }),
@@ -33,6 +35,7 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteC
     db.seoSettings.findFirst(),
     siteConfigRepository.get(),
     spaceCategoryRepository.findAll(),
+    spaceRepository.findAll(),
   ]);
 
   const pageData: IPageData = {
@@ -80,7 +83,7 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteC
     },
   };
 
-  return { props: { pageData, siteConfig, spaceCategories } };
+  return { props: { pageData, siteConfig, spaceCategories, featuredProjects: allProjects.slice(0, 4) } };
 };
 
 const SEO_TITLE =
@@ -107,7 +110,7 @@ const SEO_KEYWORDS = [
   "instalacion de pisos en cdmx",
 ].join(", ");
 
-export default function Home({ pageData, siteConfig, spaceCategories }: { pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[] }) {
+export default function Home({ pageData, siteConfig, spaceCategories, featuredProjects }: { pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[]; featuredProjects: ISpaceProject[] }) {
   const { hero, services, materials, catalog, contact, footer, seo } = pageData;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const pageUrl = siteUrl ? `${siteUrl}/` : undefined;
@@ -242,9 +245,10 @@ export default function Home({ pageData, siteConfig, spaceCategories }: { pageDa
       </Head>
 
       <HeroSection heroImage={heroImageUrl} content={hero} />
+      {siteConfig.showShowroom && <ProductsSection materials={materials} />}
       <ServicesSection services={services} />
-      {siteConfig.showMaterials && <MaterialLabSection textureImage={IMAGES.texture} materials={materials} />}
-      {siteConfig.showShowroom && <ShowroomSection materials={materials} />}
+      <FeaturedProjectsSection projects={featuredProjects} categories={spaceCategories} />
+      <CTASection whatsappPhone={contact.whatsappPhone} />
       <SpacesSection categories={spaceCategories} />
       <CatalogSection textureImage={IMAGES.texture} content={catalog} />
       <ContactSection contact={contact} />

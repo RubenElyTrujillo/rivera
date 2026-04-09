@@ -62,7 +62,6 @@ export default function AdminSitePage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        showMaterials: config.showMaterials,
         showShowroom: config.showShowroom,
       }),
     });
@@ -85,14 +84,8 @@ export default function AdminSitePage() {
           SECCIONES DEL HOME
         </p>
         <SectionToggle
-          label='Sección "Pisos y Acabados"'
-          description="Muestra u oculta el carrusel de materiales en la página principal."
-          value={config.showMaterials}
-          onChange={(v) => setConfig((c) => c ? { ...c, showMaterials: v } : c)}
-        />
-        <SectionToggle
-          label='Sección "Showroom"'
-          description="Muestra u oculta la sección del showroom en la página principal."
+          label='Sección "Catálogo de Materiales"'
+          description="Muestra u oculta la sección de materiales (grid editorial) en la página principal."
           value={config.showShowroom}
           onChange={(v) => setConfig((c) => c ? { ...c, showShowroom: v } : c)}
         />

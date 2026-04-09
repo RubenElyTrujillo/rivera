@@ -244,7 +244,7 @@ export default function Home({ pageData, siteConfig, spaceCategories }: { pageDa
       <HeroSection heroImage={heroImageUrl} content={hero} />
       <ServicesSection services={services} />
       {siteConfig.showMaterials && <MaterialLabSection textureImage={IMAGES.texture} materials={materials} />}
-      {siteConfig.showShowroom && <ShowroomSection />}
+      {siteConfig.showShowroom && <ShowroomSection materials={materials} />}
       <SpacesSection categories={spaceCategories} />
       <CatalogSection textureImage={IMAGES.texture} content={catalog} />
       <ContactSection contact={contact} />

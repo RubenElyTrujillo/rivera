@@ -36,28 +36,103 @@ model Service {
   order    Int    @default(0)
 }
 
+// ─── Categorías de producto (nivel 0) ────────────────────────────────────────
+
+model Category {
+  id         Int        @id @default(autoincrement())
+  name       String
+  slug       String     @unique
+  coverImage String     @default("")
+  icon       String     @default("")
+  order      Int        @default(0)
+  materials  Material[]
+}
+
+// ─── Materiales (nivel 1) ─────────────────────────────────────────────────────
+
 model Material {
-  id          Int              @id @default(autoincrement())
+  id          Int                  @id @default(autoincrement())
   name        String
-  subtitle    String
-  desc        String
-  spec        String
-  coverImage  String           @default("")
-  collections String           @default("[]") // JSON array de strings
-  order       Int              @default(0)
+  slug        String               @unique
+  subtitle    String               @default("")
+  desc        String               @default("")
+  spec        String               @default("")
+  coverImage  String               @default("")
+  order       Int                  @default(0)
+  categoryId  Int?
+  category    Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  collections MaterialCollection[]
   finishes    MaterialFinish[]
 }
 
-model MaterialFinish {
-  id         Int      @id @default(autoincrement())
+model MaterialCollection {
+  id         Int              @id @default(autoincrement())
   materialId Int
-  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  material   Material         @relation(fields: [materialId], references: [id], onDelete: Cascade)
   name       String
-  code       String
-  collection String   @default("")
-  image      String
-  dims       String   @default("")
-  order      Int      @default(0)
+  slug       String
+  desc       String           @default("")
+  coverImage String           @default("")
+  order      Int              @default(0)
+  finishes   MaterialFinish[]
+
+  @@unique([materialId, slug])
+}
+
+model MaterialFinish {
+  id           Int                   @id @default(autoincrement())
+  materialId   Int
+  material     Material              @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  collectionId Int
+  collection   MaterialCollection    @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String                @unique
+  code         String                @default("")
+  image        String                @default("")
+  hoverImage   String                @default("")
+  dims         String                @default("")
+  desc         String                @default("")
+  order        Int                   @default(0)
+  // Ficha técnica
+  pdfUrl       String                @default("")
+  thickness    String                @default("")
+  useClass     String                @default("")
+  waterRes     Boolean               @default(false)
+  installType  String                @default("")
+  warranty     String                @default("")
+  images       MaterialFinishImage[]
+}
+
+model MaterialFinishImage {
+  id       Int            @id @default(autoincrement())
+  finishId Int
+  finish   MaterialFinish @relation(fields: [finishId], references: [id], onDelete: Cascade)
+  url      String
+  caption  String         @default("")
+  order    Int            @default(0)
+}
+
+// ─── Navegación dinámica ──────────────────────────────────────────────────────
+
+model NavItem {
+  id       Int       @id @default(autoincrement())
+  label    String
+  href     String    @default("")
+  order    Int       @default(0)
+  visible  Boolean   @default(true)
+  parentId Int?
+  parent   NavItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children NavItem[] @relation("NavTree")
+}
+
+// ─── Secciones del home (page builder) ───────────────────────────────────────
+
+model PageSection {
+  id      Int     @id @default(autoincrement())
+  type    String
+  order   Int     @default(0)
+  visible Boolean @default(true)
+  config  String  @default("{}")
 }
 
 model SpaceCategory {
@@ -103,13 +178,13 @@ model ContactInfo {
   phone2         String @default("")
   email          String
   hoursText      String
-  surfaceOptions String @default("[]") // JSON array de strings
+  surfaceOptions String @default("[]")
 }
 
 model FooterContent {
   id       Int    @id @default(autoincrement())
   tagline  String
-  services String @default("[]") // JSON array de strings
+  services String @default("[]")
 }
 
 model SeoSettings {
@@ -120,12 +195,10 @@ model SeoSettings {
   ogImageUrl  String @default("")
 }
 
-// ─── Config del sitio ────────────────────────────────────────────────────────
-
 model SiteConfig {
-  id              Int     @id @default(autoincrement())
-  showMaterials   Boolean @default(true)
-  showShowroom    Boolean @default(true)
+  id            Int     @id @default(autoincrement())
+  showMaterials Boolean @default(true)
+  showShowroom  Boolean @default(true)
 }
 
 model Media {

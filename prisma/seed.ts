@@ -53,6 +53,19 @@ async function main() {
     console.log("✅ Services (5)");
   }
 
+  // ─── Categories ───────────────────────────────────────────────────────────
+  const categoriesCount = await db.category.count();
+  if (categoriesCount === 0) {
+    await db.category.createMany({
+      data: [
+        { name: "Pisos",    slug: "pisos",    icon: "Layers",   order: 0 },
+        { name: "Paredes",  slug: "paredes",  icon: "Columns3", order: 1 },
+        { name: "Ventanas", slug: "ventanas", icon: "Sun",      order: 2 },
+      ],
+    });
+    console.log("✅ Categories (3)");
+  }
+
   // ─── Materials ────────────────────────────────────────────────────────────
   const materialsCount = await db.material.count();
   if (materialsCount === 0) {
@@ -67,6 +80,55 @@ async function main() {
       ],
     });
     console.log("✅ Materials (6)");
+  }
+
+  // ─── Nav Items ────────────────────────────────────────────────────────────
+  const navCount = await db.navItem.count();
+  if (navCount === 0) {
+    const navPisos    = await db.navItem.create({ data: { label: "Pisos",    href: "/categorias/pisos",    order: 0 } });
+    const navParedes  = await db.navItem.create({ data: { label: "Paredes",  href: "/categorias/paredes",  order: 1 } });
+    const navVentanas = await db.navItem.create({ data: { label: "Ventanas", href: "/categorias/ventanas", order: 2 } });
+    await db.navItem.create({ data: { label: "Proyectos", href: "/#proyectos", order: 3 } });
+    await db.navItem.create({ data: { label: "Contacto",  href: "/#contacto",  order: 4 } });
+
+    await db.navItem.createMany({
+      data: [
+        { label: "Pisos Laminados",     href: "/materiales/laminados",      order: 0, parentId: navPisos.id },
+        { label: "Pisos de Madera",     href: "/materiales/madera",         order: 1, parentId: navPisos.id },
+        { label: "Pisos Vinílicos SPC", href: "/materiales/vinilicos-spc",  order: 2, parentId: navPisos.id },
+        { label: "Deck Sintético",      href: "/materiales/deck-sintetico", order: 3, parentId: navPisos.id },
+      ],
+    });
+    await db.navItem.createMany({
+      data: [
+        { label: "Lambrines",      href: "/materiales/lambrines",      order: 0, parentId: navParedes.id },
+        { label: "Muros Forrados", href: "/materiales/muros-forrados",  order: 1, parentId: navParedes.id },
+      ],
+    });
+    await db.navItem.createMany({
+      data: [
+        { label: "Persianas", href: "/materiales/persianas", order: 0, parentId: navVentanas.id },
+      ],
+    });
+    console.log("✅ NavItems");
+  }
+
+  // ─── Page Sections ────────────────────────────────────────────────────────
+  const sectionsCount = await db.pageSection.count();
+  if (sectionsCount === 0) {
+    await db.pageSection.createMany({
+      data: [
+        { type: "HERO",     order: 0, visible: true,  config: "{}" },
+        { type: "VENTAS",   order: 1, visible: true,  config: "{}" },
+        { type: "SHOWROOM", order: 2, visible: true,  config: "{}" },
+        { type: "FEATURED", order: 3, visible: true,  config: "{}" },
+        { type: "CTA",      order: 4, visible: true,  config: "{}" },
+        { type: "SPACES",   order: 5, visible: true,  config: "{}" },
+        { type: "CATALOG",  order: 6, visible: true,  config: "{}" },
+        { type: "CONTACT",  order: 7, visible: true,  config: "{}" },
+      ],
+    });
+    console.log("✅ PageSections (8)");
   }
 
   // ─── Space Projects ───────────────────────────────────────────────────────

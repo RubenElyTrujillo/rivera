@@ -45,3 +45,4 @@ next-env.d.ts
 # Base de datos SQLite y uploads de usuario
 /data/
 /public/uploads/
+.worktrees/

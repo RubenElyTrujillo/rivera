@@ -1,80 +1,118 @@
 import { db } from "@/infrastructure/db/client";
+import { toSlug } from "@/lib/toSlug";
 import type { IMaterial } from "@/domain/types/material";
 import type { MaterialInput } from "@/domain/schemas/material.schema";
 
-/** Serializa el array de colecciones a JSON string para almacenar en DB. */
-function serializeCollections(collections: string[]): string {
-  return JSON.stringify(collections);
-}
+const WITH_COLLECTIONS = {
+  collections: {
+    orderBy: { order: "asc" as const },
+    include: {
+      finishes: {
+        orderBy: { order: "asc" as const },
+        include: { images: { orderBy: { order: "asc" as const } } },
+      },
+    },
+  },
+  finishes: {
+    orderBy: { order: "asc" as const },
+    include: { images: { orderBy: { order: "asc" as const } } },
+  },
+};
 
-/** Parsea el JSON string de colecciones a array de strings al leer de DB. */
-function parseCollections(raw: string): string[] {
-  return JSON.parse(raw) as string[];
-}
-
-/**
- * Repositorio para los materiales y sus acabados.
- * Abstrae todas las operaciones de base de datos relacionadas con `Material` y `MaterialFinish`.
- *
- * Nota: el campo `collections` se guarda como JSON string en DB por limitaciones
- * del schema de SQLite/Postgres sin arrays nativos en Prisma SQLite.
- */
 export const materialRepository = {
-  /**
-   * Obtiene todos los materiales con sus acabados, ordenados por `order`.
-   * Parsea el campo `collections` de JSON string a array.
-   *
-   * @returns Lista de materiales con sus acabados.
-   */
   async findAll(): Promise<IMaterial[]> {
     const rows = await db.material.findMany({
       orderBy: { order: "asc" },
-      include: { finishes: { orderBy: { order: "asc" } } },
+      include: WITH_COLLECTIONS,
     });
-    return rows.map((m) => ({ ...m, collections: [] }));
+    return rows as unknown as IMaterial[];
   },
 
-  /**
-   * Busca un material por su ID numérico con todos sus acabados.
-   *
-   * @param id - ID del material.
-   * @returns Material con acabados o null si no existe.
-   */
+  async findByCategory(categoryId: number): Promise<IMaterial[]> {
+    const rows = await db.material.findMany({
+      where: { categoryId },
+      orderBy: { order: "asc" },
+      include: WITH_COLLECTIONS,
+    });
+    return rows as unknown as IMaterial[];
+  },
+
+  async findBySlug(slug: string): Promise<IMaterial | null> {
+    const row = await db.material.findUnique({
+      where: { slug },
+      include: WITH_COLLECTIONS,
+    });
+    return row ? (row as unknown as IMaterial) : null;
+  },
+
   async findById(id: number): Promise<IMaterial | null> {
-    const m = await db.material.findUnique({
+    const row = await db.material.findUnique({
       where: { id },
-      include: { finishes: { orderBy: { order: "asc" } } },
+      include: WITH_COLLECTIONS,
     });
-    if (!m) return null;
-    return { ...m, collections: [] };
+    return row ? (row as unknown as IMaterial) : null;
   },
 
-  /**
-   * Reemplaza toda la lista de materiales en una sola transacción.
-   * Los acabados existentes se eliminan en cascada (definido en el schema Prisma).
-   *
-   * @param materials - Lista completa de materiales a guardar.
-   * @returns La nueva lista de materiales (sin acabados, estos se gestionan por separado).
-   */
   async replaceAll(materials: MaterialInput[]): Promise<IMaterial[]> {
     const rows = await db.$transaction(async (tx) => {
       await tx.material.deleteMany();
-      await tx.material.createMany({
-        data: materials.map((m) => ({
-          name: m.name,
-          slug: m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-          subtitle: m.subtitle,
-          desc: m.desc,
-          spec: m.spec,
-          coverImage: m.coverImage,
-          order: m.order,
-        })),
-      });
+      for (const [i, m] of materials.entries()) {
+        await tx.material.create({
+          data: {
+            name:       m.name,
+            slug:       toSlug(m.name),
+            subtitle:   m.subtitle,
+            desc:       m.desc,
+            spec:       m.spec,
+            coverImage: m.coverImage,
+            order:      m.order ?? i,
+            categoryId: m.categoryId ?? null,
+          },
+        });
+      }
       return tx.material.findMany({
         orderBy: { order: "asc" },
-        include: { finishes: { orderBy: { order: "asc" } } },
+        include: WITH_COLLECTIONS,
       });
     });
-    return rows.map((m) => ({ ...m, collections: [] }));
+    return rows as unknown as IMaterial[];
+  },
+
+  async create(data: MaterialInput): Promise<IMaterial> {
+    const row = await db.material.create({
+      data: {
+        name:       data.name,
+        slug:       toSlug(data.name),
+        subtitle:   data.subtitle,
+        desc:       data.desc,
+        spec:       data.spec,
+        coverImage: data.coverImage,
+        order:      data.order,
+        categoryId: data.categoryId ?? null,
+      },
+      include: WITH_COLLECTIONS,
+    });
+    return row as unknown as IMaterial;
+  },
+
+  async update(id: number, data: Partial<MaterialInput>): Promise<IMaterial> {
+    const row = await db.material.update({
+      where: { id },
+      data: {
+        ...(data.name && { name: data.name, slug: toSlug(data.name) }),
+        ...(data.subtitle !== undefined && { subtitle: data.subtitle }),
+        ...(data.desc !== undefined && { desc: data.desc }),
+        ...(data.spec !== undefined && { spec: data.spec }),
+        ...(data.coverImage !== undefined && { coverImage: data.coverImage }),
+        ...(data.order !== undefined && { order: data.order }),
+        ...(data.categoryId !== undefined && { categoryId: data.categoryId ?? null }),
+      },
+      include: WITH_COLLECTIONS,
+    });
+    return row as unknown as IMaterial;
+  },
+
+  async delete(id: number): Promise<void> {
+    await db.material.delete({ where: { id } });
   },
 };

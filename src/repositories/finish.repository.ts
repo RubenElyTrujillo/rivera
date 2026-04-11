@@ -1,60 +1,99 @@
 import { db } from "@/infrastructure/db/client";
+import { toSlug } from "@/lib/toSlug";
 import type { IMaterialFinish } from "@/domain/types/material";
 import type { FinishInput } from "@/domain/schemas/finish.schema";
 
-/**
- * Repositorio para los acabados de materiales.
- * Abstrae todas las operaciones de base de datos relacionadas con `MaterialFinish`.
- */
+const WITH_IMAGES = {
+  images: { orderBy: { order: "asc" as const } },
+};
+
 export const finishRepository = {
-  /**
-   * Obtiene todos los acabados de un material, ordenados por `order`.
-   *
-   * @param materialId - ID del material padre.
-   * @returns Lista de acabados del material.
-   */
   async findByMaterial(materialId: number): Promise<IMaterialFinish[]> {
-    return db.materialFinish.findMany({
+    const rows = await db.materialFinish.findMany({
       where: { materialId },
       orderBy: { order: "asc" },
+      include: WITH_IMAGES,
     });
+    return rows as unknown as IMaterialFinish[];
   },
 
-  /**
-   * Crea un nuevo acabado asociado a un material.
-   *
-   * @param materialId - ID del material padre.
-   * @param data       - Datos del acabado validados.
-   * @returns El acabado creado.
-   */
-  async create(materialId: number, data: FinishInput): Promise<IMaterialFinish> {
-    const { name, code, image, dims, order } = data;
-    return db.materialFinish.create({
-      data: { materialId, name, code, image, dims, order, slug: code || name, collectionId: 1 },
+  async findBySlug(slug: string): Promise<IMaterialFinish | null> {
+    const row = await db.materialFinish.findUnique({
+      where: { slug },
+      include: WITH_IMAGES,
     });
+    return row ? (row as unknown as IMaterialFinish) : null;
   },
 
-  /**
-   * Actualiza un acabado existente.
-   *
-   * @param id   - ID del acabado.
-   * @param data - Datos actualizados del acabado.
-   * @returns El acabado actualizado.
-   */
-  async update(id: number, data: FinishInput): Promise<IMaterialFinish> {
-    const { name, code, image, dims, order } = data;
-    return db.materialFinish.update({
+  async findByCollection(collectionId: number): Promise<IMaterialFinish[]> {
+    const rows = await db.materialFinish.findMany({
+      where: { collectionId },
+      orderBy: { order: "asc" },
+      include: WITH_IMAGES,
+    });
+    return rows as unknown as IMaterialFinish[];
+  },
+
+  async create(input: FinishInput): Promise<IMaterialFinish> {
+    const row = await db.materialFinish.create({
+      data: {
+        materialId:   input.materialId,
+        collectionId: input.collectionId,
+        name:         input.name,
+        slug:         toSlug(input.name),
+        code:         input.code,
+        image:        input.image,
+        hoverImage:   input.hoverImage,
+        dims:         input.dims,
+        desc:         input.desc,
+        order:        input.order,
+        pdfUrl:       input.pdfUrl,
+        thickness:    input.thickness,
+        useClass:     input.useClass,
+        waterRes:     input.waterRes,
+        installType:  input.installType,
+        warranty:     input.warranty,
+      },
+      include: WITH_IMAGES,
+    });
+    return row as unknown as IMaterialFinish;
+  },
+
+  async update(id: number, input: Partial<FinishInput>): Promise<IMaterialFinish> {
+    const row = await db.materialFinish.update({
       where: { id },
-      data: { name, code, image, dims, order },
+      data: {
+        ...(input.name && { name: input.name, slug: toSlug(input.name) }),
+        ...(input.collectionId !== undefined && { collectionId: input.collectionId }),
+        ...(input.code !== undefined && { code: input.code }),
+        ...(input.image !== undefined && { image: input.image }),
+        ...(input.hoverImage !== undefined && { hoverImage: input.hoverImage }),
+        ...(input.dims !== undefined && { dims: input.dims }),
+        ...(input.desc !== undefined && { desc: input.desc }),
+        ...(input.order !== undefined && { order: input.order }),
+        ...(input.pdfUrl !== undefined && { pdfUrl: input.pdfUrl }),
+        ...(input.thickness !== undefined && { thickness: input.thickness }),
+        ...(input.useClass !== undefined && { useClass: input.useClass }),
+        ...(input.waterRes !== undefined && { waterRes: input.waterRes }),
+        ...(input.installType !== undefined && { installType: input.installType }),
+        ...(input.warranty !== undefined && { warranty: input.warranty }),
+      },
+      include: WITH_IMAGES,
     });
+    return row as unknown as IMaterialFinish;
   },
 
-  /**
-   * Elimina un acabado por ID.
-   *
-   * @param id - ID del acabado a eliminar.
-   */
   async delete(id: number): Promise<void> {
     await db.materialFinish.delete({ where: { id } });
+  },
+
+  async addImage(finishId: number, url: string, caption = "", order = 0) {
+    return db.materialFinishImage.create({
+      data: { finishId, url, caption, order },
+    });
+  },
+
+  async deleteImage(imageId: number): Promise<void> {
+    await db.materialFinishImage.delete({ where: { id: imageId } });
   },
 };

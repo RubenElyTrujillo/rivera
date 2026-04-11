@@ -30,7 +30,7 @@ export default withErrorHandling(async function handler(req: NextApiRequest, res
     const { materialId } = parsed.data;
     if (!materialId) return res.status(400).json({ error: "materialId requerido" });
 
-    const data = await finishRepository.create(materialId, parsed.data);
+    const data = await finishRepository.create(parsed.data);
     return res.status(201).json(data);
   }
 

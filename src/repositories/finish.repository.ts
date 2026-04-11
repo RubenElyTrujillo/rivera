@@ -28,9 +28,9 @@ export const finishRepository = {
    * @returns El acabado creado.
    */
   async create(materialId: number, data: FinishInput): Promise<IMaterialFinish> {
-    const { name, code, collection, image, dims, order } = data;
+    const { name, code, image, dims, order } = data;
     return db.materialFinish.create({
-      data: { materialId, name, code, collection, image, dims, order },
+      data: { materialId, name, code, image, dims, order, slug: code || name, collectionId: 1 },
     });
   },
 
@@ -42,10 +42,10 @@ export const finishRepository = {
    * @returns El acabado actualizado.
    */
   async update(id: number, data: FinishInput): Promise<IMaterialFinish> {
-    const { name, code, collection, image, dims, order } = data;
+    const { name, code, image, dims, order } = data;
     return db.materialFinish.update({
       where: { id },
-      data: { name, code, collection, image, dims, order },
+      data: { name, code, image, dims, order },
     });
   },
 

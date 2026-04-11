@@ -7,7 +7,10 @@
  */
 export type { IHeroContent } from "./hero";
 export type { IService } from "./service";
-export type { IMaterial, IMaterialFinish } from "./material";
+export type { IMaterial, IMaterialFinish, IMaterialCollection, IMaterialFinishImage } from "./material";
+export type { ICategory } from "./category";
+export type { INavItem } from "./navItem";
+export type { IPageSection } from "./pageSection";
 export type { ISpaceProject, ISpaceProjectImage } from "./space";
 export type { ISpaceCategory } from "./spaceCategory";
 export type { ICatalogContent } from "./catalog";

@@ -6,13 +6,24 @@ export interface IMaterialFinish {
   id: number;
   materialId: number;
   name: string;
+  slug: string;
   code: string;
-  collection: string;
+  /** @deprecated Replaced by collectionId relation. */
+  collection?: string;
   /** URL relativa de la imagen del acabado. */
   image: string;
   /** Dimensiones del producto. Ej: "1220 x 183 mm". */
   dims: string;
+  desc: string;
   order: number;
+  hoverImage: string;
+  pdfUrl: string;
+  thickness: string;
+  useClass: string;
+  waterRes: boolean;
+  installType: string;
+  warranty: string;
+  collectionId: number;
 }
 
 /**
@@ -23,6 +34,7 @@ export interface IMaterialFinish {
 export interface IMaterial {
   id: number;
   name: string;
+  slug: string;
   subtitle: string;
   desc: string;
   /** Especificaciones técnicas del material. */
@@ -32,5 +44,24 @@ export interface IMaterial {
   /** Lista de nombres de colecciones disponibles. */
   collections: string[];
   order: number;
+  categoryId: number | null;
   finishes: IMaterialFinish[];
+}
+
+export interface IMaterialCollection {
+  id: number;
+  materialId: number;
+  name: string;
+  slug: string;
+  desc: string;
+  coverImage: string;
+  order: number;
+}
+
+export interface IMaterialFinishImage {
+  id: number;
+  finishId: number;
+  url: string;
+  caption: string;
+  order: number;
 }

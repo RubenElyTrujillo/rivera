@@ -31,7 +31,7 @@ export const materialRepository = {
       orderBy: { order: "asc" },
       include: { finishes: { orderBy: { order: "asc" } } },
     });
-    return rows.map((m) => ({ ...m, collections: parseCollections(m.collections) }));
+    return rows.map((m) => ({ ...m, collections: [] }));
   },
 
   /**
@@ -46,7 +46,7 @@ export const materialRepository = {
       include: { finishes: { orderBy: { order: "asc" } } },
     });
     if (!m) return null;
-    return { ...m, collections: parseCollections(m.collections) };
+    return { ...m, collections: [] };
   },
 
   /**
@@ -61,8 +61,13 @@ export const materialRepository = {
       await tx.material.deleteMany();
       await tx.material.createMany({
         data: materials.map((m) => ({
-          ...m,
-          collections: serializeCollections(m.collections),
+          name: m.name,
+          slug: m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+          subtitle: m.subtitle,
+          desc: m.desc,
+          spec: m.spec,
+          coverImage: m.coverImage,
+          order: m.order,
         })),
       });
       return tx.material.findMany({
@@ -70,6 +75,6 @@ export const materialRepository = {
         include: { finishes: { orderBy: { order: "asc" } } },
       });
     });
-    return rows.map((m) => ({ ...m, collections: parseCollections(m.collections) }));
+    return rows.map((m) => ({ ...m, collections: [] }));
   },
 };

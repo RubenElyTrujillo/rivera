@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteC
     materials: materials
       ? materials.map((m) => ({
           ...m,
-          collections: (() => { try { return JSON.parse(m.collections) as string[]; } catch { return []; } })(),
+          collections: [],
         }))
       : [],
     catalog: catalog ?? {

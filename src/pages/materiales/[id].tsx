@@ -54,22 +54,34 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
 
     const material: IMaterial = {
         id: 0,
+        slug: raw,
         name: staticMat.name,
         subtitle: staticMat.shortName,
         desc: staticMat.description,
         spec: staticMat.spec,
         coverImage: staticMat.coverImage,
-        collections: [...new Set(staticMat.finishes.map((f) => f.collection))],
+        collections: [...new Set(staticMat.finishes.map((f) => f.collection))].filter((c): c is string => !!c),
         order: 0,
+        categoryId: null,
         finishes: staticMat.finishes.map<IMaterialFinish>((f, i) => ({
             id: i,
             materialId: 0,
             name: f.name,
+            slug: f.code || f.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
             code: f.code,
             collection: f.collection,
             image: f.image,
             dims: f.dims,
+            desc: '',
             order: i,
+            hoverImage: '',
+            pdfUrl: '',
+            thickness: '',
+            useClass: '',
+            waterRes: false,
+            installType: '',
+            warranty: '',
+            collectionId: 0,
         })),
     };
 
@@ -80,7 +92,7 @@ export default function MaterialGallery({ material, siteUrl }: Props) {
     const [selectedFinish, setSelectedFinish] = useState<IMaterialFinish | null>(null);
     const [activeCollection, setActiveCollection] = useState('Todos');
 
-    const collections = ['Todos', ...Array.from(new Set(material.finishes.map((f) => f.collection).filter(Boolean)))];
+    const collections = ['Todos', ...Array.from(new Set(material.finishes.map((f) => f.collection).filter((c): c is string => !!c)))];
     const filtered = activeCollection === 'Todos'
         ? material.finishes
         : material.finishes.filter((f) => f.collection === activeCollection);

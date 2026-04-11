@@ -9,7 +9,7 @@ import { ImageUploadField } from "@/components/admin/forms/ImageUploadField";
 import { Trash2, Plus, ChevronDown, ChevronUp, Pencil, Check, X } from "lucide-react";
 import type { IMaterial, IMaterialFinish } from "@/domain/types";
 
-const EMPTY_MAT: IMaterial = { id: 0, name: "", subtitle: "", desc: "", spec: "", coverImage: "", collections: [], order: 0, finishes: [] };
+const EMPTY_MAT: IMaterial = { id: 0, slug: '', name: "", subtitle: "", desc: "", spec: "", coverImage: "", collections: [], order: 0, finishes: [], categoryId: null };
 const EMPTY_FINISH = { name: "", code: "", collection: "", image: "", dims: "" };
 
 /** Estado de un acabado siendo editado inline. */
@@ -94,10 +94,20 @@ export default function AdminMaterialsPage() {
       ...prev,
       [finish.id]: {
         name: finish.name,
+        slug: finish.slug,
         code: finish.code,
         collection: finish.collection,
         image: finish.image,
         dims: finish.dims,
+        desc: finish.desc,
+        hoverImage: finish.hoverImage,
+        pdfUrl: finish.pdfUrl,
+        thickness: finish.thickness,
+        useClass: finish.useClass,
+        waterRes: finish.waterRes,
+        installType: finish.installType,
+        warranty: finish.warranty,
+        collectionId: finish.collectionId,
       },
     }));
   }

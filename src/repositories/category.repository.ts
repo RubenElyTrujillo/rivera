@@ -1,26 +1,19 @@
 import { db } from "@/infrastructure/db/client";
+import { toSlug } from "@/lib/toSlug";
 import type { ICategory } from "@/domain/types";
 import type { CategoryInput } from "@/domain/schemas/category.schema";
 
-/** Genera un slug URL-friendly a partir de un nombre. */
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-/**
- * Repositorio para las categorías de producto (nivel raíz).
- * Abstrae todas las operaciones de base de datos relacionadas con `Category`.
- */
 export const categoryRepository = {
   async findAll(): Promise<ICategory[]> {
     return db.category.findMany({
       orderBy: { order: "asc" },
     }) as unknown as ICategory[];
+  },
+
+  async findById(id: number): Promise<ICategory | null> {
+    return db.category.findUnique({
+      where: { id },
+    }) as unknown as ICategory | null;
   },
 
   async findBySlug(slug: string): Promise<ICategory | null> {
@@ -32,26 +25,28 @@ export const categoryRepository = {
   async create(input: CategoryInput): Promise<ICategory> {
     return db.category.create({
       data: {
-        ...input,
-        slug: toSlug(input.name),
+        name:       input.name,
+        slug:       toSlug(input.name),
+        coverImage: input.coverImage ?? "",
+        icon:       input.icon ?? "",
+        order:      input.order ?? 0,
       },
     }) as unknown as ICategory;
   },
 
   async update(id: number, input: Partial<CategoryInput>): Promise<ICategory> {
-    const data: Record<string, unknown> = { ...input };
-    if (input.name) {
-      data.slug = toSlug(input.name);
-    }
     return db.category.update({
       where: { id },
-      data,
+      data: {
+        ...(input.name       !== undefined && { name: input.name, slug: toSlug(input.name) }),
+        ...(input.coverImage !== undefined && { coverImage: input.coverImage }),
+        ...(input.icon       !== undefined && { icon: input.icon }),
+        ...(input.order      !== undefined && { order: input.order }),
+      },
     }) as unknown as ICategory;
   },
 
-  async delete(id: number): Promise<ICategory> {
-    return db.category.delete({
-      where: { id },
-    }) as unknown as ICategory;
+  async delete(id: number): Promise<void> {
+    await db.category.delete({ where: { id } });
   },
 };

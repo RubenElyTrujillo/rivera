@@ -4,6 +4,13 @@ import type { IMaterialCollection } from "@/domain/types/material";
 import type { CollectionInput } from "@/domain/schemas/finish.schema";
 
 export const collectionRepository = {
+  async findAll(): Promise<IMaterialCollection[]> {
+    const rows = await db.materialCollection.findMany({
+      orderBy: { order: "asc" },
+    });
+    return rows as unknown as IMaterialCollection[];
+  },
+
   async findByMaterial(materialId: number): Promise<IMaterialCollection[]> {
     const rows = await db.materialCollection.findMany({
       where: { materialId },

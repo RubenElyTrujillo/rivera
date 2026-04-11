@@ -134,8 +134,11 @@ FROM "MaterialCollection" mc
 WHERE mc."materialId" = mf."materialId"
   AND mc."slug" = 'default';
 
--- For any finish whose material had no default collection yet, assign NULL is fine
--- until SET NOT NULL; make collectionId required.
+-- Guard: remove any orphaned finishes that couldn't get a collectionId
+-- (finishes whose materialId references a non-existent material)
+DELETE FROM "MaterialFinish" WHERE "collectionId" IS NULL;
+
+-- Make collectionId required
 ALTER TABLE "MaterialFinish" ALTER COLUMN "collectionId" SET NOT NULL;
 
 -- AddForeignKey MaterialFinish -> MaterialCollection
@@ -144,3 +147,12 @@ ALTER TABLE "MaterialFinish" ADD CONSTRAINT "MaterialFinish_collectionId_fkey"
 
 -- Drop legacy text collection column
 ALTER TABLE "MaterialFinish" DROP COLUMN "collection";
+
+-- ─── FK Indexes (PostgreSQL does not auto-create these) ───────────────────────
+CREATE INDEX "Material_categoryId_idx" ON "Material"("categoryId");
+CREATE INDEX "MaterialFinish_materialId_idx" ON "MaterialFinish"("materialId");
+CREATE INDEX "MaterialFinish_collectionId_idx" ON "MaterialFinish"("collectionId");
+CREATE INDEX "MaterialFinishImage_finishId_idx" ON "MaterialFinishImage"("finishId");
+CREATE INDEX "NavItem_parentId_idx" ON "NavItem"("parentId");
+CREATE INDEX "SpaceProjectImage_spaceProjectId_idx" ON "SpaceProjectImage"("spaceProjectId");
+

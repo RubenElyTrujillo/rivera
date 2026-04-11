@@ -63,6 +63,8 @@ model Material {
   category    Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   collections MaterialCollection[]
   finishes    MaterialFinish[]
+
+  @@index([categoryId])
 }
 
 model MaterialCollection {
@@ -101,6 +103,9 @@ model MaterialFinish {
   installType  String                @default("")
   warranty     String                @default("")
   images       MaterialFinishImage[]
+
+  @@index([materialId])
+  @@index([collectionId])
 }
 
 model MaterialFinishImage {
@@ -110,6 +115,8 @@ model MaterialFinishImage {
   url      String
   caption  String         @default("")
   order    Int            @default(0)
+
+  @@index([finishId])
 }
 
 // ─── Navegación dinámica ──────────────────────────────────────────────────────
@@ -123,6 +130,8 @@ model NavItem {
   parentId Int?
   parent   NavItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade)
   children NavItem[] @relation("NavTree")
+
+  @@index([parentId])
 }
 
 // ─── Secciones del home (page builder) ───────────────────────────────────────
@@ -161,6 +170,8 @@ model SpaceProjectImage {
   url            String
   caption        String       @default("")
   order          Int          @default(0)
+
+  @@index([spaceProjectId])
 }
 
 model CatalogContent {

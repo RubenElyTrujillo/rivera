@@ -24,7 +24,7 @@ const IMAGES = {
   blinds: '/images/0ebc9e79a_generated_56d5f617.png',
 };
 
-export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[]; featuredProjects: ISpaceProject[] }> = async () => {
+export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[]; featuredProjects: ISpaceProject[]; whatsappPhone: string }> = async () => {
   const [hero, services, materials, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
@@ -83,7 +83,15 @@ export const getServerSideProps: GetServerSideProps<{ pageData: IPageData; siteC
     },
   };
 
-  return { props: { pageData, siteConfig, spaceCategories, featuredProjects: allProjects.slice(0, 4) } };
+  return {
+    props: {
+      pageData,
+      siteConfig,
+      spaceCategories,
+      featuredProjects: allProjects.slice(0, 4),
+      whatsappPhone: (pageData.contact as { whatsappPhone?: string })?.whatsappPhone ?? "",
+    },
+  };
 };
 
 const SEO_TITLE =
@@ -110,7 +118,19 @@ const SEO_KEYWORDS = [
   "instalacion de pisos en cdmx",
 ].join(", ");
 
-export default function Home({ pageData, siteConfig, spaceCategories, featuredProjects }: { pageData: IPageData; siteConfig: ISiteConfig; spaceCategories: ISpaceCategory[]; featuredProjects: ISpaceProject[] }) {
+export default function Home({
+  pageData,
+  siteConfig,
+  spaceCategories,
+  featuredProjects,
+  whatsappPhone: _wp,
+}: {
+  pageData: IPageData;
+  siteConfig: ISiteConfig;
+  spaceCategories: ISpaceCategory[];
+  featuredProjects: ISpaceProject[];
+  whatsappPhone: string;
+}) {
   const { hero, services, materials, catalog, contact, footer, seo } = pageData;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const pageUrl = siteUrl ? `${siteUrl}/` : undefined;

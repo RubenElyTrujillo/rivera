@@ -6,6 +6,7 @@ import type { GetServerSideProps } from 'next';
 import * as motion from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
 import { ArrowLeft, X } from 'lucide-react';
+import { db } from '@/lib/db';
 import { materialRepository } from '@/repositories/material.repository';
 import { MATERIALS_DATA } from '@/lib/materialsData';
 import type { IMaterial, IMaterialFinish } from '@/domain/types';
@@ -13,6 +14,8 @@ import type { IMaterial, IMaterialFinish } from '@/domain/types';
 interface Props {
     material: IMaterial;
     siteUrl: string;
+    whatsappPhone: string;
+    whatsappContext: { material: string };
 }
 
 function GalleryHeader({ name }: { name: string }) {
@@ -45,7 +48,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
     if (!isNaN(numId)) {
         const material = await materialRepository.findById(numId);
         if (!material) return { notFound: true };
-        return { props: { material, siteUrl } };
+        const contact = await db.contactInfo.findFirst();
+        return {
+            props: {
+                material,
+                siteUrl,
+                whatsappPhone: contact?.whatsappPhone ?? "",
+                whatsappContext: { material: material.name },
+            },
+        };
     }
 
     // String slug → static data lookup
@@ -85,10 +96,23 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
         })),
     };
 
-    return { props: { material, siteUrl } };
+    const contact = await db.contactInfo.findFirst();
+    return {
+        props: {
+            material: material as unknown as IMaterial,
+            siteUrl,
+            whatsappPhone: contact?.whatsappPhone ?? "",
+            whatsappContext: { material: (material as { name: string }).name },
+        },
+    };
 };
 
-export default function MaterialGallery({ material, siteUrl }: Props) {
+export default function MaterialGallery({
+    material,
+    siteUrl,
+    whatsappPhone: _wp,
+    whatsappContext: _wc,
+}: Props) {
     const [selectedFinish, setSelectedFinish] = useState<IMaterialFinish | null>(null);
     const [activeCollection, setActiveCollection] = useState('Todos');
 

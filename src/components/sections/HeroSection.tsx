@@ -1,13 +1,20 @@
 import Image from "next/image";
 import * as motion from "motion/react-client";
-import type { IHeroContent } from "@/domain/types";
+import type { IHeroContent, IHeroSlide } from "@/domain/types";
+import HeroCarousel from "@/components/sections/HeroCarousel";
 
 interface HeroSectionProps {
     heroImage: string;
     content?: IHeroContent | null;
+    slides?: IHeroSlide[];
+    autoPlayMs?: number;
 }
 
-const HeroSection = ({ heroImage, content }: HeroSectionProps) => {
+const HeroSection = ({ heroImage, content, slides, autoPlayMs }: HeroSectionProps) => {
+    if (slides && slides.length > 0) {
+        return <HeroCarousel slides={slides} autoPlayMs={autoPlayMs} />;
+    }
+
     const subtitle = content?.subtitle ?? "Soluciones integrales en acabados";
     const titleLine1 = content?.titleLine1 ?? "SUPERFICIES";
     const titleLine2 = content?.titleLine2 ?? "SIN LÍMITE";
@@ -36,12 +43,12 @@ const HeroSection = ({ heroImage, content }: HeroSectionProps) => {
                     <p className="text-white/70 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 font-medium">
                         {subtitle}
                     </p>
-                    <h1 className="text-white text-5xl md:text-7xl lg:text-[6rem] font-bold leading-[0.9] tracking-tight max-w-4xl">
+                    <h1 className="text-white text-8xl md:text-[7rem] lg:text-[9rem] font-bold leading-[0.9] tracking-tight max-w-4xl">
                         {titleLine1}
                         <br />
                         <span className="text-amber-700">{titleLine2}</span>
                     </h1>
-                    <p className="text-white/60 text-base md:text-lg mt-6 max-w-lg font-light leading-relaxed">
+                    <p className="text-white/90 text-base md:text-lg mt-6 max-w-lg font-light leading-relaxed">
                         {description}
                     </p>
                 </motion.div>

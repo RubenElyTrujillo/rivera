@@ -118,7 +118,37 @@ async function main() {
   if (sectionsCount === 0) {
     await db.pageSection.createMany({
       data: [
-        { type: "HERO",     order: 0, visible: true,  config: "{}" },
+        {
+          type: "HERO",
+          order: 0,
+          visible: true,
+          config: JSON.stringify({
+            slides: [
+              {
+                titleLine1: "SUPERFICIES",
+                titleLine2: "SIN LÍMITE",
+                subtitle: "Soluciones integrales en acabados",
+                description: "Transformamos la base de sus espacios con el catálogo más completo en pisos, muros y acabados de alta gama.",
+                imageUrl: "/images/5ab8b3a15_generated_f21e3e55.png",
+              },
+              {
+                titleLine1: "MUROS",
+                titleLine2: "DE AUTOR",
+                subtitle: "Revestimientos para interiores y exteriores",
+                description: "Desde azulejo artesanal hasta WPC premium — materiales que hablan por sí solos.",
+                imageUrl: "/images/7219abb30_generated_c7c0b4a0.png",
+              },
+              {
+                titleLine1: "DECK",
+                titleLine2: "Y TERRAZAS",
+                subtitle: "Espacios exteriores con carácter",
+                description: "Resistentes al clima, diseñados para durar y embellecerse con el tiempo.",
+                imageUrl: "/images/fc7bd1af6_generated_345964df.png",
+              },
+            ],
+            autoPlayMs: 5000,
+          }),
+        },
         { type: "VENTAS",   order: 1, visible: true,  config: "{}" },
         { type: "SHOWROOM", order: 2, visible: true,  config: "{}" },
         { type: "FEATURED", order: 3, visible: true,  config: "{}" },

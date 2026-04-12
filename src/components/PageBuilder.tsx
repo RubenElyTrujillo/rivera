@@ -1,4 +1,4 @@
-import type { IPageSection, IPageData, ISpaceCategory, ISpaceProject } from "@/domain/types";
+import type { IPageSection, IPageData, ISpaceCategory, ISpaceProject, HeroPageConfig } from "@/domain/types";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import ProductsSection from "@/components/sections/ShowroomSection";
@@ -35,14 +35,26 @@ export default function PageBuilder({ sections, data }: PageBuilderProps) {
     <>
       {sections.map((section) => {
         switch (section.type) {
-          case "HERO":
+          case "HERO": {
+            let heroConfig: HeroPageConfig | null = null;
+            try {
+              const parsed = JSON.parse(section.config ?? "{}") as HeroPageConfig;
+              if (Array.isArray(parsed.slides) && parsed.slides.length > 0) {
+                heroConfig = parsed;
+              }
+            } catch {
+              // malformed config — fall back to static hero
+            }
             return (
               <HeroSection
                 key={section.id}
                 heroImage={heroImageUrl}
                 content={hero}
+                slides={heroConfig?.slides}
+                autoPlayMs={heroConfig?.autoPlayMs}
               />
             );
+          }
           case "VENTAS":
             return <ServicesSection key={section.id} services={services} />;
           case "SHOWROOM":

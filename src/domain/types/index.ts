@@ -6,6 +6,7 @@
  *   import type { IHeroContent, IService } from "@/domain/types";
  */
 export type { IHeroContent } from "./hero";
+export type { IHeroSlide, HeroPageConfig } from "./heroSlide";
 export type { IService } from "./service";
 export type { IMaterial, IMaterialFinish, IMaterialCollection, IMaterialFinishImage } from "./material";
 export type { ICategory } from "./category";

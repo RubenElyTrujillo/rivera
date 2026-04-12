@@ -39,8 +39,8 @@ const HeroCarousel = ({ slides, autoPlayMs = 5000 }: HeroCarouselProps) => {
     setActiveIndex(index);
   };
 
-  const next = () => goTo((activeIndex + 1) % slides.length);
-  const prev = () => goTo((activeIndex - 1 + slides.length) % slides.length);
+  const next = () => { setDirection(1); setActiveIndex((i) => (i + 1) % slides.length); };
+  const prev = () => { setDirection(-1); setActiveIndex((i) => (i - 1 + slides.length) % slides.length); };
 
   useEffect(() => {
     if (paused || slides.length <= 1) return;

@@ -58,7 +58,7 @@ export const getServerSideProps: GetServerSideProps<{
     },
     services: services ?? [],
     materials: materials
-      ? materials.map((m) => ({
+      ? materials.map((m: typeof materials[0]) => ({
           ...m,
           collections: [],
         }))
@@ -282,10 +282,11 @@ export default function Home({
           sections={pageSections}
           data={{
             pageData,
-            siteConfig,
+            showShowroom: siteConfig.showShowroom,
             spaceCategories,
             featuredProjects,
             heroImageUrl: IMAGES.hero,
+            textureImageUrl: IMAGES.texture,
           } satisfies PageBuilderData}
         />
       ) : (

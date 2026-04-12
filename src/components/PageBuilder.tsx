@@ -1,5 +1,4 @@
 import type { IPageSection, IPageData, ISpaceCategory, ISpaceProject } from "@/domain/types";
-import type { ISiteConfig } from "@/repositories/siteConfig.repository";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import ProductsSection from "@/components/sections/ShowroomSection";
@@ -9,14 +8,13 @@ import SpacesSection from "@/components/sections/SpacesSection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 
-const TEXTURE_IMAGE = "/images/806a852e2_generated_7961075f.png";
-
 export interface PageBuilderData {
   pageData: IPageData;
-  siteConfig: ISiteConfig;
+  showShowroom: boolean;
   spaceCategories: ISpaceCategory[];
   featuredProjects: ISpaceProject[];
   heroImageUrl: string;
+  textureImageUrl: string;
 }
 
 interface PageBuilderProps {
@@ -25,12 +23,12 @@ interface PageBuilderProps {
 }
 
 /**
- * Renders the home page by mapping each PageSection record to
- * the appropriate section component in order.
- * Unknown section types are silently skipped.
+ * Maps each IPageSection record (from DB) to its corresponding
+ * section component and renders them in order.
+ * Unknown or unrecognised section types are silently skipped.
  */
 export default function PageBuilder({ sections, data }: PageBuilderProps) {
-  const { pageData, siteConfig, spaceCategories, featuredProjects, heroImageUrl } = data;
+  const { pageData, showShowroom, spaceCategories, featuredProjects, heroImageUrl, textureImageUrl } = data;
   const { hero, services, materials, catalog, contact } = pageData;
 
   return (
@@ -48,7 +46,9 @@ export default function PageBuilder({ sections, data }: PageBuilderProps) {
           case "VENTAS":
             return <ServicesSection key={section.id} services={services} />;
           case "SHOWROOM":
-            return siteConfig.showShowroom ? (
+            // Showroom visibility is also controlled by showShowroom from siteConfig,
+            // independently of the section's `visible` flag in the DB.
+            return showShowroom ? (
               <ProductsSection key={section.id} materials={materials} />
             ) : null;
           case "SPACES":
@@ -59,7 +59,7 @@ export default function PageBuilder({ sections, data }: PageBuilderProps) {
             return (
               <CatalogSection
                 key={section.id}
-                textureImage={TEXTURE_IMAGE}
+                textureImage={textureImageUrl}
                 content={catalog}
               />
             );

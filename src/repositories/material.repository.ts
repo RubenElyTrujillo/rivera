@@ -9,15 +9,43 @@ const WITH_COLLECTIONS = {
     include: {
       finishes: {
         orderBy: { order: "asc" as const },
-        include: { images: { orderBy: { order: "asc" as const } } },
+        include: {
+          images: { orderBy: { order: "asc" as const } },
+          collection: true,
+        },
       },
     },
   },
   finishes: {
     orderBy: { order: "asc" as const },
-    include: { images: { orderBy: { order: "asc" as const } } },
+    include: {
+      images: { orderBy: { order: "asc" as const } },
+      collection: true,
+    },
   },
 };
+
+/** Normalize a raw Prisma finish row: map collection relation → collection string name. */
+function normalizeFinish(f: Record<string, unknown>): Record<string, unknown> {
+  const col = f.collection as { name?: string } | null | undefined;
+  return { ...f, collection: col?.name ?? undefined };
+}
+
+/** Recursively normalize all finishes inside a material row. */
+function normalizeMaterial(row: Record<string, unknown>): Record<string, unknown> {
+  const finishes = Array.isArray(row.finishes)
+    ? row.finishes.map(normalizeFinish)
+    : row.finishes;
+  const collections = Array.isArray(row.collections)
+    ? row.collections.map((c: Record<string, unknown>) => ({
+        ...c,
+        finishes: Array.isArray(c.finishes)
+          ? c.finishes.map(normalizeFinish)
+          : c.finishes,
+      }))
+    : row.collections;
+  return { ...row, finishes, collections };
+}
 
 export const materialRepository = {
   async findAll(): Promise<IMaterial[]> {
@@ -25,7 +53,7 @@ export const materialRepository = {
       orderBy: { order: "asc" },
       include: WITH_COLLECTIONS,
     });
-    return rows as unknown as IMaterial[];
+    return rows.map((r) => normalizeMaterial(r as Record<string, unknown>)) as unknown as IMaterial[];
   },
 
   async findByCategory(categoryId: number): Promise<IMaterial[]> {
@@ -34,7 +62,7 @@ export const materialRepository = {
       orderBy: { order: "asc" },
       include: WITH_COLLECTIONS,
     });
-    return rows as unknown as IMaterial[];
+    return rows.map((r) => normalizeMaterial(r as Record<string, unknown>)) as unknown as IMaterial[];
   },
 
   async findBySlug(slug: string): Promise<IMaterial | null> {
@@ -42,7 +70,7 @@ export const materialRepository = {
       where: { slug },
       include: WITH_COLLECTIONS,
     });
-    return row ? (row as unknown as IMaterial) : null;
+    return row ? normalizeMaterial(row as Record<string, unknown>) as unknown as IMaterial : null;
   },
 
   async findById(id: number): Promise<IMaterial | null> {
@@ -50,7 +78,7 @@ export const materialRepository = {
       where: { id },
       include: WITH_COLLECTIONS,
     });
-    return row ? (row as unknown as IMaterial) : null;
+    return row ? normalizeMaterial(row as Record<string, unknown>) as unknown as IMaterial : null;
   },
 
   async replaceAll(materials: MaterialInput[]): Promise<IMaterial[]> {
@@ -75,7 +103,7 @@ export const materialRepository = {
         include: WITH_COLLECTIONS,
       });
     });
-    return rows as unknown as IMaterial[];
+    return rows.map((r) => normalizeMaterial(r as Record<string, unknown>)) as unknown as IMaterial[];
   },
 
   async create(data: MaterialInput): Promise<IMaterial> {
@@ -92,7 +120,7 @@ export const materialRepository = {
       },
       include: WITH_COLLECTIONS,
     });
-    return row as unknown as IMaterial;
+    return normalizeMaterial(row as Record<string, unknown>) as unknown as IMaterial;
   },
 
   async update(id: number, data: Partial<MaterialInput>): Promise<IMaterial> {
@@ -109,7 +137,7 @@ export const materialRepository = {
       },
       include: WITH_COLLECTIONS,
     });
-    return row as unknown as IMaterial;
+    return normalizeMaterial(row as Record<string, unknown>) as unknown as IMaterial;
   },
 
   async delete(id: number): Promise<void> {

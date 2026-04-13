@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { GetServerSideProps } from 'next';
+import * as motion from "motion/react-client";
 import ReactMarkdown from 'react-markdown';
 import { db } from '@/lib/db';
 import { finishRepository } from '@/repositories/finish.repository';

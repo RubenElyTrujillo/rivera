@@ -73,7 +73,11 @@ export default function FinishDetailPage({ finish, material, collection, navItem
                     <span className="text-foreground">{finish.name}</span>
                 </nav>
 
-                <div className="px-8 md:px-20 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="px-8 md:px-20 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20"
+                >
                     {/* Left: image gallery */}
                     <div>
                         <div className="relative aspect-square overflow-hidden bg-muted mb-4">
@@ -91,6 +95,7 @@ export default function FinishDetailPage({ finish, material, collection, navItem
                                     <button
                                         key={img.url}
                                         onClick={() => setActiveImg(img.url)}
+                                        aria-label={`Ver imagen: ${img.caption}`}
                                         className={`relative w-20 h-20 overflow-hidden border-2 transition-colors ${activeImg === img.url ? 'border-primary' : 'border-transparent hover:border-foreground/20'}`}
                                     >
                                         <Image src={img.url} alt={img.caption} fill className="object-cover" />
@@ -150,7 +155,7 @@ export default function FinishDetailPage({ finish, material, collection, navItem
                             </div>
                         )}
                     </div>
-                </div>
+                </motion.div>
             </main>
         </>
     );

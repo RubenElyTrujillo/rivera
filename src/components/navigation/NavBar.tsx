@@ -10,15 +10,20 @@ import type { INavItem } from "@/domain/types";
 
 interface NavBarProps {
   items: INavItem[];
+  transparent?: boolean;
 }
 
-export default function NavBar({ items }: NavBarProps) {
+export default function NavBar({ items, transparent = false }: NavBarProps) {
   const [activeId, setActiveId] = useState<number | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<number | null>(null);
 
   const activeItem = items.find((i) => i.id === activeId);
   const hasChildren = (item: INavItem) => (item.children?.length ?? 0) > 0;
+
+  const linkCls = transparent
+    ? "text-white/90 hover:text-white"
+    : "text-foreground/70 hover:text-foreground";
 
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openMenu = (id: number) => {
@@ -57,7 +62,7 @@ export default function NavBar({ items }: NavBarProps) {
                   size={12}
                   className={`transition-transform duration-200 ${
                     activeId === item.id ? "rotate-180" : ""
-                  }`}
+                  } ${linkCls}`}
                 />
               </button>
             </div>

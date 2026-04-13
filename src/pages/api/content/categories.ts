@@ -13,49 +13,45 @@ import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     const data = await categoryRepository.findAll();
-    res.status(200).json(data);
-    return;
+    return res.status(200).json(data);
   }
 
-  if (!requireAuth(req, res)) return;
-
   if (req.method === "POST") {
+    if (!requireAuth(req, res)) return;
+
     const parsed = CategorySchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: "Datos inválidos", details: parsed.error.flatten() });
-      return;
+      return res.status(400).json({ error: "Datos inválidos", details: parsed.error.flatten() });
     }
+
     const created = await categoryRepository.create(parsed.data);
-    res.status(201).json(created);
-    return;
+    return res.status(201).json(created);
   }
 
   if (req.method === "PUT") {
+    if (!requireAuth(req, res)) return;
+
     const id = Number(req.query.id);
-    if (!id) {
-      res.status(400).json({ error: "Se requiere ?id=X" });
-      return;
-    }
+    if (!id) return res.status(400).json({ error: "Se requiere ?id=X" });
+
     const parsed = CategorySchema.partial().safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: "Datos inválidos", details: parsed.error.flatten() });
-      return;
+      return res.status(400).json({ error: "Datos inválidos", details: parsed.error.flatten() });
     }
+
     const updated = await categoryRepository.update(id, parsed.data);
-    res.status(200).json(updated);
-    return;
+    return res.status(200).json(updated);
   }
 
   if (req.method === "DELETE") {
+    if (!requireAuth(req, res)) return;
+
     const id = Number(req.query.id);
-    if (!id) {
-      res.status(400).json({ error: "Se requiere ?id=X" });
-      return;
-    }
+    if (!id) return res.status(400).json({ error: "Se requiere ?id=X" });
+
     await categoryRepository.delete(id);
-    res.status(204).end();
-    return;
+    return res.status(200).json({ ok: true });
   }
 
-  res.status(405).json({ error: "Método no permitido" });
+  return res.status(405).json({ error: "Método no permitido" });
 });

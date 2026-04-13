@@ -10,15 +10,19 @@ import type { INavItem } from "@/domain/types";
 
 interface NavBarProps {
   items: INavItem[];
+  transparent?: boolean;
 }
 
-export default function NavBar({ items }: NavBarProps) {
+export default function NavBar({ items, transparent = false }: NavBarProps) {
   const [activeId, setActiveId] = useState<number | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<number | null>(null);
 
   const activeItem = items.find((i) => i.id === activeId);
   const hasChildren = (item: INavItem) => (item.children?.length ?? 0) > 0;
+  const linkCls = transparent
+    ? "text-white/90 hover:text-white"
+    : "text-foreground/70 hover:text-foreground";
 
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openMenu = (id: number) => {
@@ -50,7 +54,7 @@ export default function NavBar({ items }: NavBarProps) {
                 aria-expanded={activeId === item.id}
                 onClick={() => setActiveId((prev) => (prev === item.id ? null : item.id))}
                 onKeyDown={(e) => { if (e.key === "Escape") setActiveId(null); }}
-                className="flex items-center gap-1 px-4 py-2 text-xs font-semibold tracking-widest uppercase text-foreground/70 hover:text-foreground transition-colors"
+                className={`flex items-center gap-1 px-4 py-2 text-xs font-semibold tracking-widest uppercase transition-colors ${linkCls}`}
               >
                 {item.label}
                 <ChevronDown
@@ -65,7 +69,7 @@ export default function NavBar({ items }: NavBarProps) {
             <Link
               key={item.id}
               href={item.href}
-              className="px-4 py-2 text-xs font-semibold tracking-widest uppercase text-foreground/70 hover:text-foreground transition-colors"
+              className={`px-4 py-2 text-xs font-semibold tracking-widest uppercase transition-colors ${linkCls}`}
             >
               {item.label}
             </Link>
@@ -121,7 +125,7 @@ export default function NavBar({ items }: NavBarProps) {
       {/* Mobile hamburger toggle */}
       <button
         type="button"
-        className="md:hidden p-2 text-foreground/70 hover:text-foreground transition-colors"
+        className={`md:hidden p-2 transition-colors ${linkCls}`}
         aria-label={mobileOpen ? "Cerrar menu" : "Abrir menu"}
         onClick={() => { setMobileOpen((v) => !v); if (mobileOpen) setMobileExpanded(null); }}
       >

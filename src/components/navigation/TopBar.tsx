@@ -40,7 +40,7 @@ const TopBar = ({ navItems = [] }: TopBarProps) => {
           className="w-15 h-15 object-cover"
         />
       </Link>
-      <NavBar items={navItems} />
+      <NavBar items={navItems} transparent={!scrolled} />
     </motion.header>
   );
 };

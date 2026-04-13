@@ -13,6 +13,8 @@ import {
   Upload,
   FolderOpen,
   Navigation,
+  Layers,
+  LayoutList,
 } from "lucide-react";
 
 const SECTIONS = [
@@ -27,6 +29,8 @@ const SECTIONS = [
   { href: "/admin/footer", label: "Footer", desc: "Tagline y lista de servicios", icon: Layout },
   { href: "/admin/seo", label: "SEO", desc: "Título, descripción y palabras clave", icon: Search },
   { href: "/admin/media", label: "Medios", desc: "Subir y gestionar imágenes y PDFs", icon: Upload },
+  { href: "/admin/collections", label: "Colecciones", desc: "Subcategorías por material (Splash, Clásico, Select…)", icon: Layers },
+  { href: "/admin/page-sections", label: "Secciones", desc: "Orden y visibilidad de secciones del home", icon: LayoutList },
 ];
 
 export default function AdminDashboard() {

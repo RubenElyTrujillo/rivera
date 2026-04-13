@@ -73,32 +73,44 @@ Add `navItemRepository.findRoots()` to `getServerSideProps` in:
 
 ```
 Category        /categorias/[slug]                        ← exists ✅
-  └─ Material   /materiales/[matSlug]                     ← update ⚠️
-       └─ MaterialCollection  /materiales/[matSlug]/[colSlug]   ← NEW 🆕
-            └─ MaterialFinish /materiales/[matSlug]/[colSlug]/[finSlug]  ← NEW 🆕
+  └─ Material   /materiales/[id]                          ← update ⚠️  ([id] = slug or numeric)
+       └─ MaterialCollection  /materiales/[id]/[colSlug]              ← NEW 🆕
+            └─ MaterialFinish /materiales/[id]/[colSlug]/[finSlug]    ← NEW 🆕
 ```
 
-Prisma slugs: `Category.slug`, `Material.slug`, `MaterialCollection.slug` (unique per material), `MaterialFinish.slug` (globally unique).
+Next.js Pages Router file structure:
+```
+pages/materiales/
+  [id].tsx                          ← Level 2 (existing, updated)
+  [id]/
+    [colSlug]/
+      index.tsx                     ← Level 3 (new)
+      [finSlug].tsx                 ← Level 4 (new)
+```
 
-### Level 2 — `/materiales/[matSlug]` (update existing)
+Next.js resolves by segment count — no conflict between `[id].tsx` and the `[id]/` folder.
 
-`getServerSideProps` fetches by `Material.slug` (currently fetches by numeric id — change to slug lookup).  
+Prisma slugs: `Category.slug`, `Material.slug`, `MaterialCollection.slug` (unique per material via `@@unique([materialId, slug])`), `MaterialFinish.slug` (globally unique).
+
+### Level 2 — `/materiales/[id]` (update existing `pages/materiales/[id].tsx`)
+
+`getServerSideProps` already handles slug strings — keep logic, add navItems fetch and collections display.
 Page layout:
 1. **Hero banner** — `Material.coverImage` full-width with overlay + material name
 2. **"¿Qué es?" section** — renders `Material.desc` as a paragraph block
-3. **Collections grid** — cards for each `MaterialCollection` (coverImage, name, desc snippet). Click → Level 3.
+3. **Collections grid** — cards for each `MaterialCollection` (coverImage, name, desc snippet). Click → Level 3 (`/materiales/[id]/[colSlug]`).
 4. **TopBar** with full navItems.
 
-### Level 3 — `/materiales/[matSlug]/[colSlug]` (new page)
+### Level 3 — `/materiales/[id]/[colSlug]` (new `pages/materiales/[id]/[colSlug]/index.tsx`)
 
-`getServerSideProps` fetches `MaterialCollection` by `{ materialSlug, collectionSlug }` with its `finishes`.  
+`getServerSideProps` receives `params.id` (material slug) and `params.colSlug`. Fetches `MaterialCollection` by `{ material: { slug: id }, slug: colSlug }` with its `finishes`.
 Page layout:
 1. **Breadcrumb** — `Categoría > Material > Colección`
 2. **Collection header** — coverImage banner + name + `desc`
 3. **Finishes grid** — `FinishCard` components (image + hoverImage on hover, name, code). Click → Level 4.
 4. **TopBar** with full navItems.
 
-### Level 4 — `/materiales/[matSlug]/[colSlug]/[finSlug]` (new page)
+### Level 4 — `/materiales/[id]/[colSlug]/[finSlug]` (new `pages/materiales/[id]/[colSlug]/[finSlug].tsx`)
 
 `getServerSideProps` fetches `MaterialFinish` by `slug` with its `images` (MaterialFinishImage[]).  
 Page layout:
@@ -216,9 +228,9 @@ Install: `npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities`
 | `src/pages/api/health.ts` | new | `200 { ok: true }` |
 | `src/components/navigation/TopBar.tsx` | update | pass `transparent` to NavBar |
 | `src/components/navigation/NavBar.tsx` | update | accept + apply `transparent` prop |
-| `src/pages/materiales/[id].tsx` | update | fetch by slug, add navItems, show collections |
-| `src/pages/materiales/[matSlug]/[colSlug]/index.tsx` | new | Level 3 collection page |
-| `src/pages/materiales/[matSlug]/[colSlug]/[finSlug].tsx` | new | Level 4 finish detail page |
+| `src/pages/materiales/[id].tsx` | update | add navItems, fetch collections, show "¿Qué es?" + collection cards |
+| `src/pages/materiales/[id]/[colSlug]/index.tsx` | new | Level 3 collection page |
+| `src/pages/materiales/[id]/[colSlug]/[finSlug].tsx` | new | Level 4 finish detail page |
 | `prisma/schema.prisma` | update | add `specMd` to `MaterialFinish` |
 | `prisma/migrations/…` | new | migration file |
 | `src/pages/admin/materials.tsx` | update | table view + search + pagination |

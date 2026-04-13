@@ -102,6 +102,7 @@ model MaterialFinish {
   waterRes     Boolean               @default(false)
   installType  String                @default("")
   warranty     String                @default("")
+  specMd       String                @default("")
   images       MaterialFinishImage[]
 
   @@index([materialId])

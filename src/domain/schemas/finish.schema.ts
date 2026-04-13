@@ -34,6 +34,7 @@ export const FinishSchema = z.object({
   waterRes:     z.boolean().default(false),
   installType:  z.string().max(200).default(""),
   warranty:     z.string().max(200).default(""),
+  specMd:       z.string().default(""),
 });
 
 export type FinishInput = z.infer<typeof FinishSchema>;

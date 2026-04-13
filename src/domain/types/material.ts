@@ -23,7 +23,9 @@ export interface IMaterialFinish {
   waterRes: boolean;
   installType: string;
   warranty: string;
+  specMd: string;
   collectionId: number;
+  images?: IMaterialFinishImage[];
 }
 
 /**

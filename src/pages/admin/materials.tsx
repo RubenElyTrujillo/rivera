@@ -111,6 +111,7 @@ export default function AdminMaterialsPage() {
         waterRes: finish.waterRes,
         installType: finish.installType,
         warranty: finish.warranty,
+        specMd: finish.specMd,
         collectionId: finish.collectionId,
       },
     }));

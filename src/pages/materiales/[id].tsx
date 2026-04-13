@@ -94,6 +94,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
             waterRes: false,
             installType: '',
             warranty: '',
+            specMd: '',
             collectionId: 0,
         })),
     };

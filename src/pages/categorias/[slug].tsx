@@ -3,16 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 import type { GetServerSideProps } from "next";
 import * as motion from "motion/react-client";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { categoryRepository } from "@/repositories/category.repository";
 import { materialRepository } from "@/repositories/material.repository";
-import type { ICategory, IMaterial } from "@/domain/types";
+import { navItemRepository } from "@/repositories/navItem.repository";
+import type { ICategory, IMaterial, INavItem } from "@/domain/types";
 
 interface Props {
   category: ICategory;
   materials: IMaterial[];
   whatsappPhone: string;
+  navItems: INavItem[];
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) => {
@@ -20,9 +22,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
   const category = await categoryRepository.findBySlug(slug);
   if (!category) return { notFound: true };
 
-  const [materials, contact] = await Promise.all([
+  const [materials, contact, navItems] = await Promise.all([
     materialRepository.findByCategory(category.id),
     db.contactInfo.findFirst(),
+    navItemRepository.findRoots(),
   ]);
 
   return {
@@ -30,6 +33,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
       category,
       materials,
       whatsappPhone: contact?.whatsappPhone ?? "",
+      navItems,
     },
   };
 };
@@ -46,25 +50,9 @@ export default function CategoryPage({ category, materials }: Props) {
         />
       </Head>
 
-      {/* Sticky header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
-        <div className="px-6 md:px-16 py-5 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm font-semibold tracking-wider text-foreground/50 hover:text-foreground transition-colors"
-          >
-            <ArrowLeft size={16} />
-            VOLVER
-          </Link>
-          <div className="text-center">
-            <p className="text-xs text-primary tracking-[0.2em] uppercase font-bold">CATEGORÍA</p>
-            <h1 className="text-sm md:text-base font-bold tracking-tight">{category.name}</h1>
-          </div>
-          <div className="w-16" />
-        </div>
-      </div>
+      {/* Sticky header removed — MainLayout TopBar handles navigation */}
 
-      <main className="min-h-screen bg-foreground">
+      <main className="min-h-screen bg-foreground pt-20">
         {/* Category hero */}
         {category.coverImage && (
           <div className="relative h-64 md:h-80 overflow-hidden">

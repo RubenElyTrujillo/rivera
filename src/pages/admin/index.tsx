@@ -11,12 +11,16 @@ import {
   Layout,
   Search,
   Upload,
+  FolderOpen,
+  Navigation,
 } from "lucide-react";
 
 const SECTIONS = [
   { href: "/admin/hero", label: "Hero", desc: "Título, subtítulo e imagen principal", icon: ImageIcon },
-  { href: "/admin/services", label: "Servicios", desc: "5 tarjetas de servicios", icon: Wrench },
+  { href: "/admin/services", label: "Ventas", desc: "5 tarjetas de ventas", icon: Wrench },
   { href: "/admin/materials", label: "Materiales", desc: "Tipos de pisos y recubrimientos", icon: Package },
+  { href: "/admin/categories", label: "Categorías", desc: "Categorías de producto (Pisos, Paredes…)", icon: FolderOpen },
+  { href: "/admin/nav-items", label: "Navegación", desc: "Árbol de menú de 3 niveles", icon: Navigation },
   { href: "/admin/spaces", label: "Espacios", desc: "Galería de proyectos", icon: Grid2x2 },
   { href: "/admin/catalog", label: "Catálogo", desc: "Texto y PDF descargable", icon: BookOpen },
   { href: "/admin/contact", label: "Contacto", desc: "Teléfonos, email y opciones del formulario", icon: Phone },

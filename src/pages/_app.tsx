@@ -5,6 +5,7 @@ import MainLayout from "@/components/layout/MainLayout";
 import AdminLayout from "@/components/admin/AdminLayout";
 import type { WhatsAppContext } from "@/hooks/useWhatsApp";
 import "@/styles/globals.css";
+import type { INavItem } from "@/domain/types";
 
 const WhatsAppFAB = dynamic(() => import("@/components/ui/WhatsAppFAB"), { ssr: false });
 
@@ -16,6 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const whatsappPhone: string = (pageProps.whatsappPhone as string) ?? "";
   const whatsappContext: WhatsAppContext | undefined = pageProps.whatsappContext as WhatsAppContext | undefined;
+  const navItems: INavItem[] = (pageProps.navItems as INavItem[]) ?? [];
 
   if (isAdmin && !isLogin) {
     return (
@@ -37,7 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <MainLayout>
+    <MainLayout navItems={navItems}>
       <Component {...pageProps} />
       <WhatsAppFAB phone={whatsappPhone} context={whatsappContext} />
     </MainLayout>

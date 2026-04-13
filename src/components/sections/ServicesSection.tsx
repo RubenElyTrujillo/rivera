@@ -26,7 +26,7 @@ const ServicesSection = ({ services }: { services?: IService[] | null }) => {
   const list = services && services.length > 0 ? services : DEFAULT_SERVICES;
 
   return (
-    <section id="servicios" className="bg-background border-y border-border">
+    <section id="ventas" className="bg-background border-y border-border">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-border">
         {list.map((service, i) => {
           const Icon = ICON_MAP[service.icon] ?? Layers;

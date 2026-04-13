@@ -205,7 +205,7 @@ export default function Home({
         areaServed: ["Ciudad de Mexico", "Estado de Mexico"],
         hasOfferCatalog: {
           "@type": "OfferCatalog",
-          name: "Servicios",
+          name: "Ventas",
           itemListElement: services.map((s) => ({
             "@type": "Offer",
             itemOffered: { "@type": "Service", name: s.title },

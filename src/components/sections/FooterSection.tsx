@@ -68,7 +68,7 @@ export default function FooterSection({ contact, footer }: FooterSectionProps) {
                     {/* Services */}
                     <div className="space-y-6">
                         <p className="text-xs tracking-[0.2em] text-background/30 uppercase font-bold">
-                            Servicios
+                            Ventas
                         </p>
                         <div className="space-y-2 text-sm text-background/50">
                             {services.map((svc) => <p key={svc}>{svc}</p>)}

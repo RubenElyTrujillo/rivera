@@ -10,12 +10,13 @@ import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
 import PageBuilder, { type PageBuilderData } from "@/components/PageBuilder";
-import type { IPageData, ISpaceCategory, ISpaceProject, IPageSection } from "@/domain/types";
+import type { IPageData, ISpaceCategory, ISpaceProject, IPageSection, INavItem } from "@/domain/types";
 import { db } from "@/lib/db";
 import { siteConfigRepository, type ISiteConfig } from "@/repositories/siteConfig.repository";
 import { spaceCategoryRepository } from "@/repositories/spaceCategory.repository";
 import { spaceRepository } from "@/repositories/space.repository";
 import { pageSectionRepository } from "@/repositories/pageSection.repository";
+import { navItemRepository } from "@/repositories/navItem.repository";
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -33,8 +34,9 @@ export const getServerSideProps: GetServerSideProps<{
   featuredProjects: ISpaceProject[];
   pageSections: IPageSection[];
   whatsappPhone: string;
+  navItems: INavItem[];
 }> = async () => {
-  const [hero, services, materials, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects, pageSections] = await Promise.all([
+  const [hero, services, materials, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects, pageSections, navItems] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
     db.material.findMany({ orderBy: { order: "asc" }, include: { finishes: { orderBy: { order: "asc" } } } }),
@@ -46,6 +48,7 @@ export const getServerSideProps: GetServerSideProps<{
     spaceCategoryRepository.findAll(),
     spaceRepository.findAll(),
     pageSectionRepository.findVisible(),
+    navItemRepository.findRoots(),
   ]);
 
   const pageData: IPageData = {
@@ -101,6 +104,7 @@ export const getServerSideProps: GetServerSideProps<{
       featuredProjects: allProjects.slice(0, 4),
       pageSections: pageSections as unknown as IPageSection[],
       whatsappPhone: (pageData.contact as { whatsappPhone?: string })?.whatsappPhone ?? "",
+      navItems,
     },
   };
 };

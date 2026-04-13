@@ -52,7 +52,7 @@ export default function CategoryPage({ category, materials }: Props) {
 
       {/* Sticky header removed — MainLayout TopBar handles navigation */}
 
-      <main className="min-h-screen bg-foreground pt-20">
+      <main className="min-h-screen bg-foreground pt-24">
         {/* Category hero */}
         {category.coverImage && (
           <div className="relative h-64 md:h-80 overflow-hidden">

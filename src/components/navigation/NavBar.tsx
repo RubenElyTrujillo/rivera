@@ -82,7 +82,7 @@ export default function NavBar({ items }: NavBarProps) {
             transition={{ duration: 0.18 }}
             onMouseEnter={cancelClose}
             onMouseLeave={scheduleClose}
-            className="fixed top-[68px] left-0 right-0 z-30 bg-background border-b border-foreground/10 shadow-lg"
+            className="fixed top-[92px] left-0 right-0 z-30 bg-background border-b border-foreground/10 shadow-lg"
           >
             <div className="px-12 md:px-20 py-8 flex gap-12 md:gap-20 flex-wrap">
               {activeItem.children!.filter(i => i.visible).map((child) => (

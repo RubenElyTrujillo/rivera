@@ -48,6 +48,8 @@ export default function NavBar({ items }: NavBarProps) {
                 type="button"
                 aria-haspopup="true"
                 aria-expanded={activeId === item.id}
+                onClick={() => setActiveId((prev) => (prev === item.id ? null : item.id))}
+                onKeyDown={(e) => { if (e.key === "Escape") setActiveId(null); }}
                 className="flex items-center gap-1 px-4 py-2 text-xs font-semibold tracking-widest uppercase text-foreground/70 hover:text-foreground transition-colors"
               >
                 {item.label}

@@ -10,6 +10,8 @@ import { db } from '@/lib/db';
 import { materialRepository } from '@/repositories/material.repository';
 import { MATERIALS_DATA } from '@/lib/materialsData';
 import type { IMaterial, IMaterialFinish } from '@/domain/types';
+import FinishCard from "@/components/ui/FinishCard";
+import { buildWhatsAppUrl } from "@/hooks/useWhatsApp";
 
 interface Props {
     material: IMaterial;
@@ -110,8 +112,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
 export default function MaterialGallery({
     material,
     siteUrl,
-    whatsappPhone: _wp,
-    whatsappContext: _wc,
+    whatsappPhone,
 }: Props) {
     const [selectedFinish, setSelectedFinish] = useState<IMaterialFinish | null>(null);
     const [activeCollection, setActiveCollection] = useState('Todos');
@@ -217,6 +218,30 @@ export default function MaterialGallery({
                     </div>
                 </div>
 
+                {/* ¿Qué es este material? */}
+                {material.desc && (
+                    <section className="px-6 md:px-16 py-12 md:py-16 border-b border-foreground/10">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7 }}
+                        >
+                            <p className="text-xs text-primary tracking-[0.2em] uppercase font-bold mb-3">
+                                SOBRE ESTE MATERIAL
+                            </p>
+                            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
+                                ¿Qué es el {material.name.toLowerCase()}?
+                            </h2>
+                            <p className="text-foreground/60 leading-relaxed max-w-2xl text-base">
+                                {material.desc}
+                            </p>
+                            {material.spec && (
+                                <p className="mt-4 text-sm font-mono text-foreground/40">{material.spec}</p>
+                            )}
+                        </motion.div>
+                    </section>
+                )}
+
                 {/* Collection filter */}
                 {collections.length > 1 && (
                     <div className="px-6 md:px-16 py-8 border-b border-foreground/10 overflow-x-auto hide-scrollbar">
@@ -247,33 +272,19 @@ export default function MaterialGallery({
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                             <AnimatePresence mode="popLayout">
                                 {filtered.map((finish, i) => (
-                                    <motion.button
+                                    <motion.div
                                         key={finish.code}
                                         layout
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ duration: 0.35, delay: i * 0.04 }}
-                                        onClick={() => setSelectedFinish(finish)}
-                                        className="group text-left"
                                     >
-                                        <div className="aspect-square overflow-hidden bg-foreground/5 mb-3 relative">
-                                            {finish.image && (
-                                                <Image
-                                                    src={finish.image}
-                                                    alt={`Acabado ${finish.name} — ${finish.code}`}
-                                                    fill
-                                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            )}
-                                        </div>
-                                        <p className="text-xs font-bold tracking-tight leading-tight group-hover:text-primary transition-colors">
-                                            {finish.name}
-                                        </p>
-                                        <p className="text-xs text-foreground/40 tracking-wider mt-0.5 font-mono">
-                                            {finish.code}
-                                        </p>
-                                    </motion.button>
+                                        <FinishCard
+                                            finish={finish}
+                                            onClick={() => setSelectedFinish(finish)}
+                                        />
+                                    </motion.div>
                                 ))}
                             </AnimatePresence>
                         </div>
@@ -321,7 +332,7 @@ export default function MaterialGallery({
                                         </p>
                                     )}
                                     <h3 className="text-xl font-bold tracking-tight mb-4">{selectedFinish.name}</h3>
-                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="grid grid-cols-2 gap-4 mb-4">
                                         <div>
                                             <p className="text-xs text-foreground/40 tracking-widest uppercase mb-1">Código</p>
                                             <p className="text-sm font-mono font-semibold">{selectedFinish.code}</p>
@@ -333,8 +344,60 @@ export default function MaterialGallery({
                                             </div>
                                         )}
                                     </div>
+                                    {/* Ficha técnica */}
+                                    {(selectedFinish.thickness || selectedFinish.useClass || selectedFinish.installType || selectedFinish.warranty || selectedFinish.waterRes) && (
+                                        <div className="border-t border-foreground/10 pt-4 mb-4">
+                                            <p className="text-xs text-foreground/40 tracking-widest uppercase mb-3">Ficha técnica</p>
+                                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                                {selectedFinish.thickness && (
+                                                    <div>
+                                                        <p className="text-xs text-foreground/40 uppercase tracking-widest mb-0.5">Espesor</p>
+                                                        <p className="font-semibold">{selectedFinish.thickness}</p>
+                                                    </div>
+                                                )}
+                                                {selectedFinish.useClass && (
+                                                    <div>
+                                                        <p className="text-xs text-foreground/40 uppercase tracking-widest mb-0.5">Clase de uso</p>
+                                                        <p className="font-semibold">{selectedFinish.useClass}</p>
+                                                    </div>
+                                                )}
+                                                {selectedFinish.installType && (
+                                                    <div>
+                                                        <p className="text-xs text-foreground/40 uppercase tracking-widest mb-0.5">Instalación</p>
+                                                        <p className="font-semibold">{selectedFinish.installType}</p>
+                                                    </div>
+                                                )}
+                                                {selectedFinish.warranty && (
+                                                    <div>
+                                                        <p className="text-xs text-foreground/40 uppercase tracking-widest mb-0.5">Garantía</p>
+                                                        <p className="font-semibold">{selectedFinish.warranty}</p>
+                                                    </div>
+                                                )}
+                                                <div className="col-span-2">
+                                                    <p className="text-xs text-foreground/40 uppercase tracking-widest mb-0.5">Resistencia al agua</p>
+                                                    <p className="font-semibold">{selectedFinish.waterRes ? "✓ Resistente al agua" : "No especificado"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* PDF download */}
+                                    {selectedFinish.pdfUrl && (
+                                        <a
+                                            href={selectedFinish.pdfUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block text-center border border-foreground/20 text-foreground/70 py-3 text-xs font-bold tracking-widest uppercase hover:border-foreground hover:text-foreground transition-colors mb-4"
+                                        >
+                                            DESCARGAR FICHA TÉCNICA (PDF)
+                                        </a>
+                                    )}
                                     <a
-                                        href="https://wa.me/525629671869"
+                                        href={buildWhatsAppUrl(whatsappPhone, {
+                                            material: material.name,
+                                            collection: selectedFinish.collection ?? undefined,
+                                            product: selectedFinish.name,
+                                            code: selectedFinish.code,
+                                        }).url}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="block text-center bg-foreground text-background py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary transition-colors"

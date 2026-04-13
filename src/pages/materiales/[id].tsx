@@ -148,6 +148,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
 function GallerySection({
     material,
     whatsappPhone,
+    whatsappContext,
 }: {
     material: IMaterial;
     whatsappPhone: string;

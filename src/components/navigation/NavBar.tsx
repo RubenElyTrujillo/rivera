@@ -1,7 +1,7 @@
 // src/components/navigation/NavBar.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
 import * as motion from "motion/react-client";
@@ -20,20 +20,34 @@ export default function NavBar({ items }: NavBarProps) {
   const activeItem = items.find((i) => i.id === activeId);
   const hasChildren = (item: INavItem) => (item.children?.length ?? 0) > 0;
 
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openMenu = (id: number) => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    setActiveId(id);
+  };
+  const scheduleClose = () => {
+    closeTimerRef.current = setTimeout(() => setActiveId(null), 80);
+  };
+  const cancelClose = () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+  };
+
   return (
     <>
       {/* Desktop nav items */}
       <div className="hidden md:flex items-center gap-0">
-        {items.map((item) =>
+        {items.filter(i => i.visible).map((item) =>
           hasChildren(item) ? (
             <div
               key={item.id}
               className="relative"
-              onMouseEnter={() => setActiveId(item.id)}
-              onMouseLeave={() => setActiveId(null)}
+              onMouseEnter={() => openMenu(item.id)}
+              onMouseLeave={scheduleClose}
             >
               <button
                 type="button"
+                aria-haspopup="true"
+                aria-expanded={activeId === item.id}
                 className="flex items-center gap-1 px-4 py-2 text-xs font-semibold tracking-widest uppercase text-foreground/70 hover:text-foreground transition-colors"
               >
                 {item.label}
@@ -59,19 +73,19 @@ export default function NavBar({ items }: NavBarProps) {
 
       {/* Desktop mega-menu panel */}
       <AnimatePresence>
-        {activeId && activeItem && hasChildren(activeItem) && (
+        {activeId !== null && activeItem && hasChildren(activeItem) && (
           <motion.div
             key="mega-menu"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.18 }}
-            onMouseEnter={() => setActiveId(activeId)}
-            onMouseLeave={() => setActiveId(null)}
+            onMouseEnter={cancelClose}
+            onMouseLeave={scheduleClose}
             className="fixed top-[68px] left-0 right-0 z-30 bg-background border-b border-foreground/10 shadow-lg"
           >
             <div className="px-12 md:px-20 py-8 flex gap-12 md:gap-20 flex-wrap">
-              {activeItem.children!.map((child) => (
+              {activeItem.children!.filter(i => i.visible).map((child) => (
                 <div key={child.id} className="min-w-[140px]">
                   <Link
                     href={child.href}
@@ -82,7 +96,7 @@ export default function NavBar({ items }: NavBarProps) {
                   </Link>
                   {(child.children?.length ?? 0) > 0 && (
                     <ul className="flex flex-col gap-1.5">
-                      {child.children!.map((grandchild) => (
+                      {child.children!.filter(i => i.visible).map((grandchild) => (
                         <li key={grandchild.id}>
                           <Link
                             href={grandchild.href}
@@ -107,7 +121,7 @@ export default function NavBar({ items }: NavBarProps) {
         type="button"
         className="md:hidden p-2 text-foreground/70 hover:text-foreground transition-colors"
         aria-label={mobileOpen ? "Cerrar menu" : "Abrir menu"}
-        onClick={() => setMobileOpen((v) => !v)}
+        onClick={() => { setMobileOpen((v) => !v); if (mobileOpen) setMobileExpanded(null); }}
       >
         {mobileOpen ? <X size={22} /> : <Menu size={22} />}
       </button>
@@ -129,7 +143,7 @@ export default function NavBar({ items }: NavBarProps) {
               </span>
               <button
                 type="button"
-                onClick={() => setMobileOpen(false)}
+                onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
                 className="p-2 text-foreground/60 hover:text-foreground transition-colors"
                 aria-label="Cerrar menu"
               >
@@ -137,12 +151,13 @@ export default function NavBar({ items }: NavBarProps) {
               </button>
             </div>
             <nav className="flex-1 px-6 py-6 flex flex-col divide-y divide-foreground/10">
-              {items.map((item) => (
+              {items.filter(i => i.visible).map((item) => (
                 <div key={item.id}>
                   {hasChildren(item) ? (
                     <>
                       <button
                         type="button"
+                        aria-expanded={mobileExpanded === item.id}
                         onClick={() =>
                           setMobileExpanded((prev) =>
                             prev === item.id ? null : item.id
@@ -168,7 +183,7 @@ export default function NavBar({ items }: NavBarProps) {
                             className="overflow-hidden"
                           >
                             <div className="pb-4 pl-2 flex flex-col">
-                              {item.children!.map((child) => (
+                              {item.children!.filter(i => i.visible).map((child) => (
                                 <div key={child.id}>
                                   <Link
                                     href={child.href}
@@ -179,7 +194,7 @@ export default function NavBar({ items }: NavBarProps) {
                                   </Link>
                                   {(child.children?.length ?? 0) > 0 && (
                                     <div className="pl-3 flex flex-col">
-                                      {child.children!.map((grandchild) => (
+                                      {child.children!.filter(i => i.visible).map((grandchild) => (
                                         <Link
                                           key={grandchild.id}
                                           href={grandchild.href}

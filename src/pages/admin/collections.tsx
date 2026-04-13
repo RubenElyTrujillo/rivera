@@ -38,37 +38,46 @@ export default function AdminCollectionsPage() {
     const patch = editing[col.id];
     if (!patch || !Object.keys(patch).length) return;
     setSaving((p) => ({ ...p, [col.id]: true }));
-    await fetch(`/api/content/collections?id=${col.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(patch),
-    });
-    setCollections((prev) => prev.map((c) => c.id === col.id ? { ...c, ...patch } : c));
-    setEditing((p) => { const n = { ...p }; delete n[col.id]; return n; });
-    setSaving((p) => ({ ...p, [col.id]: false }));
-    toast("Colección guardada");
+    try {
+      const res = await fetch(`/api/content/collections?id=${col.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) { toast("Error al guardar colección"); return; }
+      setCollections((prev) => prev.map((c) => c.id === col.id ? { ...c, ...patch } : c));
+      setEditing((p) => { const n = { ...p }; delete n[col.id]; return n; });
+      toast("Colección guardada");
+    } catch { toast("Error de conexión"); }
+    finally { setSaving((p) => ({ ...p, [col.id]: false })); }
   }
 
   async function deleteCollection(id: number) {
     if (!confirm("¿Eliminar esta colección? Se eliminarán también sus acabados.")) return;
-    await fetch(`/api/content/collections?id=${id}`, { method: "DELETE" });
-    setCollections((prev) => prev.filter((c) => c.id !== id));
-    toast("Colección eliminada");
+    try {
+      const res = await fetch(`/api/content/collections?id=${id}`, { method: "DELETE" });
+      if (!res.ok) { toast("Error al eliminar colección"); return; }
+      setCollections((prev) => prev.filter((c) => c.id !== id));
+      toast("Colección eliminada");
+    } catch { toast("Error de conexión"); }
   }
 
   async function addCollection() {
     if (!selectedMaterialId || !newCol.name.trim()) return;
     setAdding(true);
-    const res = await fetch("/api/content/collections", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...newCol, materialId: selectedMaterialId }),
-    });
-    const created = await res.json();
-    setCollections((prev) => [...prev, created]);
-    setNewCol({ name: "", desc: "", coverImage: "", order: 0 });
-    setAdding(false);
-    toast("Colección creada");
+    try {
+      const res = await fetch("/api/content/collections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...newCol, materialId: selectedMaterialId }),
+      });
+      if (!res.ok) { toast("Error al crear colección"); return; }
+      const created = await res.json();
+      setCollections((prev) => [...prev, created]);
+      setNewCol({ name: "", desc: "", coverImage: "", order: 0 });
+      toast("Colección creada");
+    } catch { toast("Error de conexión"); }
+    finally { setAdding(false); }
   }
 
   if (checking) return <AdminPageSkeleton />;

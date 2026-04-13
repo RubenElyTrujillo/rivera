@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
 import * as motion from "motion/react-client";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -36,7 +35,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
 };
 
 export default function CategoryPage({ category, materials }: Props) {
-  const router = useRouter();
 
   return (
     <>
@@ -100,15 +98,18 @@ export default function CategoryPage({ category, materials }: Props) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
               {materials.map((material, i) => (
-                <motion.button
+                <Link
                   key={material.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.07 }}
-                  onClick={() => router.push(`/materiales/${material.id}`)}
-                  className="group relative overflow-hidden text-left w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                  href={`/materiales/${material.id}`}
+                  className="group relative overflow-hidden text-left w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary block"
                 >
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: i * 0.07 }}
+                    className="relative"
+                  >
                   <div className="aspect-[4/3] overflow-hidden bg-foreground/20">
                     {material.coverImage && (
                       <img
@@ -139,7 +140,8 @@ export default function CategoryPage({ category, materials }: Props) {
                       </div>
                     </div>
                   </div>
-                </motion.button>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           )}

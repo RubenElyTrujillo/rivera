@@ -6,7 +6,6 @@ import type { GetServerSideProps } from 'next';
 import * as motion from 'motion/react-client';
 import { db } from '@/lib/db';
 import { materialRepository } from '@/repositories/material.repository';
-import { collectionRepository } from '@/repositories/collection.repository';
 import { finishRepository } from '@/repositories/finish.repository';
 import { navItemRepository } from '@/repositories/navItem.repository';
 import type { IMaterial, IMaterialCollection, IMaterialFinish, INavItem } from '@/domain/types';
@@ -30,13 +29,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params }) 
 
     const collection = await db.materialCollection.findUnique({
         where: { materialId_slug: { materialId: material.id, slug: colSlug } },
-    });
+    }).catch(() => null);
     if (!collection) return { notFound: true };
 
     const [finishes, contact, navItems] = await Promise.all([
-        finishRepository.findByCollection(collection.id),
-        db.contactInfo.findFirst(),
-        navItemRepository.findRoots(),
+        finishRepository.findByCollection(collection.id).catch(() => []),
+        db.contactInfo.findFirst().catch(() => null),
+        navItemRepository.findRoots().catch(() => []),
     ]);
 
     return {

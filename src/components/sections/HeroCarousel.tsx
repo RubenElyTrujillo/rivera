@@ -94,7 +94,7 @@ const HeroCarousel = ({ slides, autoPlayMs = 5000 }: HeroCarouselProps) => {
           <p className="text-white/70 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 font-medium">
             {slide.subtitle}
           </p>
-          <h1 className="text-white text-8xl md:text-[7rem] lg:text-[9rem] font-bold leading-[0.9] tracking-tight max-w-4xl">
+          <h1 className="text-white text-4xl sm:text-6xl md:text-[7rem] lg:text-[9rem] font-bold leading-[0.9] tracking-tight max-w-4xl">
             {slide.titleLine1}
             <br />
             <span className="text-amber-700">{slide.titleLine2}</span>

@@ -10,7 +10,11 @@ import { Trash2, Plus, ChevronDown, ChevronUp, Pencil, Check, X } from "lucide-r
 import type { IMaterial, IMaterialFinish } from "@/domain/types";
 
 const EMPTY_MAT: IMaterial = { id: 0, slug: '', name: "", subtitle: "", desc: "", spec: "", coverImage: "", collections: [], order: 0, finishes: [], categoryId: null };
-const EMPTY_FINISH = { name: "", code: "", collection: "", image: "", dims: "" };
+const EMPTY_FINISH = {
+  name: "", code: "", collection: "", image: "", dims: "",
+  hoverImage: "", pdfUrl: "", thickness: "", useClass: "",
+  waterRes: false, installType: "", warranty: "",
+};
 
 /** Estado de un acabado siendo editado inline. */
 type FinishEditState = Omit<IMaterialFinish, "id" | "materialId" | "order">;
@@ -58,7 +62,7 @@ export default function AdminMaterialsPage() {
     if (!newFinish[matId]) setNewFinish((prev) => ({ ...prev, [matId]: { ...EMPTY_FINISH } }));
   }
 
-  function updateNewFinish(matId: number, key: keyof typeof EMPTY_FINISH, value: string) {
+  function updateNewFinish(matId: number, key: keyof typeof EMPTY_FINISH, value: string | boolean) {
     setNewFinish((prev) => ({ ...prev, [matId]: { ...prev[matId], [key]: value } }));
   }
 
@@ -118,7 +122,7 @@ export default function AdminMaterialsPage() {
   }
 
   /** Actualiza un campo del acabado en modo edición. */
-  function updateEdit(finishId: number, key: keyof FinishEditState, value: string) {
+  function updateEdit(finishId: number, key: keyof FinishEditState, value: string | boolean) {
     setEditingFinish((prev) => ({
       ...prev,
       [finishId]: prev[finishId] ? { ...prev[finishId]!, [key]: value } : null,
@@ -280,6 +284,63 @@ export default function AdminMaterialsPage() {
                                   aspect="square"
                                 />
                               </Field>
+                              <Field label="Imagen hover (cómo se ve instalado)">
+                                <ImageUploadField
+                                  value={edits?.hoverImage ?? ""}
+                                  onChange={(v) => updateEdit(f.id, "hoverImage", v)}
+                                  aspect="landscape"
+                                />
+                              </Field>
+                              <Field label="PDF Ficha técnica (URL)">
+                                <AdminInput
+                                  value={edits?.pdfUrl ?? ""}
+                                  onChange={(v) => updateEdit(f.id, "pdfUrl", v)}
+                                  placeholder="/uploads/ficha-tecnica.pdf"
+                                />
+                              </Field>
+                              <div className="grid grid-cols-2 gap-3 mb-3">
+                                <Field label="Grosor">
+                                  <AdminInput
+                                    value={edits?.thickness ?? ""}
+                                    onChange={(v) => updateEdit(f.id, "thickness", v)}
+                                    placeholder="8mm"
+                                  />
+                                </Field>
+                                <Field label="Clase de uso">
+                                  <AdminInput
+                                    value={edits?.useClass ?? ""}
+                                    onChange={(v) => updateEdit(f.id, "useClass", v)}
+                                    placeholder="AC3"
+                                  />
+                                </Field>
+                                <Field label="Tipo de instalación">
+                                  <AdminInput
+                                    value={edits?.installType ?? ""}
+                                    onChange={(v) => updateEdit(f.id, "installType", v)}
+                                    placeholder="Flotante / Click"
+                                  />
+                                </Field>
+                                <Field label="Garantía">
+                                  <AdminInput
+                                    value={edits?.warranty ?? ""}
+                                    onChange={(v) => updateEdit(f.id, "warranty", v)}
+                                    placeholder="25 años"
+                                  />
+                                </Field>
+                              </div>
+                              <Field label="Resistencia al agua">
+                                <label className="flex items-center gap-2 mt-1 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={edits?.waterRes ?? false}
+                                    onChange={(e) => updateEdit(f.id, "waterRes", e.target.checked)}
+                                    className="w-4 h-4 accent-[hsl(20,60%,45%)]"
+                                  />
+                                  <span className="text-sm text-[hsl(0,0%,40%)]">
+                                    {edits?.waterRes ? "Sí — resistente al agua" : "No"}
+                                  </span>
+                                </label>
+                              </Field>
                               <div className="flex gap-2 mt-3">
                                 <button
                                   onClick={() => saveEdit(mat.id, f)}
@@ -325,6 +386,63 @@ export default function AdminMaterialsPage() {
                           onChange={(v) => updateNewFinish(mat.id, "image", v)}
                           aspect="square"
                         />
+                      </Field>
+                      <Field label="Imagen hover (cómo se ve instalado)">
+                        <ImageUploadField
+                          value={newFinish[mat.id]?.hoverImage ?? ""}
+                          onChange={(v) => updateNewFinish(mat.id, "hoverImage", v)}
+                          aspect="landscape"
+                        />
+                      </Field>
+                      <Field label="PDF Ficha técnica (URL)">
+                        <AdminInput
+                          value={newFinish[mat.id]?.pdfUrl ?? ""}
+                          onChange={(v) => updateNewFinish(mat.id, "pdfUrl", v)}
+                          placeholder="/uploads/ficha-tecnica.pdf"
+                        />
+                      </Field>
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        <Field label="Grosor">
+                          <AdminInput
+                            value={newFinish[mat.id]?.thickness ?? ""}
+                            onChange={(v) => updateNewFinish(mat.id, "thickness", v)}
+                            placeholder="8mm"
+                          />
+                        </Field>
+                        <Field label="Clase de uso">
+                          <AdminInput
+                            value={newFinish[mat.id]?.useClass ?? ""}
+                            onChange={(v) => updateNewFinish(mat.id, "useClass", v)}
+                            placeholder="AC3"
+                          />
+                        </Field>
+                        <Field label="Tipo de instalación">
+                          <AdminInput
+                            value={newFinish[mat.id]?.installType ?? ""}
+                            onChange={(v) => updateNewFinish(mat.id, "installType", v)}
+                            placeholder="Flotante / Click"
+                          />
+                        </Field>
+                        <Field label="Garantía">
+                          <AdminInput
+                            value={newFinish[mat.id]?.warranty ?? ""}
+                            onChange={(v) => updateNewFinish(mat.id, "warranty", v)}
+                            placeholder="25 años"
+                          />
+                        </Field>
+                      </div>
+                      <Field label="Resistencia al agua">
+                        <label className="flex items-center gap-2 mt-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={newFinish[mat.id]?.waterRes ?? false}
+                            onChange={(e) => updateNewFinish(mat.id, "waterRes", e.target.checked)}
+                            className="w-4 h-4 accent-[hsl(20,60%,45%)]"
+                          />
+                          <span className="text-sm text-[hsl(0,0%,40%)]">
+                            {newFinish[mat.id]?.waterRes ? "Sí — resistente al agua" : "No"}
+                          </span>
+                        </label>
                       </Field>
                       <button
                         onClick={() => addFinish(mat.id)}

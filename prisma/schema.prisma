@@ -36,89 +36,57 @@ model Service {
   order    Int    @default(0)
 }
 
-// ─── Categorías de producto (nivel 0) ────────────────────────────────────────
+// ─── Catálogo 3 niveles ───────────────────────────────────────────────────────
 
-model Category {
+model Categoria {
+  id            Int            @id @default(autoincrement())
+  name          String
+  slug          String         @unique
+  coverImage    String?
+  description   String?
+  order         Int            @default(0)
+  subcategorias Subcategoria[]
+}
+
+model Subcategoria {
   id          Int        @id @default(autoincrement())
+  categoriaId Int
+  categoria   Categoria  @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
   name        String
   slug        String     @unique
-  coverImage  String     @default("")
-  description String     @default("")
-  icon        String     @default("")
+  coverImage  String?
+  description String?
   order       Int        @default(0)
-  materials   Material[]
+  productos   Producto[]
+
+  @@index([categoriaId])
 }
 
-// ─── Materiales (nivel 1) ─────────────────────────────────────────────────────
+model Producto {
+  id             Int              @id @default(autoincrement())
+  subcategoriaId Int
+  subcategoria   Subcategoria     @relation(fields: [subcategoriaId], references: [id], onDelete: Cascade)
+  name           String
+  slug           String           @unique
+  coverImage     String?
+  hoverImage     String?
+  shortDesc      String?
+  htmlContent    String?          @db.Text
+  order          Int              @default(0)
+  imagenes       ProductoImagen[]
 
-model Material {
-  id          Int                  @id @default(autoincrement())
-  name        String
-  slug        String               @unique
-  subtitle    String               @default("")
-  desc        String               @default("")
-  spec        String               @default("")
-  coverImage  String               @default("")
-  order       Int                  @default(0)
-  categoryId  Int?
-  category    Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  collections MaterialCollection[]
-  finishes    MaterialFinish[]
-
-  @@index([categoryId])
+  @@index([subcategoriaId])
 }
 
-model MaterialCollection {
-  id         Int              @id @default(autoincrement())
-  materialId Int
-  material   Material         @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  name       String
-  slug       String
-  desc       String           @default("")
-  coverImage String           @default("")
-  order      Int              @default(0)
-  finishes   MaterialFinish[]
+model ProductoImagen {
+  id         Int      @id @default(autoincrement())
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  url        String
+  caption    String?
+  order      Int      @default(0)
 
-  @@unique([materialId, slug])
-}
-
-model MaterialFinish {
-  id           Int                   @id @default(autoincrement())
-  materialId   Int
-  material     Material              @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  collectionId Int
-  collection   MaterialCollection    @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  name         String
-  slug         String                @unique
-  code         String                @default("")
-  image        String                @default("")
-  hoverImage   String                @default("")
-  dims         String                @default("")
-  desc         String                @default("")
-  order        Int                   @default(0)
-  // Ficha técnica
-  pdfUrl       String                @default("")
-  thickness    String                @default("")
-  useClass     String                @default("")
-  waterRes     Boolean               @default(false)
-  installType  String                @default("")
-  warranty     String                @default("")
-  specMd       String                @default("")
-  images       MaterialFinishImage[]
-
-  @@index([materialId])
-  @@index([collectionId])
-}
-
-model MaterialFinishImage {
-  id       Int            @id @default(autoincrement())
-  finishId Int
-  finish   MaterialFinish @relation(fields: [finishId], references: [id], onDelete: Cascade)
-  url      String
-  caption  String         @default("")
-  order    Int            @default(0)
-
-  @@index([finishId])
+  @@index([productoId])
 }
 
 // ─── Navegación dinámica ──────────────────────────────────────────────────────

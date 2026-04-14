@@ -3,6 +3,7 @@ export interface ICategory {
   name: string
   slug: string
   coverImage: string
+  description: string
   icon: string
   order: number
 }

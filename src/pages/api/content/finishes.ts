@@ -5,6 +5,7 @@ import { requireAuth } from "@/infrastructure/auth/middleware";
 import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
 
 /**
+ * GET    /api/content/finishes               → Lista todos los acabados (admin).
  * GET    /api/content/finishes?materialId=1  → Lista los acabados de un material.
  * POST   /api/content/finishes               → Crea un nuevo acabado (requiere auth).
  * PUT    /api/content/finishes?id=1          → Actualiza un acabado (requiere auth).
@@ -12,10 +13,12 @@ import { withErrorHandling } from "@/infrastructure/http/withErrorHandling";
  */
 export default withErrorHandling(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
-    const materialId = Number(req.query.materialId);
-    if (!materialId) return res.status(400).json({ error: "materialId requerido" });
-
-    const data = await finishRepository.findByMaterial(materialId);
+    const materialId = req.query.materialId ? Number(req.query.materialId) : null;
+    if (materialId) {
+      const data = await finishRepository.findByMaterial(materialId);
+      return res.status(200).json(data);
+    }
+    const data = await finishRepository.findAll();
     return res.status(200).json(data);
   }
 

@@ -8,6 +8,14 @@ const WITH_IMAGES = {
 };
 
 export const finishRepository = {
+  async findAll(): Promise<IMaterialFinish[]> {
+    const rows = await db.materialFinish.findMany({
+      orderBy: [{ materialId: "asc" }, { order: "asc" }],
+      include: WITH_IMAGES,
+    });
+    return rows as unknown as IMaterialFinish[];
+  },
+
   async findByMaterial(materialId: number): Promise<IMaterialFinish[]> {
     const rows = await db.materialFinish.findMany({
       where: { materialId },

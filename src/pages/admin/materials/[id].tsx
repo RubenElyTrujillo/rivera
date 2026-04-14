@@ -9,7 +9,7 @@ import {
 } from "@/components/admin/adminUtils";
 import { ImageUploadField } from "@/components/admin/forms/ImageUploadField";
 import { Trash2, Plus, Pencil, Check, X } from "lucide-react";
-import type { IMaterial, IMaterialFinish } from "@/domain/types";
+import type { IMaterial, IMaterialFinish, ICategory } from "@/domain/types";
 
 const EMPTY_FINISH = {
   name: "", code: "", collection: "", image: "", dims: "",
@@ -26,11 +26,19 @@ export default function AdminMaterialDetailPage() {
   const id = Number(router.query.id);
 
   const [material, setMaterial] = useState<IMaterial | null>(null);
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [saving, setSaving] = useState(false);
   const [newFinish, setNewFinish] = useState({ ...EMPTY_FINISH });
   const [finishSaving, setFinishSaving] = useState(false);
   const [editingFinish, setEditingFinish] = useState<(FinishEditState & { id: number }) | null>(null);
   const [editFinishSaving, setEditFinishSaving] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/content/categories")
+      .then((r) => r.json())
+      .then((d: ICategory[]) => { if (Array.isArray(d)) setCategories(d); })
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -177,6 +185,18 @@ export default function AdminMaterialDetailPage() {
               <AdminInput value={material.subtitle} onChange={(v) => update("subtitle", v)} />
             </Field>
           </div>
+          <Field label="Categoría">
+            <select
+              value={material.categoryId ?? ""}
+              onChange={(e) => update("categoryId", e.target.value ? Number(e.target.value) : null)}
+              className="w-full border border-[hsl(0,0%,80%)] rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)]"
+            >
+              <option value="">— Sin categoría —</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </Field>
           <Field label="Descripción">
             <AdminTextarea value={material.desc} onChange={(v) => update("desc", v)} rows={3} />
           </Field>

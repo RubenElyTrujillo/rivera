@@ -25,11 +25,12 @@ export const categoryRepository = {
   async create(input: CategoryInput): Promise<ICategory> {
     return db.category.create({
       data: {
-        name:       input.name,
-        slug:       toSlug(input.name),
-        coverImage: input.coverImage ?? "",
-        icon:       input.icon ?? "",
-        order:      input.order ?? 0,
+        name:        input.name,
+        slug:        toSlug(input.name),
+        coverImage:  input.coverImage ?? "",
+        description: input.description ?? "",
+        icon:        input.icon ?? "",
+        order:       input.order ?? 0,
       },
     }) as unknown as ICategory;
   },
@@ -38,10 +39,11 @@ export const categoryRepository = {
     return db.category.update({
       where: { id },
       data: {
-        ...(input.name       !== undefined && { name: input.name, slug: toSlug(input.name) }),
-        ...(input.coverImage !== undefined && { coverImage: input.coverImage }),
-        ...(input.icon       !== undefined && { icon: input.icon }),
-        ...(input.order      !== undefined && { order: input.order }),
+        ...(input.name        !== undefined && { name: input.name, slug: toSlug(input.name) }),
+        ...(input.coverImage  !== undefined && { coverImage: input.coverImage }),
+        ...(input.description !== undefined && { description: input.description }),
+        ...(input.icon        !== undefined && { icon: input.icon }),
+        ...(input.order       !== undefined && { order: input.order }),
       },
     }) as unknown as ICategory;
   },

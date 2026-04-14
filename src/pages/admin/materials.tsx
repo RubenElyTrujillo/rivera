@@ -8,7 +8,7 @@ import {
 } from "@/components/admin/adminUtils";
 import { ImageUploadField } from "@/components/admin/forms/ImageUploadField";
 import { Trash2, Plus, ChevronDown, ChevronUp, Pencil, Check, X } from "lucide-react";
-import type { IMaterial, IMaterialFinish } from "@/domain/types";
+import type { IMaterial, IMaterialFinish, ICategory } from "@/domain/types";
 
 const EMPTY_MAT: IMaterial = { id: 0, slug: '', name: "", subtitle: "", desc: "", spec: "", coverImage: "", collections: [], order: 0, finishes: [], categoryId: null };
 const EMPTY_FINISH = {
@@ -24,6 +24,7 @@ export default function AdminMaterialsPage() {
   const { checking } = useAdminAuth();
   const { show, ToastComponent } = useToast();
   const [materials, setMaterials] = useState<IMaterial[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [saving, setSaving] = useState(false);
   const [expandedFinishes, setExpandedFinishes] = useState<Record<number, boolean>>({});
   const [newFinish, setNewFinish] = useState<Record<number, typeof EMPTY_FINISH>>({});
@@ -33,6 +34,13 @@ export default function AdminMaterialsPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 20;
+
+  useEffect(() => {
+    fetch("/api/content/categories")
+      .then((r) => r.json())
+      .then((d: ICategory[]) => { if (Array.isArray(d)) setCategories(d); })
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     fetch("/api/content/materials")
@@ -227,7 +235,7 @@ export default function AdminMaterialsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 font-medium text-[hsl(0,0%,13%)]">{m.name}</td>
-                  <td className="px-4 py-3 text-[hsl(0,0%,55%)] hidden md:table-cell">{m.categoryId ?? "—"}</td>
+                  <td className="px-4 py-3 text-[hsl(0,0%,55%)] hidden md:table-cell">{categories.find((c) => c.id === m.categoryId)?.name ?? "—"}</td>
                   <td className="px-4 py-3 text-[hsl(0,0%,55%)] hidden md:table-cell">{m.order}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">

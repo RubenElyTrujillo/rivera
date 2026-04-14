@@ -39,13 +39,14 @@ model Service {
 // ─── Categorías de producto (nivel 0) ────────────────────────────────────────
 
 model Category {
-  id         Int        @id @default(autoincrement())
-  name       String
-  slug       String     @unique
-  coverImage String     @default("")
-  icon       String     @default("")
-  order      Int        @default(0)
-  materials  Material[]
+  id          Int        @id @default(autoincrement())
+  name        String
+  slug        String     @unique
+  coverImage  String     @default("")
+  description String     @default("")
+  icon        String     @default("")
+  order       Int        @default(0)
+  materials   Material[]
 }
 
 // ─── Materiales (nivel 1) ─────────────────────────────────────────────────────

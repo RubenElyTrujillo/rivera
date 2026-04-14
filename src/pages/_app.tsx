@@ -13,7 +13,6 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const isAdmin = router.pathname.startsWith("/admin");
   const isLogin = router.pathname === "/admin/login";
-  const isGallery = router.pathname.startsWith("/materiales");
 
   const whatsappPhone: string = (pageProps.whatsappPhone as string) ?? "";
   const whatsappContext: WhatsAppContext | undefined = pageProps.whatsappContext as WhatsAppContext | undefined;
@@ -26,15 +25,6 @@ export default function App({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </div>
       </AdminLayout>
-    );
-  }
-
-  if (isGallery) {
-    return (
-      <>
-        <Component {...pageProps} />
-        <WhatsAppFAB phone={whatsappPhone} context={whatsappContext} />
-      </>
     );
   }
 

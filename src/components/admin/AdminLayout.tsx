@@ -22,8 +22,8 @@ const NAV_ITEMS = [
   // { href: "/admin/hero", label: "Hero (legacy)", icon: ImageIcon }, // hero estático desactivado
   { href: "/admin/hero-slides", label: "Hero Carrusel", icon: ImageIcon },
   { href: "/admin/services", label: "Servicios", icon: Wrench },
-  { href: "/admin/categories", label: "Categorías", icon: FolderOpen },
-  { href: "/admin/materials", label: "Líneas", icon: Package },
+  { href: "/admin/categorias", label: "Categorías", icon: FolderOpen },
+  { href: "/admin/subcategorias", label: "Subcategorías", icon: Package },
   { href: "/admin/productos", label: "Productos", icon: Layers },
   // { href: "/admin/space-categories", label: "Categorías de proyectos", icon: FolderOpen },
   { href: "/admin/spaces", label: "Proyectos", icon: Grid2x2 },

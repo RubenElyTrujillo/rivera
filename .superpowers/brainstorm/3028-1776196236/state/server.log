@@ -1,0 +1,11 @@
+{"type":"server-started","port":62712,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:62712","screen_dir":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content","state_dir":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/state"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/structure-overview.html"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/structure-v2.html"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/approaches.html"}
+{"source":"user-event","type":"click","text":"A\n    \n      Rediseño limpio ⭐ Recomendado\n      Nuevas tablas en la DB: Categoria, Subcategoria, Producto, ProductoImagen. Se eliminan los modelos viejos (Material, MaterialCollection, MaterialFinish). Admin completamente nuevo y limpio.\n      \n        Pros\n          Código claro, sin herencia confusa\n          Nombres que coinciden con lo que el cliente ve\n          Admin simple de 3 páginas\n        \n        Contras\n          Cambio más grande\n          Hay que crear nuevas páginas públicas","choice":"a","id":null,"timestamp":1776197166924}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/design-data-model.html"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/design-data-model-v2.html"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/design-admin-pages.html"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/design-public-pages.html"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/3028-1776196236/content/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}

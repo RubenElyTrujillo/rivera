@@ -1,0 +1,64 @@
+<h2>3 enfoques para rediseñar el catálogo</h2>
+<p class="subtitle">¿Cómo hacemos la transición al nuevo modelo?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Rediseño limpio ⭐ Recomendado</h3>
+      <p>Nuevas tablas en la DB: <strong>Categoria, Subcategoria, Producto, ProductoImagen</strong>. Se eliminan los modelos viejos (Material, MaterialCollection, MaterialFinish). Admin completamente nuevo y limpio.</p>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Código claro, sin herencia confusa</li>
+          <li>Nombres que coinciden con lo que el cliente ve</li>
+          <li>Admin simple de 3 páginas</li>
+        </ul></div>
+        <div class="cons"><h4>Contras</h4><ul>
+          <li>Cambio más grande</li>
+          <li>Hay que crear nuevas páginas públicas</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Reutilizar modelos existentes</h3>
+      <p>Renombrar en el código lo que ya existe: <strong>Material → Categoria, MaterialCollection → Subcategoria, MaterialFinish → Producto</strong>. Sin cambios en la DB.</p>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Menos trabajo de migración</li>
+          <li>Las páginas existentes siguen funcionando</li>
+        </ul></div>
+        <div class="cons"><h4>Contras</h4><ul>
+          <li>Código confuso (nombres no coinciden con DB)</li>
+          <li>El admin queda a medio camino</li>
+          <li>Arrastra campos innecesarios</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Modelos paralelos</h3>
+      <p>Crear los nuevos modelos junto con los viejos. Migrar gradualmente.</p>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Sin riesgo de romper lo que funciona</li>
+        </ul></div>
+        <div class="cons"><h4>Contras</h4><ul>
+          <li>Base de código duplicada</li>
+          <li>Mucho más trabajo a largo plazo</li>
+          <li>El cliente se confunde con dos catálogos</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:16px;font-size:13px;color:#555;">Selecciona o responde en la terminal. <strong>Recomiendo fuertemente la opción A</strong> — es el primer proyecto real, sin datos en producción que perder.</p>

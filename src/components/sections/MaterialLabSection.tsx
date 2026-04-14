@@ -2,19 +2,21 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import * as motion from 'motion/react-client';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import type { IMaterial } from "@/domain/types";
 
-const DEFAULT_MATERIALS: IMaterial[] = [
-    { id: 0, slug: '', name: 'MADERA DE INGENIERÍA', subtitle: '7 colecciones únicas', desc: 'Piso natural pre-acabado con vetas y tonos irrepetibles. Colecciones: Loft Life, Bamboo, Les Terres, Vitare, Loft Mate, True Toro y Utopia.', spec: 'APLICACIÓN: RESIDENCIAL', coverImage: '', collections: [], finishes: [], order: 0, categoryId: null },
-    { id: 0, slug: '', name: 'LAMINADOS', subtitle: '4 colecciones', desc: 'Fibras de madera con resinas de alta resistencia. Ambiente cálido y moderno. Colecciones: Splash, Clásico, Select y Vintage.', spec: 'ABRASIÓN: AC3–AC4', coverImage: '', collections: [], finishes: [], order: 1, categoryId: null },
-    { id: 0, slug: '', name: 'VINÍLICOS SPC', subtitle: 'WPC · LVT · SPC', desc: 'Recubrimiento de PVC de última generación. Bajo costo, alta resistencia a impactos y abrasión. Fácil instalación con sistema clic.', spec: 'RESISTENCIA: AGUA', coverImage: '', collections: [], finishes: [], order: 2, categoryId: null },
-    { id: 0, slug: '', name: 'DECK SINTÉTICO', subtitle: 'Residencial y comercial', desc: 'Compuesto de madera y plástico (WPC) para exteriores. Alta durabilidad, poco mantenimiento, diseño tipo tablón natural.', spec: 'USO: EXTERIOR', coverImage: '', collections: [], finishes: [], order: 3, categoryId: null },
-    { id: 0, slug: '', name: 'LAMBRINES', subtitle: 'PVC y madera natural', desc: 'Textura, volumen y confort acústico para el plano vertical. Madera auténtica o PVC de cero mantenimiento.', spec: 'TIPO: VERTICAL', coverImage: '', collections: [], finishes: [], order: 4, categoryId: null },
-    { id: 0, slug: '', name: 'MUROS FORRADOS', subtitle: 'Continuidad visual', desc: 'El mismo material del piso sube al muro. Integración total para espacios más amplios y cohesivos.', spec: 'EFECTO: MONOLÍTICO', coverImage: '', collections: [], finishes: [], order: 5, categoryId: null },
+
+type MatItem = { id: number; slug: string; name: string; subtitle?: string; desc?: string; spec?: string; coverImage?: string; order: number };
+
+const DEFAULT_MATERIALS: MatItem[] = [
+    { id: 0, slug: '', name: 'MADERA DE INGENIERÍA', subtitle: '7 colecciones únicas', desc: 'Piso natural pre-acabado con vetas y tonos irrepetibles.', spec: 'APLICACIÓN: RESIDENCIAL', coverImage: '', order: 0 },
+    { id: 0, slug: '', name: 'LAMINADOS', subtitle: '4 colecciones', desc: 'Fibras de madera con resinas de alta resistencia.', spec: 'ABRASIÓN: AC3–AC4', coverImage: '', order: 1 },
+    { id: 0, slug: '', name: 'VINÍLICOS SPC', subtitle: 'WPC · LVT · SPC', desc: 'Recubrimiento de PVC de última generación.', spec: 'RESISTENCIA: AGUA', coverImage: '', order: 2 },
+    { id: 0, slug: '', name: 'DECK SINTÉTICO', subtitle: 'Residencial y comercial', desc: 'Compuesto de madera y plástico (WPC) para exteriores.', spec: 'USO: EXTERIOR', coverImage: '', order: 3 },
+    { id: 0, slug: '', name: 'LAMBRINES', subtitle: 'PVC y madera natural', desc: 'Textura, volumen y confort acústico para el plano vertical.', spec: 'TIPO: VERTICAL', coverImage: '', order: 4 },
+    { id: 0, slug: '', name: 'MUROS FORRADOS', subtitle: 'Continuidad visual', desc: 'El mismo material del piso sube al muro.', spec: 'EFECTO: MONOLÍTICO', coverImage: '', order: 5 },
 ];
 
-const MaterialLabSection = ({ textureImage, materials }: { textureImage: string; materials?: IMaterial[] | null }) => {
-    const list = materials && materials.length > 0 ? materials : DEFAULT_MATERIALS;
+const MaterialLabSection = ({ textureImage, materials }: { textureImage: string; materials?: MatItem[] | null }) => {
+    const list: MatItem[] = materials && materials.length > 0 ? materials : DEFAULT_MATERIALS;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: string) => {

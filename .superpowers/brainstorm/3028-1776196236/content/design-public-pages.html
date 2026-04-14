@@ -1,0 +1,112 @@
+<h2>Diseño — Sección 3: Páginas Públicas</h2>
+<p class="subtitle">Lo que ve el visitante del sitio</p>
+
+<div class="section">
+
+  <!-- Page 1: Categoria -->
+  <div class="mockup" style="margin-bottom:16px;">
+    <div class="mockup-header">Página de Categoría — /pisos-laminados</div>
+    <div class="mockup-body">
+      <div class="mock-nav">Rivera | Pisos ▾ | Paredes | Proyectos | Contacto</div>
+      <div style="position:relative;background:#2a2a2a;height:120px;border-radius:4px;margin:8px 0;display:flex;flex-direction:column;justify-content:center;padding:16px;">
+        <div style="color:#fff;font-size:18px;font-weight:700;">Pisos Laminados</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:4px;">¿Qué es un piso laminado? Descripción opcional del cliente…</div>
+        <div style="position:absolute;bottom:8px;right:12px;font-size:10px;color:rgba(255,255,255,0.4);">imagen de portada</div>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px;">Inicio / Pisos Laminados</div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Subcategorías</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        <div style="background:#f5f5f5;border-radius:6px;overflow:hidden;">
+          <div style="height:64px;background:#ddd;"></div>
+          <div style="padding:6px;font-size:12px;font-weight:600;">Splash!</div>
+          <div style="padding:0 6px 6px;font-size:11px;color:#888;">12 productos</div>
+        </div>
+        <div style="background:#f5f5f5;border-radius:6px;overflow:hidden;">
+          <div style="height:64px;background:#ddd;"></div>
+          <div style="padding:6px;font-size:12px;font-weight:600;">Clásico</div>
+          <div style="padding:0 6px 6px;font-size:11px;color:#888;">8 productos</div>
+        </div>
+        <div style="background:#f5f5f5;border-radius:6px;overflow:hidden;">
+          <div style="height:64px;background:#ddd;"></div>
+          <div style="padding:6px;font-size:12px;font-weight:600;">Vintage</div>
+          <div style="padding:0 6px 6px;font-size:11px;color:#888;">6 productos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 2: Subcategoria -->
+  <div class="mockup" style="margin-bottom:16px;">
+    <div class="mockup-header">Página de Subcategoría — /pisos-laminados/splash</div>
+    <div class="mockup-body">
+      <div class="mock-nav">Rivera | Pisos ▾ | Paredes | Proyectos | Contacto</div>
+      <div style="background:#2a2a2a;height:100px;border-radius:4px;margin:8px 0;display:flex;align-items:center;padding:16px;gap:12px;">
+        <div>
+          <div style="color:#fff;font-size:16px;font-weight:700;">Splash!</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:11px;margin-top:4px;">Resistencia al agua de nivel superior…</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px;">Inicio / Pisos Laminados / Splash!</div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Productos <span style="color:#888;font-weight:400;">(hover para ver acabado)</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+        <!-- Card with hover indicator -->
+        <div style="border-radius:6px;overflow:hidden;border:2px solid #e07b39;position:relative;">
+          <div style="height:72px;background:linear-gradient(135deg,#c8a882,#a0785a);display:flex;align-items:center;justify-content:center;">
+            <span style="color:white;font-size:9px;opacity:0.7;">hover →</span>
+          </div>
+          <div style="height:72px;background:linear-gradient(135deg,#8B6914,#6b4f10);position:absolute;top:0;left:0;right:0;opacity:0.3;display:flex;align-items:center;justify-content:center;"><span style="color:white;font-size:9px;">imagen hover</span></div>
+          <div style="padding:6px;font-size:11px;font-weight:600;background:#fff;">Arctic Oak</div>
+        </div>
+        <div style="border-radius:6px;overflow:hidden;">
+          <div style="height:72px;background:#c8a882;"></div>
+          <div style="padding:6px;font-size:11px;font-weight:600;background:#fff;">Roble Natural</div>
+        </div>
+        <div style="border-radius:6px;overflow:hidden;">
+          <div style="height:72px;background:#b09070;"></div>
+          <div style="padding:6px;font-size:11px;font-weight:600;background:#fff;">Nogal Oscuro</div>
+        </div>
+        <div style="border-radius:6px;overflow:hidden;">
+          <div style="height:72px;background:#d0c0a0;"></div>
+          <div style="padding:6px;font-size:11px;font-weight:600;background:#fff;">Maple Claro</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#aaa;margin-top:6px;">🖱 Al pasar el mouse: muestra imagen hover (o zoom suave si no hay)</div>
+    </div>
+  </div>
+
+  <!-- Page 3: Producto -->
+  <div class="mockup">
+    <div class="mockup-header">Página de Producto — /producto/arctic-oak-splash</div>
+    <div class="mockup-body">
+      <div class="mock-nav">Rivera | Pisos ▾ | Paredes | Proyectos | Contacto</div>
+      <div style="font-size:11px;color:#888;margin:6px 0;">Inicio / Pisos Laminados / Splash! / Arctic Oak</div>
+      <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+        <!-- Galería izq -->
+        <div style="flex:0 0 160px;">
+          <div style="height:120px;background:#c8a882;border-radius:6px;margin-bottom:6px;"></div>
+          <div style="display:flex;gap:4px;">
+            <div style="flex:1;height:36px;background:#d0b890;border-radius:4px;border:2px solid #e07b39;"></div>
+            <div style="flex:1;height:36px;background:#b09070;border-radius:4px;"></div>
+            <div style="flex:1;height:36px;background:#a08060;border-radius:4px;"></div>
+          </div>
+          <div style="font-size:10px;color:#aaa;margin-top:4px;text-align:center;">galería (si sube imágenes)</div>
+        </div>
+        <!-- Contenido der -->
+        <div style="flex:1;min-width:160px;">
+          <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Arctic Oak Splash</div>
+          <div style="font-size:11px;color:#888;margin-bottom:8px;">Pisos Laminados › Splash!</div>
+          <div style="font-size:12px;color:#555;margin-bottom:10px;">Piso laminado resistente al agua con acabado roble ártico…</div>
+          <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:12px;color:#333;min-height:60px;">
+            <em style="color:#aaa;">Contenido WYSIWYG del cliente (tablas, listas, medidas, etc.)</em>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="mock-button" style="background:#25d366;border-color:#25d366;">💬 Preguntar por WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p style="font-size:13px;color:#555;">¿Las 3 páginas públicas se ven bien? Responde en la terminal.</p>

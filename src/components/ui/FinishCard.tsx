@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { IMaterialFinish } from "@/domain/types";
+
 
 interface FinishCardProps {
-  finish: IMaterialFinish;
+  finish: { name: string; coverImage?: string; hoverImage?: string; spec?: string; image?: string; collection?: string; code?: string };
   onClick: () => void;
 }
 

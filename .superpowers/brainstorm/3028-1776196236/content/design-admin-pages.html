@@ -1,0 +1,116 @@
+<h2>Diseño — Sección 2: Admin Pages</h2>
+<p class="subtitle">3 páginas limpias con formularios directos</p>
+
+<div class="section">
+
+  <!-- /admin/categorias -->
+  <div class="mockup" style="margin-bottom:16px;">
+    <div class="mockup-header">/admin/categorias — Nivel 1</div>
+    <div class="mockup-body" style="font-size:13px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+        <!-- List -->
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:11px;color:#888;text-transform:uppercase;margin-bottom:6px;">Categorías existentes</div>
+          <div style="border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #f0f0f0;background:#fff;">
+              <div style="width:32px;height:32px;background:#eee;border-radius:4px;"></div>
+              <div style="flex:1;"><strong>Pisos Laminados</strong><br><span style="color:#888;font-size:11px;">/pisos-laminados · 3 subcategorías</span></div>
+              <span style="font-size:11px;color:#e07b39;cursor:pointer;">Editar</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fafafa;">
+              <div style="width:32px;height:32px;background:#eee;border-radius:4px;"></div>
+              <div style="flex:1;"><strong>Pisos de Madera</strong><br><span style="color:#888;font-size:11px;">/pisos-de-madera · 1 subcategoría</span></div>
+              <span style="font-size:11px;color:#e07b39;cursor:pointer;">Editar</span>
+            </div>
+          </div>
+        </div>
+        <!-- Form -->
+        <div style="flex:1;min-width:200px;background:#f9f9f9;border-radius:6px;padding:12px;">
+          <div style="font-size:11px;color:#888;text-transform:uppercase;margin-bottom:8px;">Nueva / Editar categoría</div>
+          <div style="margin-bottom:8px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Nombre *</div><div class="mock-input">Pisos Laminados</div></div>
+          <div style="margin-bottom:8px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Descripción (opcional)</div><div style="background:#fff;border:1px solid #ddd;border-radius:4px;padding:6px;font-size:12px;color:#999;height:48px;">¿Qué es un piso laminado?…</div></div>
+          <div style="margin-bottom:8px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Imagen de portada</div><div style="background:#fff;border:1px dashed #ccc;border-radius:4px;padding:10px;text-align:center;color:#aaa;font-size:11px;">📷 Subir imagen</div></div>
+          <button class="mock-button">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- /admin/subcategorias -->
+  <div class="mockup" style="margin-bottom:16px;">
+    <div class="mockup-header">/admin/subcategorias — Nivel 2</div>
+    <div class="mockup-body" style="font-size:13px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <select style="border:1px solid #ddd;border-radius:4px;padding:4px 8px;font-size:12px;background:#fff;"><option>Todas las categorías</option><option selected>Pisos Laminados</option></select>
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #f0f0f0;">
+              <div style="width:32px;height:32px;background:#eee;border-radius:4px;"></div>
+              <div style="flex:1;"><strong>Splash!</strong><br><span style="color:#888;font-size:11px;">Pisos Laminados · /pisos-laminados/splash · 12 productos</span></div>
+              <span style="font-size:11px;color:#e07b39;">Editar</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fafafa;">
+              <div style="width:32px;height:32px;background:#eee;border-radius:4px;"></div>
+              <div style="flex:1;"><strong>Clásico</strong><br><span style="color:#888;font-size:11px;">Pisos Laminados · /pisos-laminados/clasico · 8 productos</span></div>
+              <span style="font-size:11px;color:#e07b39;">Editar</span>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px;background:#f9f9f9;border-radius:6px;padding:12px;">
+          <div style="font-size:11px;color:#888;text-transform:uppercase;margin-bottom:8px;">Nueva / Editar subcategoría</div>
+          <div style="margin-bottom:8px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Categoría padre *</div><select style="width:100%;border:1px solid #ddd;border-radius:4px;padding:5px;font-size:12px;background:#fff;"><option>Pisos Laminados</option></select></div>
+          <div style="margin-bottom:8px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Nombre *</div><div class="mock-input">Splash!</div></div>
+          <div style="margin-bottom:8px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Descripción (opcional)</div><div style="background:#fff;border:1px solid #ddd;border-radius:4px;padding:6px;font-size:12px;color:#999;height:40px;">¿Qué hace especial a Splash?…</div></div>
+          <div style="margin-bottom:8px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Imagen de portada</div><div style="background:#fff;border:1px dashed #ccc;border-radius:4px;padding:8px;text-align:center;color:#aaa;font-size:11px;">📷 Subir</div></div>
+          <button class="mock-button">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- /admin/productos -->
+  <div class="mockup">
+    <div class="mockup-header">/admin/productos — Nivel 3</div>
+    <div class="mockup-body" style="font-size:13px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+            <select style="border:1px solid #ddd;border-radius:4px;padding:4px 8px;font-size:12px;background:#fff;"><option>Todas las categorías</option></select>
+            <select style="border:1px solid #ddd;border-radius:4px;padding:4px 8px;font-size:12px;background:#fff;"><option>Todas las subcategorías</option></select>
+            <input class="mock-input" placeholder="Buscar…" style="width:120px;">
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #f0f0f0;">
+              <div style="width:36px;height:36px;background:#eee;border-radius:4px;"></div>
+              <div style="flex:1;"><strong>Arctic Oak Splash</strong><br><span style="color:#888;font-size:11px;">Pisos Laminados › Splash!</span></div>
+              <span style="font-size:11px;color:#e07b39;">Editar</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fafafa;">
+              <div style="width:36px;height:36px;background:#eee;border-radius:4px;"></div>
+              <div style="flex:1;"><strong>Roble Natural Splash</strong><br><span style="color:#888;font-size:11px;">Pisos Laminados › Splash!</span></div>
+              <span style="font-size:11px;color:#e07b39;">Editar</span>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px;background:#f9f9f9;border-radius:6px;padding:12px;">
+          <div style="font-size:11px;color:#888;text-transform:uppercase;margin-bottom:8px;">Nuevo / Editar producto</div>
+          <div style="margin-bottom:6px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Subcategoría *</div><select style="width:100%;border:1px solid #ddd;border-radius:4px;padding:5px;font-size:12px;background:#fff;"><option>Splash!</option></select></div>
+          <div style="margin-bottom:6px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Nombre *</div><div class="mock-input">Arctic Oak Splash</div></div>
+          <div style="margin-bottom:6px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Descripción corta</div><div class="mock-input" style="font-size:11px;color:#999;">Piso laminado resistente al agua…</div></div>
+          <div style="display:flex;gap:8px;margin-bottom:6px;">
+            <div style="flex:1;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Imagen portada</div><div style="border:1px dashed #ccc;border-radius:4px;padding:8px;text-align:center;color:#aaa;font-size:11px;background:#fff;">📷</div></div>
+            <div style="flex:1;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Imagen hover</div><div style="border:1px dashed #ccc;border-radius:4px;padding:8px;text-align:center;color:#aaa;font-size:11px;background:#fff;">🖱</div></div>
+          </div>
+          <div style="margin-bottom:6px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Galería</div><div style="border:1px dashed #ccc;border-radius:4px;padding:8px;text-align:center;color:#aaa;font-size:11px;background:#fff;">+ Agregar imágenes</div></div>
+          <div style="margin-bottom:6px;"><div style="font-size:11px;color:#555;margin-bottom:3px;">Contenido (WYSIWYG)</div><div style="border:1px solid #ddd;border-radius:4px;background:#fff;padding:6px;font-size:11px;color:#aaa;height:48px;">B I U | H1 H2 | Lista…</div></div>
+          <button class="mock-button">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p style="font-size:13px;color:#555;">¿Las 3 páginas de admin se ven bien? Responde en la terminal.</p>

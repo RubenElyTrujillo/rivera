@@ -1,0 +1,91 @@
+<h2>Diseño — Sección 1: Modelo de Datos</h2>
+<p class="subtitle">Las 4 tablas nuevas que reemplazan todo lo anterior</p>
+
+<div class="section">
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+
+    <!-- Categoria -->
+    <div style="flex:1;min-width:180px;background:#fff3e0;border:2px solid #e07b39;border-radius:8px;padding:14px;font-size:13px;">
+      <div style="font-weight:700;font-size:14px;color:#e07b39;margin-bottom:8px;">📁 Categoria</div>
+      <div style="line-height:2;">
+        <div><code>id</code> <span style="color:#888;">Int</span></div>
+        <div><code>name</code> <span style="color:#888;">String</span></div>
+        <div><code>slug</code> <span style="color:#888;">String @unique</span></div>
+        <div><code>coverImage</code> <span style="color:#888;">String?</span></div>
+        <div><code>description</code> <span style="color:#888;">String?</span></div>
+        <div><code>order</code> <span style="color:#888;">Int</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0c88a;font-size:11px;color:#888;">
+        URL: <code>/[slug]</code><br>
+        Ej: <code>/pisos-laminados</code>
+      </div>
+    </div>
+
+    <div style="font-size:20px;color:#ccc;padding-top:40px;">→</div>
+
+    <!-- Subcategoria -->
+    <div style="flex:1;min-width:180px;background:#e8f5e9;border:2px solid #4caf50;border-radius:8px;padding:14px;font-size:13px;">
+      <div style="font-weight:700;font-size:14px;color:#388e3c;margin-bottom:8px;">📂 Subcategoria</div>
+      <div style="line-height:2;">
+        <div><code>id</code> <span style="color:#888;">Int</span></div>
+        <div><code>categoriaId</code> <span style="color:#888;">Int (FK)</span></div>
+        <div><code>name</code> <span style="color:#888;">String</span></div>
+        <div><code>slug</code> <span style="color:#888;">String @unique</span></div>
+        <div><code>coverImage</code> <span style="color:#888;">String?</span></div>
+        <div><code>hoverImage</code> <span style="color:#888;">String?</span></div>
+        <div><code>description</code> <span style="color:#888;">String?</span></div>
+        <div><code>order</code> <span style="color:#888;">Int</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #a5d6a7;font-size:11px;color:#888;">
+        URL: <code>/[catSlug]/[slug]</code><br>
+        Ej: <code>/pisos-laminados/splash</code>
+      </div>
+    </div>
+
+    <div style="font-size:20px;color:#ccc;padding-top:40px;">→</div>
+
+    <!-- Producto -->
+    <div style="flex:1;min-width:180px;background:#e3f2fd;border:2px solid #2196f3;border-radius:8px;padding:14px;font-size:13px;">
+      <div style="font-weight:700;font-size:14px;color:#1565c0;margin-bottom:8px;">📦 Producto</div>
+      <div style="line-height:2;">
+        <div><code>id</code> <span style="color:#888;">Int</span></div>
+        <div><code>subcategoriaId</code> <span style="color:#888;">Int (FK)</span></div>
+        <div><code>name</code> <span style="color:#888;">String</span></div>
+        <div><code>slug</code> <span style="color:#888;">String @unique</span></div>
+        <div><code>coverImage</code> <span style="color:#888;">String?</span></div>
+        <div><code>shortDesc</code> <span style="color:#888;">String?</span></div>
+        <div><code>htmlContent</code> <span style="color:#888;">Text?</span></div>
+        <div><code>order</code> <span style="color:#888;">Int</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #90caf9;font-size:11px;color:#888;">
+        URL: <code>/producto/[slug]</code><br>
+        Ej: <code>/producto/arctic-oak-splash</code>
+      </div>
+    </div>
+
+    <div style="font-size:20px;color:#ccc;padding-top:40px;">→</div>
+
+    <!-- ProductoImagen -->
+    <div style="flex:1;min-width:150px;background:#f3e5f5;border:2px solid #9c27b0;border-radius:8px;padding:14px;font-size:13px;">
+      <div style="font-weight:700;font-size:14px;color:#6a1b9a;margin-bottom:8px;">🖼 ProductoImagen</div>
+      <div style="line-height:2;">
+        <div><code>id</code> <span style="color:#888;">Int</span></div>
+        <div><code>productoId</code> <span style="color:#888;">Int (FK)</span></div>
+        <div><code>url</code> <span style="color:#888;">String</span></div>
+        <div><code>caption</code> <span style="color:#888;">String?</span></div>
+        <div><code>order</code> <span style="color:#888;">Int</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #ce93d8;font-size:11px;color:#888;">
+        Galería del producto<br>
+        (opcional, múltiples)
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="background:#ffebee;border:1px solid #ef9a9a;border-radius:6px;padding:12px;margin-top:4px;font-size:13px;">
+  <strong>🗑 Se eliminan:</strong> Category, Material, MaterialCollection, MaterialFinish, MaterialFinishImage (y sus migraciones previas se dejan como histórico, la DB se limpia con una migración nueva).
+</div>
+
+<p style="margin-top:16px;font-size:13px;color:#555;">¿Este modelo de datos se ve correcto? Responde en la terminal.</p>

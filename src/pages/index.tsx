@@ -36,10 +36,9 @@ export const getServerSideProps: GetServerSideProps<{
   whatsappPhone: string;
   navItems: INavItem[];
 }> = async () => {
-  const [hero, services, materials, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects, pageSections, navItems] = await Promise.all([
+  const [hero, services, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects, pageSections, navItems] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
-    db.material.findMany({ orderBy: { order: "asc" }, include: { finishes: { orderBy: { order: "asc" } } } }),
     db.catalogContent.findFirst(),
     db.contactInfo.findFirst(),
     db.footerContent.findFirst(),
@@ -60,12 +59,6 @@ export const getServerSideProps: GetServerSideProps<{
       imageUrl: IMAGES.hero,
     },
     services: services ?? [],
-    materials: materials
-      ? materials.map((m: typeof materials[0]) => ({
-          ...m,
-          collections: [],
-        }))
-      : [],
     catalog: catalog ?? {
       title: "Catálogo completo",
       description: "Descarga nuestro catálogo con especificaciones técnicas, colecciones de pisos, colores y fichas de cada producto.",
@@ -148,7 +141,7 @@ export default function Home({
   pageSections: IPageSection[];
   whatsappPhone: string;
 }) {
-  const { hero, services, materials, catalog, contact, footer, seo } = pageData;
+  const { hero, services, catalog, contact, footer, seo } = pageData;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const pageUrl = siteUrl ? `${siteUrl}/` : undefined;
   const ogImageSrc = seo.ogImageUrl || IMAGES.hero;
@@ -296,7 +289,7 @@ export default function Home({
       ) : (
         <>
           <HeroSection heroImage={IMAGES.hero} content={hero} />
-          {siteConfig.showShowroom && <ProductsSection materials={materials} />}
+          {siteConfig.showShowroom && <ProductsSection />}
           <ServicesSection services={services} />
           <FeaturedProjectsSection projects={featuredProjects} categories={spaceCategories} />
           <CTASection whatsappPhone={contact.whatsappPhone} />

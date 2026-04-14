@@ -1,6 +1,5 @@
 import type { IHeroContent } from "./hero";
 import type { IService } from "./service";
-import type { IMaterial } from "./material";
 import type { ICatalogContent } from "./catalog";
 import type { IContactInfo } from "./contact";
 import type { IFooterContent } from "./footer";
@@ -13,7 +12,6 @@ import type { ISeoSettings } from "./seo";
 export interface IPageData {
   hero: IHeroContent;
   services: IService[];
-  materials: IMaterial[];
   catalog: ICatalogContent;
   contact: IContactInfo;
   footer: IFooterContent;

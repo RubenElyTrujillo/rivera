@@ -29,7 +29,7 @@ interface PageBuilderProps {
  */
 export default function PageBuilder({ sections, data }: PageBuilderProps) {
   const { pageData, showShowroom, spaceCategories, featuredProjects, heroImageUrl, textureImageUrl } = data;
-  const { hero, services, materials, catalog, contact } = pageData;
+  const { hero, services, catalog, contact } = pageData;
 
   return (
     <>
@@ -61,7 +61,7 @@ export default function PageBuilder({ sections, data }: PageBuilderProps) {
             // Showroom visibility is also controlled by showShowroom from siteConfig,
             // independently of the section's `visible` flag in the DB.
             return showShowroom ? (
-              <ProductsSection key={section.id} materials={materials} />
+              <ProductsSection key={section.id} />
             ) : null;
           case "SPACES":
             return (

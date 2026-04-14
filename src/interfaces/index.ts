@@ -5,8 +5,6 @@
 export type {
   IHeroContent,
   IService,
-  IMaterial,
-  IMaterialFinish,
   ISpaceProject,
   ICatalogContent,
   IContactInfo,

@@ -54,10 +54,11 @@ const HeroCarousel = ({ slides, autoPlayMs = 5000 }: HeroCarouselProps) => {
   const slide = slides[activeIndex];
 
   const align = slide.textAlign ?? "left";
-  const containerAlign =
-    align === "center" ? "items-center" : align === "right" ? "items-end" : "items-start";
   const textAlign =
     align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
+  // Block elements with max-w-* need explicit auto margins to honour alignment
+  const blockMx =
+    align === "center" ? "mx-auto" : align === "right" ? "ml-auto" : "";
 
   return (
     <section
@@ -90,23 +91,23 @@ const HeroCarousel = ({ slides, autoPlayMs = 5000 }: HeroCarouselProps) => {
       </AnimatePresence>
 
       {/* Text block */}
-      <div className={`relative z-10 h-full flex flex-col justify-end pb-20 md:pb-28 px-8 md:px-20 ${containerAlign}`}>
+      <div className="relative z-10 h-full flex flex-col justify-end pb-20 md:pb-28 px-8 md:px-20">
         <motion.div
           key={activeIndex}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className={textAlign}
+          className={`w-full ${textAlign}`}
         >
           <p className="text-white/70 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 font-medium">
             {slide.subtitle}
           </p>
-          <h1 className="text-white text-4xl sm:text-6xl md:text-[7rem] lg:text-[9rem] font-bold leading-[0.9] tracking-tight max-w-4xl">
+          <h1 className={`text-white text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight max-w-4xl ${blockMx}`}>
             {slide.titleLine1}
             <br />
             <span className="text-amber-700">{slide.titleLine2}</span>
           </h1>
-          <p className="text-white/90 text-base md:text-lg mt-6 max-w-lg font-light leading-relaxed">
+          <p className={`text-white/90 text-base md:text-lg mt-6 max-w-lg font-light leading-relaxed ${blockMx}`}>
             {slide.description}
           </p>
         </motion.div>

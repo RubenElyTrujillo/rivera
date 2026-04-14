@@ -95,15 +95,15 @@ jobs:
 
             # 7. Health check
             echo "Verificando salud del sitio..."
-            sleep 20
+            sleep 45
             health_ok=false
-            for i in $(seq 1 6); do
-              if docker exec rivera_web wget -q -O /dev/null http://localhost:3000/api/health; then
+            for i in $(seq 1 10); do
+              if docker exec rivera_web wget -q -O /dev/null http://127.0.0.1:3000/api/health; then
                 echo "Sitio OK."
                 health_ok=true
                 break
               fi
-              echo "  intento $i/6..."
+              echo "  intento $i/10..."
               sleep 10
             done
             if [ "$health_ok" = "false" ]; then

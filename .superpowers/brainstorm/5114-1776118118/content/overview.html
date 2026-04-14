@@ -1,0 +1,36 @@
+<h2>Cambios solicitados — Rivera</h2>
+<p class="subtitle">Vamos a revisar cada uno. Primero identifiquemos qué es fix rápido vs qué necesita diseño.</p>
+
+<div class="section">
+  <h3>🔧 Fixes inmediatos (ya sabemos qué hacer)</h3>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px 18px;">
+      <strong style="color:#16a34a;">1. Admin no actualizado</strong>
+      <p style="margin:4px 0 0;color:#374151;font-size:13px;">El código ya está correcto. Solo falta reconstruir Docker: <code>docker-compose up -d --build</code></p>
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px 18px;">
+      <strong style="color:#16a34a;">2. Navbar texto invisible</strong>
+      <p style="margin:4px 0 0;color:#374151;font-size:13px;">El color es negro sobre imagen oscura. Fix: texto blanco cuando el header está encima del hero, oscuro cuando scrollea.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>🎨 Cambios que necesitan diseño</h3>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+    <div style="background:#fefce8;border:1px solid #fde047;border-radius:8px;padding:14px 18px;">
+      <strong style="color:#854d0e;">3. Opciones visibles al explorar un material</strong>
+      <p style="margin:4px 0 0;color:#374151;font-size:13px;">Al entrar a un material (ej. Pisos Laminados), que los otros materiales/categorías sigan visibles para navegar fácil.</p>
+    </div>
+    <div style="background:#fefce8;border:1px solid #fde047;border-radius:8px;padding:14px 18px;">
+      <strong style="color:#854d0e;">4. Subcategorías configurables en admin</strong>
+      <p style="margin:4px 0 0;color:#374151;font-size:13px;">Ej: Pisos Laminados → Splash, Clásico, Select, Vintage. Admin controla qué subcategorías existen.</p>
+    </div>
+    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:14px 18px;">
+      <strong style="color:#991b1b;">5. CMS completo — control de secciones</strong>
+      <p style="margin:4px 0 0;color:#374151;font-size:13px;">Que el cliente pueda mover secciones, cambiar diseño, títulos, etc. desde el admin. Este es el cambio más grande.</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:24px;">Empecemos con el #3. ¿Qué quieres que vea el usuario cuando está explorando un material?</p>

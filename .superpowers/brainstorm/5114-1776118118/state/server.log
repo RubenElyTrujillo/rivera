@@ -1,0 +1,3 @@
+{"type":"server-started","port":50011,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:50011","screen_dir":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/5114-1776118118/content","state_dir":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/5114-1776118118/state"}
+{"type":"screen-added","file":"/Users/rubenely/Documentos/Proyectos/rivera/.superpowers/brainstorm/5114-1776118118/content/overview.html"}
+{"type":"server-stopped","reason":"idle timeout"}

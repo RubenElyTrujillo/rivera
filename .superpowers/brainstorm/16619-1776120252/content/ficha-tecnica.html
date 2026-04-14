@@ -1,0 +1,40 @@
+<h2>¿Cómo maneja el cliente la ficha técnica del producto?</h2>
+<p class="subtitle">Actualmente los campos son fijos (grosor, clase de uso, garantía…). ¿Cómo quiere el cliente editarla?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Campos fijos estructurados (lo que ya existe)</h3>
+      <p>El admin tiene inputs para: grosor, clase de uso, resistencia al agua, tipo de instalación, garantía. Rápido de llenar, pero no flexible.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Ya existe</li><li>Consistente entre productos</li></ul></div>
+        <div class="cons"><h4>Contras</h4><ul><li>No puede agregar info extra</li><li>Diseño fijo</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Editor Markdown + campos fijos (Recomendado ⭐)</h3>
+      <p>Se mantienen los campos estructurados para datos clave, y se agrega un editor de texto enriquecido (Markdown) para contenido libre: tablas, párrafos, listas.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Fácil para el cliente</li><li>Flexible para info extra</li><li>Sin riesgo de HTML roto</li></ul></div>
+        <div class="cons"><h4>Contras</h4><ul><li>Requiere agregar campo en DB</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Editor HTML completo</h3>
+      <p>Un editor visual (WYSIWYG) que genera HTML. El cliente puede poner tablas, imágenes, cualquier estructura.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Máxima libertad</li></ul></div>
+        <div class="cons"><h4>Contras</h4><ul><li>HTML malo puede romper el diseño</li><li>Más pesado de implementar</li><li>Cliente puede meter código roto</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

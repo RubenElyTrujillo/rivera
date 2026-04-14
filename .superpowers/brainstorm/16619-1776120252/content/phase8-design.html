@@ -1,0 +1,70 @@
+<h2>Diseño Phase 8 — Resumen completo</h2>
+<p class="subtitle">5 bloques de trabajo. Todo basado en la DB existente + mínimas adiciones.</p>
+
+<!-- BLOQUE 1 -->
+<div class="section">
+<h3>🔧 Bloque 1 — Fixes rápidos</h3>
+<div style="display:flex;flex-direction:column;gap:8px;">
+  <div style="background:#f0fdf4;border-left:3px solid #22c55e;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>NavItems en todas las páginas</strong> — agregar <code>navItemRepository.findRoots()</code> a los <code>getServerSideProps</code> que lo tienen vacío (materiales, colecciones, acabados)
+  </div>
+  <div style="background:#f0fdf4;border-left:3px solid #22c55e;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Navbar texto blanco sobre hero</strong> — TopBar pasa <code>transparent</code> prop a NavBar; texto blanco cuando no scrolleado, oscuro cuando sí
+  </div>
+  <div style="background:#f0fdf4;border-left:3px solid #22c55e;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Docker rebuild</strong> — correr <code>docker-compose up -d --build</code> para ver cambios del admin
+  </div>
+</div>
+</div>
+
+<!-- BLOQUE 2 -->
+<div class="section">
+<h3>🗂️ Bloque 2 — Jerarquía de productos (4 niveles)</h3>
+<div style="display:flex;flex-direction:column;gap:8px;">
+  <div style="background:#eff6ff;border-left:3px solid #3b82f6;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Nivel 2 actualizado</strong> <code>/materiales/[slug]</code> — sección "¿Qué es?" con <code>Material.desc</code> + cards de colecciones (Splash, Clásico…)
+  </div>
+  <div style="background:#fef3c7;border-left:3px solid #f59e0b;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Nivel 3 NUEVO</strong> <code>/materiales/[slug]/[colSlug]</code> — descripción de colección + grid de acabados con hover image
+  </div>
+  <div style="background:#fef3c7;border-left:3px solid #f59e0b;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Nivel 4 NUEVO</strong> <code>/materiales/[slug]/[colSlug]/[finSlug]</code> — galería de imágenes + campos estructurados + Markdown para ficha técnica libre + botón WhatsApp con nombre del producto
+  </div>
+</div>
+</div>
+
+<!-- BLOQUE 3 -->
+<div class="section">
+<h3>⚙️ Bloque 3 — Admin mejorado</h3>
+<div style="display:flex;flex-direction:column;gap:8px;">
+  <div style="background:#faf5ff;border-left:3px solid #a855f7;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Admin Colecciones</strong> — <code>/admin/collections</code> nueva página: selector de material → tabla de colecciones con CRUD
+  </div>
+  <div style="background:#faf5ff;border-left:3px solid #a855f7;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Admin Materiales rediseñado</strong> — tabla compacta con buscador + paginación (20/página) en lugar de tarjetas grandes. Botón "Editar" abre página de detalle <code>/admin/materials/[id]</code>
+  </div>
+  <div style="background:#faf5ff;border-left:3px solid #a855f7;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+    <strong>Admin Acabados mejorado</strong> — dentro del material, tabla de acabados con búsqueda. Agregar campo Markdown (<code>specMd</code>) y gestor de galería de imágenes
+  </div>
+</div>
+</div>
+
+<!-- BLOQUE 4 -->
+<div class="section">
+<h3>🗃️ Bloque 4 — DB: campo Markdown en acabados</h3>
+<div style="background:#fff7ed;border-left:3px solid #f97316;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+  Agregar <code>specMd String @default("")</code> en <code>MaterialFinish</code> + migración. El cliente escribe en Markdown (encabezados, tablas, listas) y se renderiza en la página del producto.
+</div>
+</div>
+
+<!-- BLOQUE 5 -->
+<div class="section">
+<h3>🧩 Bloque 5 — CMS de secciones (Opción B)</h3>
+<div style="background:#f0fdf4;border-left:3px solid #22c55e;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;">
+  <strong>Admin Secciones</strong> <code>/admin/page-sections</code> — lista de secciones con drag-and-drop para reordenar + toggle visible/oculto. <code>PageSection</code> ya tiene <code>order</code> + <code>visible</code> en DB.
+</div>
+</div>
+
+<div style="background:#f1f5f9;border-radius:8px;padding:14px 18px;margin-top:4px;font-size:13px;color:#475569;">
+  <strong>Lo que NO cambia:</strong> Diseño visual del sitio, paleta de colores, componentes del hero, sección de espacios, catálogo, contacto y footer. Todo eso queda como está.
+</div>

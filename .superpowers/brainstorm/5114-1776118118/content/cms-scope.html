@@ -1,0 +1,48 @@
+<h2>¿Qué tanto control quiere el cliente en el admin?</h2>
+<p class="subtitle">Esto define cuánto trabajo hay. Elige la opción que mejor describe lo que necesita.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Control de contenido (lo que ya existe + mejoras)</h3>
+      <p>El cliente edita textos, imágenes, productos, colores de acento. Las secciones están fijas pero puede mostrar/ocultar algunas. El orden lo defines tú como dev.</p>
+      <ul style="margin-top:8px;font-size:12px;color:#6b7280;padding-left:16px;">
+        <li>✅ Ya está casi todo</li>
+        <li>✅ Agregar: toggle visible/oculto por sección</li>
+        <li>✅ Agregar: color de acento desde admin</li>
+        <li>⏱ 1–2 días de trabajo</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Control de orden + contenido</h3>
+      <p>El cliente puede reordenar las secciones de la página arrastrándolas en el admin. También edita contenido y puede ocultar secciones. Diseño de cada sección fijo.</p>
+      <ul style="margin-top:8px;font-size:12px;color:#6b7280;padding-left:16px;">
+        <li>✅ Drag & drop en admin para reordenar</li>
+        <li>✅ Toggle visible/oculto</li>
+        <li>✅ Edición de contenido existente</li>
+        <li>⏱ 3–4 días de trabajo</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Page builder completo</h3>
+      <p>El cliente puede reordenar secciones, cambiar variantes de diseño (ej: hero con video vs imagen), elegir layouts diferentes, colores por sección. Como Webflow pero propio.</p>
+      <ul style="margin-top:8px;font-size:12px;color:#6b7280;padding-left:16px;">
+        <li>⚠️ Mucho más complejo de construir</li>
+        <li>⚠️ Puede introducir inconsistencias de diseño</li>
+        <li>⚠️ Mantenimiento más difícil</li>
+        <li>⏱ 2–3 semanas de trabajo</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px;">💡 Recomendación: Opción B. Da mucho control sin la complejidad del page builder. El cliente puede armar su sitio como quiera dentro de un diseño consistente.</p>

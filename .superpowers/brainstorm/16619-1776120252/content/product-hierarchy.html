@@ -1,0 +1,60 @@
+<h2>Flujo de navegación de productos</h2>
+<p class="subtitle">4 niveles, cada uno con su propia página. El cliente configura todo desde el admin.</p>
+
+<div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">
+
+  <!-- Level 1 -->
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="background:#0f172a;color:white;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">NIVEL 1</span>
+      <code style="font-size:12px;color:#64748b;">/categorias/pisos</code>
+    </div>
+    <p style="font-size:13px;color:#334155;margin:0;"><strong>Categoría</strong> — muestra todos los materiales de esa categoría como cards grandes con foto. <em>Ej: Pisos Laminados, Pisos de Madera, Pisos Vinílicos…</em></p>
+    <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">✅ Ya existe (<code>/categorias/[slug]</code>)</p>
+  </div>
+
+  <!-- Arrow -->
+  <div style="text-align:center;color:#94a3b8;font-size:20px;">↓</div>
+
+  <!-- Level 2 -->
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="background:#1d4ed8;color:white;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">NIVEL 2</span>
+      <code style="font-size:12px;color:#64748b;">/materiales/pisos-laminados</code>
+    </div>
+    <p style="font-size:13px;color:#334155;margin:0;"><strong>Material</strong> — descripción del material (¿Qué es?) + sus colecciones como cards. <em>Ej: Splash, Clásico, Select, Vintage, MAGNUS</em></p>
+    <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">⚠️ Existe pero actualmente muestra acabados directamente — hay que añadir cards de colecciones</p>
+  </div>
+
+  <!-- Arrow -->
+  <div style="text-align:center;color:#94a3b8;font-size:20px;">↓</div>
+
+  <!-- Level 3 -->
+  <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:16px 20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="background:#d97706;color:white;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">NIVEL 3 — NUEVO</span>
+      <code style="font-size:12px;color:#64748b;">/materiales/pisos-laminados/splash</code>
+    </div>
+    <p style="font-size:13px;color:#334155;margin:0;"><strong>Colección</strong> — grid de acabados de esa colección con imagen, nombre y código. Click → Nivel 4.</p>
+    <p style="font-size:11px;color:#92400e;margin:4px 0 0;">🆕 Página nueva. La DB (<code>MaterialCollection</code>) ya existe, solo falta la página y el admin para crearlas.</p>
+  </div>
+
+  <!-- Arrow -->
+  <div style="text-align:center;color:#94a3b8;font-size:20px;">↓</div>
+
+  <!-- Level 4 -->
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="background:#374151;color:white;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">NIVEL 4</span>
+      <code style="font-size:12px;color:#64748b;">/materiales/pisos-laminados/splash/roble-natural</code>
+    </div>
+    <p style="font-size:13px;color:#334155;margin:0;"><strong>Acabado/Producto</strong> — galería de fotos, ficha técnica, botón de WhatsApp con mensaje del producto.</p>
+    <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">✅ Ya existe (<code>/materiales/[id]</code>) — solo ajustar URL para la nueva estructura</p>
+  </div>
+
+</div>
+
+<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:14px 18px;margin-top:16px;">
+  <strong style="color:#166534;">TopBar con navegación completa en todas las páginas</strong>
+  <p style="margin:4px 0 0;font-size:12px;color:#374151;">Fix simple: agregar <code>navItems</code> al <code>getServerSideProps</code> de cada página que lo tenga vacío.</p>
+</div>

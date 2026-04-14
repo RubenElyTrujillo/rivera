@@ -107,6 +107,8 @@ jobs:
               sleep 10
             done
             if [ "$health_ok" = "false" ]; then
-              echo "ERROR: Health check fallido. El despliegue puede estar incompleto."
+              echo "ERROR: Health check fallido. Logs del contenedor:"
+              docker logs --tail 50 rivera_web
+              echo "ERROR: El despliegue puede estar incompleto."
               exit 1
             fi

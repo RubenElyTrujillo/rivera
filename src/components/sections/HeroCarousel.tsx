@@ -53,6 +53,12 @@ const HeroCarousel = ({ slides, autoPlayMs = 5000 }: HeroCarouselProps) => {
 
   const slide = slides[activeIndex];
 
+  const align = slide.textAlign ?? "left";
+  const containerAlign =
+    align === "center" ? "items-center" : align === "right" ? "items-end" : "items-start";
+  const textAlign =
+    align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
+
   return (
     <section
       id="hero"
@@ -84,12 +90,13 @@ const HeroCarousel = ({ slides, autoPlayMs = 5000 }: HeroCarouselProps) => {
       </AnimatePresence>
 
       {/* Text block */}
-      <div className="relative z-10 h-full flex flex-col justify-end pb-20 md:pb-28 px-8 md:px-20">
+      <div className={`relative z-10 h-full flex flex-col justify-end pb-20 md:pb-28 px-8 md:px-20 ${containerAlign}`}>
         <motion.div
           key={activeIndex}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className={textAlign}
         >
           <p className="text-white/70 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 font-medium">
             {slide.subtitle}

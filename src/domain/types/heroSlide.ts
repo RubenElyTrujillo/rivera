@@ -8,6 +8,8 @@ export interface IHeroSlide {
   subtitle: string
   description: string
   imageUrl: string
+  /** Horizontal alignment of the text block. Defaults to "left". */
+  textAlign?: "left" | "center" | "right"
 }
 
 /**

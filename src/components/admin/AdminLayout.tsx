@@ -19,7 +19,7 @@ import {
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/hero", label: "Hero", icon: ImageIcon },
+  // { href: "/admin/hero", label: "Hero (legacy)", icon: ImageIcon }, // hero estático desactivado
   { href: "/admin/hero-slides", label: "Hero Carrusel", icon: ImageIcon },
   { href: "/admin/services", label: "Servicios", icon: Wrench },
   { href: "/admin/materials", label: "Materiales", icon: Package },

@@ -15,6 +15,10 @@ const HeroSection = ({ heroImage, content, slides, autoPlayMs }: HeroSectionProp
         return <HeroCarousel slides={slides} autoPlayMs={autoPlayMs} />;
     }
 
+    /* --- HERO ESTÁTICO (legacy, desactivado temporalmente) ---
+     * Si en algún momento se necesita volver al hero de una sola imagen,
+     * descomentar este bloque y comentar el return de HeroCarousel arriba.
+     *
     const subtitle = content?.subtitle ?? "Soluciones integrales en acabados";
     const titleLine1 = content?.titleLine1 ?? "SUPERFICIES";
     const titleLine2 = content?.titleLine2 ?? "SIN LÍMITE";
@@ -55,6 +59,10 @@ const HeroSection = ({ heroImage, content, slides, autoPlayMs }: HeroSectionProp
             </div>
         </section>
     );
+    */
+
+    // Fallback: si no hay slides configurados, muestra un carrusel vacío (no debería ocurrir en prod)
+    return null;
 };
 
 export default HeroSection;

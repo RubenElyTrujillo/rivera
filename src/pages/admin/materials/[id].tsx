@@ -39,7 +39,8 @@ export default function AdminMaterialDetailPage() {
       .then((list: IMaterial[]) => {
         const found = list.find((m) => m.id === id) ?? null;
         setMaterial(found);
-      });
+      })
+      .catch(() => null);
   }, [id]);
 
   function update<K extends keyof IMaterial>(key: K, value: IMaterial[K]) {
@@ -47,41 +48,62 @@ export default function AdminMaterialDetailPage() {
   }
 
   async function save() {
-    if (!material) return;
-    setSaving(true);
-    const all: IMaterial[] = await fetch("/api/content/materials").then((r) => r.json());
-    const payload = all.map((m) => (m.id === material.id ? material : m));
-    await fetch("/api/content/materials", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    setSaving(false);
-    show("¡Guardado!");
+    try {
+      if (!material) return;
+      setSaving(true);
+      const allRes = await fetch("/api/content/materials");
+      if (!allRes.ok) { show("Error al cargar materiales"); return; }
+      const all: IMaterial[] = await allRes.json();
+      const payload = all.map((m) => (m.id === material.id ? material : m));
+      const res = await fetch("/api/content/materials", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) { show("Error al guardar material"); return; }
+      show("¡Guardado!");
+    } catch {
+      show("Error de conexión");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function addFinish() {
-    if (!material || !newFinish.name) return;
-    setFinishSaving(true);
-    await fetch("/api/content/finishes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ materialId: material.id, ...newFinish, order: material.finishes?.length ?? 0 }),
-    });
-    const finishes: IMaterialFinish[] = await fetch(`/api/content/finishes?materialId=${material.id}`).then((r) => r.json());
-    setMaterial((prev) => prev ? { ...prev, finishes } : prev);
-    setNewFinish({ ...EMPTY_FINISH });
-    setFinishSaving(false);
-    show("Acabado agregado");
+    try {
+      if (!material || !newFinish.name) return;
+      setFinishSaving(true);
+      const res = await fetch("/api/content/finishes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ materialId: material.id, ...newFinish, order: material.finishes?.length ?? 0 }),
+      });
+      if (!res.ok) { show("Error al agregar acabado"); return; }
+      const finishRes = await fetch(`/api/content/finishes?materialId=${material.id}`);
+      if (!finishRes.ok) { show("Error al cargar acabados"); return; }
+      const finishes: IMaterialFinish[] = await finishRes.json();
+      setMaterial((prev) => prev ? { ...prev, finishes } : prev);
+      setNewFinish({ ...EMPTY_FINISH });
+      show("Acabado agregado");
+    } catch {
+      show("Error de conexión");
+    } finally {
+      setFinishSaving(false);
+    }
   }
 
   async function deleteFinish(finishId: number) {
     if (!material || !confirm("¿Eliminar este acabado?")) return;
-    await fetch(`/api/content/finishes?id=${finishId}`, { method: "DELETE" });
-    setMaterial((prev) =>
-      prev ? { ...prev, finishes: prev.finishes.filter((f) => f.id !== finishId) } : prev
-    );
-    show("Acabado eliminado");
+    try {
+      const res = await fetch(`/api/content/finishes?id=${finishId}`, { method: "DELETE" });
+      if (!res.ok) { show("Error al eliminar acabado"); return; }
+      setMaterial((prev) =>
+        prev ? { ...prev, finishes: prev.finishes.filter((f) => f.id !== finishId) } : prev
+      );
+      show("Acabado eliminado");
+    } catch {
+      show("Error de conexión");
+    }
   }
 
   function startEdit(finish: IMaterialFinish) {
@@ -107,19 +129,27 @@ export default function AdminMaterialDetailPage() {
   }
 
   async function saveEdit(finish: IMaterialFinish) {
-    if (!material || !editingFinish) return;
-    setEditFinishSaving(true);
-    const { id: _id, ...edits } = editingFinish;
-    await fetch(`/api/content/finishes?id=${finish.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...edits, order: finish.order, materialId: material.id }),
-    });
-    const finishes: IMaterialFinish[] = await fetch(`/api/content/finishes?materialId=${material.id}`).then((r) => r.json());
-    setMaterial((prev) => prev ? { ...prev, finishes } : prev);
-    setEditingFinish(null);
-    setEditFinishSaving(false);
-    show("Acabado actualizado");
+    try {
+      if (!material || !editingFinish) return;
+      setEditFinishSaving(true);
+      const { id: _id, ...edits } = editingFinish;
+      const res = await fetch(`/api/content/finishes?id=${finish.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...edits, order: finish.order, materialId: material.id }),
+      });
+      if (!res.ok) { show("Error al actualizar acabado"); return; }
+      const finishRes = await fetch(`/api/content/finishes?materialId=${material.id}`);
+      if (!finishRes.ok) { show("Error al cargar acabados"); return; }
+      const finishes: IMaterialFinish[] = await finishRes.json();
+      setMaterial((prev) => prev ? { ...prev, finishes } : prev);
+      setEditingFinish(null);
+      show("Acabado actualizado");
+    } catch {
+      show("Error de conexión");
+    } finally {
+      setEditFinishSaving(false);
+    }
   }
 
   if (checking || (!material && id)) return <AdminPageSkeleton />;

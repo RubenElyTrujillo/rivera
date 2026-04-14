@@ -37,7 +37,8 @@ export default function AdminMaterialsPage() {
   useEffect(() => {
     fetch("/api/content/materials")
       .then((r) => r.json())
-      .then((d: IMaterial[]) => { if (d?.length) setMaterials(d); });
+      .then((d: IMaterial[]) => { if (d?.length) setMaterials(d); })
+      .catch(() => null);
   }, []);
 
   const update = (idx: number, key: keyof IMaterial, value: string | string[]) =>
@@ -48,52 +49,66 @@ export default function AdminMaterialsPage() {
   const add = () => setMaterials((prev) => [...prev, { ...EMPTY_MAT, id: Date.now(), order: prev.length }]);
 
   async function save() {
-    setSaving(true);
-    const payload = materials.map((m, i) => ({ ...m, order: i }));
-    await fetch("/api/content/materials", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const updated: IMaterial[] = await fetch("/api/content/materials").then((r) => r.json());
-    if (updated?.length) setMaterials(updated);
-    setSaving(false);
-    show("¡Guardado!");
+    try {
+      setSaving(true);
+      const payload = materials.map((m, i) => ({ ...m, order: i }));
+      const res = await fetch("/api/content/materials", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) { show("Error al guardar materiales"); return; }
+      const updRes = await fetch("/api/content/materials");
+      if (!updRes.ok) { show("Error al cargar materiales"); return; }
+      const updated: IMaterial[] = await updRes.json();
+      if (updated?.length) setMaterials(updated);
+      show("¡Guardado!");
+    } catch {
+      show("Error de conexión");
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function toggleFinishes(matId: number) {
-    setExpandedFinishes((prev) => ({ ...prev, [matId]: !prev[matId] }));
-    if (!newFinish[matId]) setNewFinish((prev) => ({ ...prev, [matId]: { ...EMPTY_FINISH } }));
-  }
 
-  function updateNewFinish(matId: number, key: keyof typeof EMPTY_FINISH, value: string | boolean) {
-    setNewFinish((prev) => ({ ...prev, [matId]: { ...prev[matId], [key]: value } }));
-  }
 
   async function addFinish(matId: number) {
-    const f = newFinish[matId];
-    if (!f?.name) return;
-    setFinishSaving((prev) => ({ ...prev, [matId]: true }));
-    const mat = materials.find((m) => m.id === matId);
-    await fetch("/api/content/finishes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ materialId: matId, ...f, order: mat?.finishes?.length ?? 0 }),
-    });
-    const finishes: IMaterialFinish[] = await fetch(`/api/content/finishes?materialId=${matId}`).then((r) => r.json());
-    setMaterials((prev) => prev.map((m) => m.id === matId ? { ...m, finishes } : m));
-    setNewFinish((prev) => ({ ...prev, [matId]: { ...EMPTY_FINISH } }));
-    setFinishSaving((prev) => ({ ...prev, [matId]: false }));
-    show("Acabado agregado");
+    try {
+      const f = newFinish[matId];
+      if (!f?.name) return;
+      setFinishSaving((prev) => ({ ...prev, [matId]: true }));
+      const mat = materials.find((m) => m.id === matId);
+      const res = await fetch("/api/content/finishes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ materialId: matId, ...f, order: mat?.finishes?.length ?? 0 }),
+      });
+      if (!res.ok) { show("Error al agregar acabado"); return; }
+      const finishRes = await fetch(`/api/content/finishes?materialId=${matId}`);
+      if (!finishRes.ok) { show("Error al cargar acabados"); return; }
+      const finishes: IMaterialFinish[] = await finishRes.json();
+      setMaterials((prev) => prev.map((m) => m.id === matId ? { ...m, finishes } : m));
+      setNewFinish((prev) => ({ ...prev, [matId]: { ...EMPTY_FINISH } }));
+      show("Acabado agregado");
+    } catch {
+      show("Error de conexión");
+    } finally {
+      setFinishSaving((prev) => ({ ...prev, [matId]: false }));
+    }
   }
 
   async function deleteFinish(matId: number, finishId: number) {
     if (!confirm("¿Eliminar este acabado?")) return;
-    await fetch(`/api/content/finishes?id=${finishId}`, { method: "DELETE" });
-    setMaterials((prev) => prev.map((m) =>
-      m.id === matId ? { ...m, finishes: m.finishes.filter((f) => f.id !== finishId) } : m
-    ));
-    show("Acabado eliminado");
+    try {
+      const res = await fetch(`/api/content/finishes?id=${finishId}`, { method: "DELETE" });
+      if (!res.ok) { show("Error al eliminar acabado"); return; }
+      setMaterials((prev) => prev.map((m) =>
+        m.id === matId ? { ...m, finishes: m.finishes.filter((f) => f.id !== finishId) } : m
+      ));
+      show("Acabado eliminado");
+    } catch {
+      show("Error de conexión");
+    }
   }
 
   /** Abre el modo edición de un acabado cargando sus valores actuales. */
@@ -136,19 +151,27 @@ export default function AdminMaterialsPage() {
 
   /** Guarda los cambios del acabado en edición vía PUT a la API. */
   async function saveEdit(matId: number, finish: IMaterialFinish) {
-    const edits = editingFinish[finish.id];
-    if (!edits) return;
-    setFinishSaving((prev) => ({ ...prev, [finish.id]: true }));
-    await fetch(`/api/content/finishes?id=${finish.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...edits, order: finish.order, materialId: matId }),
-    });
-    const finishes: IMaterialFinish[] = await fetch(`/api/content/finishes?materialId=${matId}`).then((r) => r.json());
-    setMaterials((prev) => prev.map((m) => m.id === matId ? { ...m, finishes } : m));
-    setEditingFinish((prev) => ({ ...prev, [finish.id]: null }));
-    setFinishSaving((prev) => ({ ...prev, [finish.id]: false }));
-    show("Acabado actualizado");
+    try {
+      const edits = editingFinish[finish.id];
+      if (!edits) return;
+      setFinishSaving((prev) => ({ ...prev, [finish.id]: true }));
+      const res = await fetch(`/api/content/finishes?id=${finish.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...edits, order: finish.order, materialId: matId }),
+      });
+      if (!res.ok) { show("Error al actualizar acabado"); return; }
+      const finishRes = await fetch(`/api/content/finishes?materialId=${matId}`);
+      if (!finishRes.ok) { show("Error al cargar acabados"); return; }
+      const finishes: IMaterialFinish[] = await finishRes.json();
+      setMaterials((prev) => prev.map((m) => m.id === matId ? { ...m, finishes } : m));
+      setEditingFinish((prev) => ({ ...prev, [finish.id]: null }));
+      show("Acabado actualizado");
+    } catch {
+      show("Error de conexión");
+    } finally {
+      setFinishSaving((prev) => ({ ...prev, [finish.id]: false }));
+    }
   }
 
   function handleDelete(id: number) {

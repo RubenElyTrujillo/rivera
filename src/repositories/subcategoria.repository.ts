@@ -1,0 +1,61 @@
+import { db } from "@/infrastructure/db/client"
+import { toSlug } from "@/lib/toSlug"
+import type { ISubcategoria } from "@/domain/types"
+import type { SubcategoriaInput } from "@/domain/schemas/subcategoria.schema"
+
+export const subcategoriaRepository = {
+  async findAll(categoriaId?: number): Promise<ISubcategoria[]> {
+    return db.subcategoria.findMany({
+      where: categoriaId ? { categoriaId } : undefined,
+      orderBy: { order: "asc" },
+      include: {
+        categoria: { select: { id: true, name: true, slug: true } },
+        _count: { select: { productos: true } },
+      },
+    }) as unknown as ISubcategoria[]
+  },
+
+  async findBySlug(slug: string): Promise<ISubcategoria | null> {
+    const row = await db.subcategoria.findUnique({
+      where: { slug },
+      include: {
+        categoria: { select: { id: true, name: true, slug: true } },
+        productos: {
+          orderBy: { order: "asc" },
+          select: { id: true, name: true, slug: true, coverImage: true, hoverImage: true, shortDesc: true, order: true, subcategoriaId: true, htmlContent: true },
+        },
+      },
+    })
+    return row as unknown as ISubcategoria | null
+  },
+
+  async create(input: SubcategoriaInput): Promise<ISubcategoria> {
+    return db.subcategoria.create({
+      data: {
+        categoriaId: input.categoriaId,
+        name:        input.name,
+        slug:        toSlug(input.name),
+        coverImage:  input.coverImage ?? null,
+        description: input.description ?? null,
+        order:       input.order ?? 0,
+      },
+    }) as unknown as ISubcategoria
+  },
+
+  async update(id: number, input: Partial<SubcategoriaInput>): Promise<ISubcategoria> {
+    return db.subcategoria.update({
+      where: { id },
+      data: {
+        ...(input.categoriaId !== undefined && { categoriaId: input.categoriaId }),
+        ...(input.name        !== undefined && { name: input.name, slug: toSlug(input.name) }),
+        ...(input.coverImage  !== undefined && { coverImage: input.coverImage }),
+        ...(input.description !== undefined && { description: input.description }),
+        ...(input.order       !== undefined && { order: input.order }),
+      },
+    }) as unknown as ISubcategoria
+  },
+
+  async delete(id: number): Promise<void> {
+    await db.subcategoria.delete({ where: { id } })
+  },
+}

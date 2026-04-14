@@ -155,8 +155,8 @@ export default function AdminMaterialDetailPage() {
   if (checking || (!material && id)) return <AdminPageSkeleton />;
   if (!material) return (
     <>
-      <Head><title>Material no encontrado — Admin Rivera</title></Head>
-      <PageHeader title="Material no encontrado" subtitle="" />
+      <Head><title>Línea no encontrada — Admin Rivera</title></Head>
+      <PageHeader title="Línea no encontrada" subtitle="" />
       <Link href="/admin/materials" className="text-sm text-[hsl(20,60%,45%)] hover:underline">← Volver a materiales</Link>
     </>
   );
@@ -164,7 +164,7 @@ export default function AdminMaterialDetailPage() {
   return (
     <>
       <Head><title>{material.name || "Material"} — Admin Rivera</title></Head>
-      <PageHeader title={material.name || "Material"} subtitle="Edita los datos y acabados de este material." />
+      <PageHeader title={material.name || "Material"} subtitle="Edita los datos y productos de esta línea." />
       <Link href="/admin/materials" className="inline-block text-sm text-[hsl(20,60%,45%)] hover:underline mb-4">← Volver a materiales</Link>
       <div className="space-y-6">
         {/* ── Material fields ── */}

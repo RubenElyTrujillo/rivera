@@ -141,10 +141,10 @@ export default function AdminSpacesPage() {
 
   return (
     <>
-      <Head><title>Espacios — Admin Rivera</title></Head>
+      <Head><title>Proyectos — Admin Rivera</title></Head>
       <PageHeader
-        title="Proyectos de Espacios"
-        subtitle="Organizados por categoría. Los cambios se guardan todos juntos al final."
+        title="Proyectos"
+        subtitle="Proyectos realizados. Los cambios se guardan todos juntos al final."
       />
 
       {/* Sin categorías */}

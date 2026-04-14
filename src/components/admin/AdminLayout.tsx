@@ -22,10 +22,10 @@ const NAV_ITEMS = [
   // { href: "/admin/hero", label: "Hero (legacy)", icon: ImageIcon }, // hero estático desactivado
   { href: "/admin/hero-slides", label: "Hero Carrusel", icon: ImageIcon },
   { href: "/admin/services", label: "Servicios", icon: Wrench },
-  { href: "/admin/materials", label: "Materiales", icon: Package },
+  { href: "/admin/materials", label: "Líneas", icon: Package },
   { href: "/admin/collections", label: "Colecciones", icon: Layers },
-  { href: "/admin/space-categories", label: "Categorías", icon: FolderOpen },
-  { href: "/admin/spaces", label: "Espacios", icon: Grid2x2 },
+  // { href: "/admin/space-categories", label: "Categorías de proyectos", icon: FolderOpen },
+  { href: "/admin/spaces", label: "Proyectos", icon: Grid2x2 },
   { href: "/admin/catalog", label: "Catálogo", icon: BookOpen },
   { href: "/admin/contact", label: "Contacto", icon: Phone },
   { href: "/admin/footer", label: "Footer", icon: Layout },

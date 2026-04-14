@@ -189,8 +189,8 @@ export default function AdminMaterialsPage() {
 
   return (
     <>
-      <Head><title>Materiales — Admin Rivera</title></Head>
-      <PageHeader title="Materiales" subtitle="Tipos de pisos y recubrimientos. Agrega y edita los acabados de cada material." />
+      <Head><title>Líneas — Admin Rivera</title></Head>
+      <PageHeader title="Líneas" subtitle="Líneas de producto (Pisos Laminados, Pisos de Madera, etc.). Cada línea contiene sus productos." />
       <div className="space-y-4">
         {/* Search */}
         <div className="mb-4">

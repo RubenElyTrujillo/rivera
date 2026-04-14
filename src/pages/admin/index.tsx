@@ -20,10 +20,10 @@ import {
 const SECTIONS = [
   { href: "/admin/hero", label: "Hero", desc: "Título, subtítulo e imagen principal", icon: ImageIcon },
   { href: "/admin/services", label: "Ventas", desc: "5 tarjetas de ventas", icon: Wrench },
-  { href: "/admin/materials", label: "Materiales", desc: "Tipos de pisos y recubrimientos", icon: Package },
-  { href: "/admin/categories", label: "Categorías", desc: "Categorías de producto (Pisos, Paredes…)", icon: FolderOpen },
+  { href: "/admin/materials", label: "Líneas", desc: "Líneas de producto (Pisos Laminados, Pisos de Madera…)", icon: Package },
+  { href: "/admin/categories", label: "Categorías de proyectos", desc: "Categorías para el showcase de proyectos", icon: FolderOpen },
   { href: "/admin/nav-items", label: "Navegación", desc: "Árbol de menú de 3 niveles", icon: Navigation },
-  { href: "/admin/spaces", label: "Espacios", desc: "Galería de proyectos", icon: Grid2x2 },
+  { href: "/admin/spaces", label: "Proyectos", desc: "Proyectos realizados por Rivera", icon: Grid2x2 },
   { href: "/admin/catalog", label: "Catálogo", desc: "Texto y PDF descargable", icon: BookOpen },
   { href: "/admin/contact", label: "Contacto", desc: "Teléfonos, email y opciones del formulario", icon: Phone },
   { href: "/admin/footer", label: "Footer", desc: "Tagline y lista de servicios", icon: Layout },

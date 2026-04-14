@@ -123,16 +123,20 @@ model MaterialFinishImage {
 // ─── Navegación dinámica ──────────────────────────────────────────────────────
 
 model NavItem {
-  id       Int       @id @default(autoincrement())
-  label    String
-  href     String    @default("")
-  order    Int       @default(0)
-  visible  Boolean   @default(true)
-  parentId Int?
-  parent   NavItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade)
-  children NavItem[] @relation("NavTree")
+  id          Int       @id @default(autoincrement())
+  label       String
+  href        String    @default("")
+  slug        String?   @unique
+  coverImage  String?
+  description String?
+  order       Int       @default(0)
+  visible     Boolean   @default(true)
+  parentId    Int?
+  parent      NavItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children    NavItem[] @relation("NavTree")
 
   @@index([parentId])
+  @@index([slug])
 }
 
 // ─── Secciones del home (page builder) ───────────────────────────────────────

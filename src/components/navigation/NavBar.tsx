@@ -20,6 +20,7 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
 
   const activeItem = items.find((i) => i.id === activeId);
   const hasChildren = (item: INavItem) => (item.children?.length ?? 0) > 0;
+  const itemHref = (item: INavItem) => item.slug ? `/${item.slug}` : item.href || "#";
   const linkCls = transparent
     ? "text-white/90 hover:text-white"
     : "text-foreground/70 hover:text-foreground";
@@ -68,7 +69,7 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
           ) : (
             <Link
               key={item.id}
-              href={item.href}
+              href={itemHref(item)}
               className={`px-4 py-2 text-xs font-semibold tracking-widest uppercase transition-colors ${linkCls}`}
             >
               {item.label}
@@ -94,7 +95,7 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
               {activeItem.children!.filter(i => i.visible).map((child) => (
                 <div key={child.id} className="min-w-[140px]">
                   <Link
-                    href={child.href}
+                    href={itemHref(child)}
                     className="block text-sm font-bold tracking-wide text-foreground hover:text-primary transition-colors mb-3"
                     onClick={() => setActiveId(null)}
                   >
@@ -105,7 +106,7 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
                       {child.children!.filter(i => i.visible).map((grandchild) => (
                         <li key={grandchild.id}>
                           <Link
-                            href={grandchild.href}
+                            href={itemHref(grandchild)}
                             className="text-xs text-foreground/50 hover:text-foreground transition-colors"
                             onClick={() => setActiveId(null)}
                           >
@@ -192,7 +193,7 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
                               {item.children!.filter(i => i.visible).map((child) => (
                                 <div key={child.id}>
                                   <Link
-                                    href={child.href}
+                                    href={itemHref(child)}
                                     onClick={() => setMobileOpen(false)}
                                     className="block py-2.5 text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
                                   >
@@ -203,7 +204,7 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
                                       {child.children!.filter(i => i.visible).map((grandchild) => (
                                         <Link
                                           key={grandchild.id}
-                                          href={grandchild.href}
+                                          href={itemHref(grandchild)}
                                           onClick={() => setMobileOpen(false)}
                                           className="block py-1.5 text-xs text-foreground/50 hover:text-foreground transition-colors"
                                         >
@@ -221,7 +222,7 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
                     </>
                   ) : (
                     <Link
-                      href={item.href}
+                      href={itemHref(item)}
                       onClick={() => setMobileOpen(false)}
                       className="block py-4 text-base font-bold tracking-wide text-foreground hover:text-primary transition-colors"
                     >

@@ -2,15 +2,32 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import {
   useAdminAuth, PageHeader, FormCard, Field,
-  AdminInput, useToast, AdminPageSkeleton,
+  AdminInput, AdminTextarea, useToast, AdminPageSkeleton,
 } from "@/components/admin/adminUtils";
+import { ImageUploadField } from "@/components/admin/forms/ImageUploadField";
 import { Trash2, Plus, Pencil, Check, X, EyeOff } from "lucide-react";
 import type { INavItem } from "@/domain/types";
 
-type EditState = { label: string; href: string; visible: boolean; order: number };
-type AddState = { label: string; href: string; visible: boolean; order: number };
+type EditState = {
+  label: string;
+  href: string;
+  slug: string;
+  coverImage: string;
+  description: string;
+  visible: boolean;
+  order: number;
+};
+type AddState = {
+  label: string;
+  href: string;
+  slug: string;
+  coverImage: string;
+  description: string;
+  visible: boolean;
+  order: number;
+};
 
-const EMPTY_ADD: AddState = { label: "", href: "", visible: true, order: 0 };
+const EMPTY_ADD: AddState = { label: "", href: "", slug: "", coverImage: "", description: "", visible: true, order: 0 };
 
 function buildTree(flat: INavItem[]): INavItem[] {
   const map = new Map<number, INavItem & { children: INavItem[] }>();
@@ -49,26 +66,35 @@ function NavRow({
       <div className="rounded border border-[hsl(20,60%,45%)]/30 bg-[hsl(20,60%,45%)]/5 p-3 space-y-2">
         <div className="grid grid-cols-2 gap-2">
           <Field label="Etiqueta *">
-            <AdminInput
-              value={editing.label}
-              onChange={(v) => onChange("label", v)}
-              placeholder="Pisos"
-            />
-          </Field>
-          <Field label="URL (href)">
-            <AdminInput
-              value={editing.href}
-              onChange={(v) => onChange("href", v)}
-              placeholder="/categorias/pisos"
-            />
+            <AdminInput value={editing.label} onChange={(v) => onChange("label", v)} placeholder="Pisos Laminados" />
           </Field>
           <Field label="Orden">
-            <AdminInput
-              value={String(editing.order)}
-              onChange={(v) => onChange("order", Number(v))}
-              placeholder="0"
-            />
+            <AdminInput value={String(editing.order)} onChange={(v) => onChange("order", Number(v))} placeholder="0" />
           </Field>
+          {/* Slug + URL solo para ítems de nivel 2+ */}
+          {depth > 0 && (
+            <>
+              <Field label="Slug (URL)">
+                <AdminInput
+                  value={editing.slug}
+                  onChange={(v) => {
+                    const clean = v.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                    onChange("slug", clean);
+                    if (!editing.href) onChange("href", `/${clean}`);
+                  }}
+                  placeholder="pisos-laminados"
+                />
+              </Field>
+              <Field label="URL (href)">
+                <AdminInput value={editing.href} onChange={(v) => onChange("href", v)} placeholder="/pisos-laminados" />
+              </Field>
+            </>
+          )}
+          {depth === 0 && (
+            <Field label="URL (href)">
+              <AdminInput value={editing.href} onChange={(v) => onChange("href", v)} placeholder="/#seccion" />
+            </Field>
+          )}
           <Field label="Visible en el menú">
             <label className="flex items-center gap-2 mt-2 cursor-pointer">
               <input
@@ -77,13 +103,31 @@ function NavRow({
                 onChange={(e) => onChange("visible", e.target.checked)}
                 className="w-4 h-4 accent-[hsl(20,60%,45%)]"
               />
-              <span className="text-sm text-[hsl(0,0%,40%)]">
-                {editing.visible ? "Visible" : "Oculto"}
-              </span>
+              <span className="text-sm text-[hsl(0,0%,40%)]">{editing.visible ? "Visible" : "Oculto"}</span>
             </label>
           </Field>
         </div>
-        <div className="flex gap-2">
+        {/* Imagen y descripción de la página de categoría (solo items con slug) */}
+        {depth > 0 && (
+          <div className="space-y-2 pt-2 border-t border-[hsl(0,0%,90%)]">
+            <p className="text-xs font-semibold text-[hsl(0,0%,50%)] uppercase tracking-wider">Página de categoría</p>
+            <Field label="Imagen de portada">
+              <ImageUploadField
+                value={editing.coverImage}
+                onChange={(v) => onChange("coverImage", v)}
+                aspect="landscape"
+                placeholder="/uploads/portada.webp"
+              />
+            </Field>
+            <Field label="Descripción (¿Qué es este producto?)">
+              <AdminTextarea
+                value={editing.description}
+                onChange={(v) => onChange("description", v)}
+              />
+            </Field>
+          </div>
+        )}
+        <div className="flex gap-2 pt-1">
           <button
             onClick={onSave}
             disabled={saving}
@@ -105,13 +149,14 @@ function NavRow({
 
   return (
     <div className="flex items-center gap-2 py-2 px-3 rounded border border-[hsl(0,0%,90%)] bg-[hsl(0,0%,97%)]">
-      <span
-        className={`flex-1 text-sm truncate ${
-          !item.visible ? "text-[hsl(0,0%,60%)] line-through" : "text-[hsl(0,0%,13%)] font-medium"
-        }`}
-      >
+      <span className={`flex-1 text-sm truncate ${!item.visible ? "text-[hsl(0,0%,60%)] line-through" : "text-[hsl(0,0%,13%)] font-medium"}`}>
         {item.label}
-        {item.href && (
+        {item.slug && (
+          <span className="ml-2 text-xs font-mono text-[hsl(20,60%,45%)] font-normal">
+            /{item.slug}
+          </span>
+        )}
+        {!item.slug && item.href && (
           <span className="ml-2 text-xs font-mono text-[hsl(0,0%,55%)] font-normal">
             {item.href}
           </span>
@@ -119,26 +164,14 @@ function NavRow({
       </span>
       {!item.visible && <EyeOff size={12} className="text-[hsl(0,0%,50%)] shrink-0" />}
       {canAddChild && depth < 2 && (
-        <button
-          onClick={onAddChild}
-          title="Agregar hijo"
-          className="p-1 rounded text-[hsl(0,0%,55%)] hover:text-[hsl(20,60%,45%)] hover:bg-[hsl(20,60%,45%)]/10 transition-colors shrink-0"
-        >
+        <button onClick={onAddChild} title="Agregar hijo" className="p-1 rounded text-[hsl(0,0%,55%)] hover:text-[hsl(20,60%,45%)] hover:bg-[hsl(20,60%,45%)]/10 transition-colors shrink-0">
           <Plus size={13} />
         </button>
       )}
-      <button
-        onClick={onEdit}
-        title="Editar"
-        className="p-1 rounded text-[hsl(0,0%,55%)] hover:text-[hsl(20,60%,45%)] hover:bg-[hsl(20,60%,45%)]/10 transition-colors shrink-0"
-      >
+      <button onClick={onEdit} title="Editar" className="p-1 rounded text-[hsl(0,0%,55%)] hover:text-[hsl(20,60%,45%)] hover:bg-[hsl(20,60%,45%)]/10 transition-colors shrink-0">
         <Pencil size={13} />
       </button>
-      <button
-        onClick={onDelete}
-        title="Eliminar"
-        className="p-1 rounded text-[hsl(0,0%,55%)] hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
-      >
+      <button onClick={onDelete} title="Eliminar" className="p-1 rounded text-[hsl(0,0%,55%)] hover:text-red-500 hover:bg-red-50 transition-colors shrink-0">
         <Trash2 size={13} />
       </button>
     </div>
@@ -147,64 +180,69 @@ function NavRow({
 
 interface AddFormProps {
   saving: boolean;
+  depth: number;
   onSave: (data: AddState) => void;
   onCancel: () => void;
 }
 
-function AddForm({ saving, onSave, onCancel }: AddFormProps) {
+function AddForm({ saving, depth, onSave, onCancel }: AddFormProps) {
   const [form, setForm] = useState<AddState>({ ...EMPTY_ADD });
 
   return (
     <div className="rounded border border-[hsl(20,60%,45%)]/30 bg-[hsl(20,60%,45%)]/5 p-3 space-y-2 mt-2">
       <div className="grid grid-cols-2 gap-2">
         <Field label="Etiqueta *">
-          <AdminInput
-            value={form.label}
-            onChange={(v) => setForm((p) => ({ ...p, label: v }))}
-            placeholder="Pisos Laminados"
-          />
-        </Field>
-        <Field label="URL (href)">
-          <AdminInput
-            value={form.href}
-            onChange={(v) => setForm((p) => ({ ...p, href: v }))}
-            placeholder="/categorias/pisos-laminados"
-          />
+          <AdminInput value={form.label} onChange={(v) => setForm((p) => ({ ...p, label: v }))} placeholder="Pisos Laminados" />
         </Field>
         <Field label="Orden">
-          <AdminInput
-            value={String(form.order)}
-            onChange={(v) => setForm((p) => ({ ...p, order: Number(v) }))}
-            placeholder="0"
-          />
+          <AdminInput value={String(form.order)} onChange={(v) => setForm((p) => ({ ...p, order: Number(v) }))} placeholder="0" />
         </Field>
+        {depth > 0 && (
+          <>
+            <Field label="Slug (URL)">
+              <AdminInput
+                value={form.slug}
+                onChange={(v) => {
+                  const clean = v.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                  setForm((p) => ({ ...p, slug: clean, href: p.href || `/${clean}` }));
+                }}
+                placeholder="pisos-laminados"
+              />
+            </Field>
+            <Field label="URL (href)">
+              <AdminInput value={form.href} onChange={(v) => setForm((p) => ({ ...p, href: v }))} placeholder="/pisos-laminados" />
+            </Field>
+          </>
+        )}
+        {depth === 0 && (
+          <Field label="URL (href)">
+            <AdminInput value={form.href} onChange={(v) => setForm((p) => ({ ...p, href: v }))} placeholder="/#seccion" />
+          </Field>
+        )}
         <Field label="Visible">
           <label className="flex items-center gap-2 mt-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.visible}
-              onChange={(e) => setForm((p) => ({ ...p, visible: e.target.checked }))}
-              className="w-4 h-4 accent-[hsl(20,60%,45%)]"
-            />
-            <span className="text-sm text-[hsl(0,0%,40%)]">
-              {form.visible ? "Visible" : "Oculto"}
-            </span>
+            <input type="checkbox" checked={form.visible} onChange={(e) => setForm((p) => ({ ...p, visible: e.target.checked }))} className="w-4 h-4 accent-[hsl(20,60%,45%)]" />
+            <span className="text-sm text-[hsl(0,0%,40%)]">{form.visible ? "Visible" : "Oculto"}</span>
           </label>
         </Field>
       </div>
+      {depth > 0 && (
+        <div className="space-y-2 pt-2 border-t border-[hsl(0,0%,90%)]">
+          <p className="text-xs font-semibold text-[hsl(0,0%,50%)] uppercase tracking-wider">Página de categoría</p>
+          <Field label="Imagen de portada">
+            <ImageUploadField value={form.coverImage} onChange={(v) => setForm((p) => ({ ...p, coverImage: v }))} aspect="landscape" placeholder="/uploads/portada.webp" />
+          </Field>
+          <Field label="Descripción">
+            <AdminTextarea value={form.description} onChange={(v) => setForm((p) => ({ ...p, description: v }))} />
+          </Field>
+        </div>
+      )}
       <div className="flex gap-2">
-        <button
-          onClick={() => onSave(form)}
-          disabled={saving || !form.label}
-          className="flex items-center gap-1.5 text-xs font-semibold bg-[hsl(20,60%,45%)] text-white px-3 py-1.5 rounded hover:bg-[hsl(20,60%,35%)] transition-colors disabled:opacity-50"
-        >
+        <button onClick={() => onSave(form)} disabled={saving || !form.label} className="flex items-center gap-1.5 text-xs font-semibold bg-[hsl(20,60%,45%)] text-white px-3 py-1.5 rounded hover:bg-[hsl(20,60%,35%)] transition-colors disabled:opacity-50">
           <Check size={12} />
           {saving ? "Agregando..." : "Agregar"}
         </button>
-        <button
-          onClick={onCancel}
-          className="flex items-center gap-1.5 text-xs font-semibold border border-[hsl(0,0%,80%)] text-[hsl(0,0%,40%)] px-3 py-1.5 rounded hover:bg-[hsl(0,0%,95%)] transition-colors"
-        >
+        <button onClick={onCancel} className="flex items-center gap-1.5 text-xs font-semibold border border-[hsl(0,0%,80%)] text-[hsl(0,0%,40%)] px-3 py-1.5 rounded hover:bg-[hsl(0,0%,95%)] transition-colors">
           <X size={12} /> Cancelar
         </button>
       </div>
@@ -230,7 +268,15 @@ export default function AdminNavItemsPage() {
   function startEdit(item: INavItem) {
     setEditing((p) => ({
       ...p,
-      [item.id]: { label: item.label, href: item.href, visible: item.visible, order: item.order },
+      [item.id]: {
+        label: item.label,
+        href: item.href,
+        slug: item.slug ?? "",
+        coverImage: item.coverImage ?? "",
+        description: item.description ?? "",
+        visible: item.visible,
+        order: item.order,
+      },
     }));
   }
 
@@ -245,7 +291,13 @@ export default function AdminNavItemsPage() {
     await fetch(`/api/content/nav-items?id=${item.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...edits, parentId: item.parentId }),
+      body: JSON.stringify({
+        ...edits,
+        slug: edits.slug || null,
+        coverImage: edits.coverImage || null,
+        description: edits.description || null,
+        parentId: item.parentId,
+      }),
     });
     await reload();
     setEditing((p) => ({ ...p, [item.id]: null }));
@@ -259,7 +311,13 @@ export default function AdminNavItemsPage() {
     await fetch("/api/content/nav-items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...data, parentId }),
+      body: JSON.stringify({
+        ...data,
+        slug: data.slug || null,
+        coverImage: data.coverImage || null,
+        description: data.description || null,
+        parentId,
+      }),
     });
     await reload();
     setAddingParentId("none");
@@ -308,6 +366,7 @@ export default function AdminNavItemsPage() {
             <div className="ml-6 pl-3">
               <AddForm
                 saving={saving}
+                depth={depth + 1}
                 onSave={(data) => addItem(data, item.id)}
                 onCancel={() => setAddingParentId("none")}
               />
@@ -338,6 +397,7 @@ export default function AdminNavItemsPage() {
         {addingParentId === null && (
           <AddForm
             saving={saving}
+            depth={0}
             onSave={(data) => addItem(data, null)}
             onCancel={() => setAddingParentId("none")}
           />

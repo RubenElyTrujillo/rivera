@@ -8,8 +8,8 @@
 export type { IHeroContent } from "./hero";
 export type { IHeroSlide, HeroPageConfig } from "./heroSlide";
 export type { IService } from "./service";
-export type { IMaterial, IMaterialFinish, IMaterialCollection, IMaterialFinishImage } from "./material";
-export type { ICategory } from "./category";
+// New catalog types
+export type { ICategoria, ISubcategoria, IProducto, IProductoImagen } from "./catalog-new";
 export type { INavItem } from "./navItem";
 export type { IPageSection } from "./pageSection";
 export type { ISpaceProject, ISpaceProjectImage } from "./space";

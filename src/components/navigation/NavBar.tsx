@@ -24,10 +24,6 @@ export default function NavBar({ items, transparent = false }: NavBarProps) {
     ? "text-white/90 hover:text-white"
     : "text-foreground/70 hover:text-foreground";
 
-  const linkCls = transparent
-    ? "text-white/90 hover:text-white"
-    : "text-foreground/70 hover:text-foreground";
-
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openMenu = (id: number) => {
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);

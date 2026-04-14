@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import * as motion from "motion/react-client";
@@ -11,6 +12,8 @@ interface TopBarProps {
 
 const TopBar = ({ navItems = [] }: TopBarProps) => {
   const [scrolled, setScrolled] = useState<boolean>(false);
+  const { pathname } = useRouter();
+  const isHome = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,13 +25,16 @@ const TopBar = ({ navItems = [] }: TopBarProps) => {
     };
   }, []);
 
+  // Transparent only on home page when not scrolled
+  const isTransparent = isHome && !scrolled;
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
       className={`fixed top-0 right-0 left-0 z-40 flex items-center justify-between px-6 md:px-12 py-4 transition-all duration-500 ${
-        scrolled ? "bg-background/90 backdrop-blur-md shadow-sm" : ""
+        isTransparent ? "" : "bg-background/90 backdrop-blur-md shadow-sm"
       }`}
     >
       <Link href="/" className="flex items-center gap-3 flex-shrink-0">
@@ -40,7 +46,7 @@ const TopBar = ({ navItems = [] }: TopBarProps) => {
           className="w-15 h-15 object-cover"
         />
       </Link>
-      <NavBar items={navItems} transparent={!scrolled} />
+      <NavBar items={navItems} transparent={isTransparent} />
     </motion.header>
   );
 };

@@ -53,6 +53,7 @@ export const finishRepository = {
         waterRes:     input.waterRes,
         installType:  input.installType,
         warranty:     input.warranty,
+        specMd:       input.specMd,
       },
       include: WITH_IMAGES,
     });
@@ -77,6 +78,7 @@ export const finishRepository = {
         ...(input.waterRes !== undefined && { waterRes: input.waterRes }),
         ...(input.installType !== undefined && { installType: input.installType }),
         ...(input.warranty !== undefined && { warranty: input.warranty }),
+        ...(input.specMd !== undefined && { specMd: input.specMd }),
       },
       include: WITH_IMAGES,
     });

@@ -14,6 +14,7 @@ import {
   LogOut,
   Upload,
   Settings,
+  Layers,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { href: "/admin/hero", label: "Hero", icon: ImageIcon },
   { href: "/admin/services", label: "Servicios", icon: Wrench },
   { href: "/admin/materials", label: "Materiales", icon: Package },
+  { href: "/admin/collections", label: "Colecciones", icon: Layers },
   { href: "/admin/space-categories", label: "Categorías", icon: FolderOpen },
   { href: "/admin/spaces", label: "Espacios", icon: Grid2x2 },
   { href: "/admin/catalog", label: "Catálogo", icon: BookOpen },

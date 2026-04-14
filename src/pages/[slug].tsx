@@ -1,4 +1,4 @@
-import type { GetStaticPaths, GetStaticProps } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -119,15 +119,7 @@ export default function CategoryPage({ item, navItems }: CategoryPageProps) {
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const all = await navItemRepository.findAll();
-  const paths = all
-    .filter((item) => item.slug)
-    .map((item) => ({ params: { slug: item.slug! } }));
-  return { paths, fallback: "blocking" };
-};
-
-export const getStaticProps: GetStaticProps<CategoryPageProps> = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps<CategoryPageProps> = async ({ params }) => {
   const slug = params?.slug as string;
   const [item, navRoots] = await Promise.all([
     navItemRepository.findBySlug(slug),
@@ -141,6 +133,5 @@ export const getStaticProps: GetStaticProps<CategoryPageProps> = async ({ params
       item: JSON.parse(JSON.stringify(item)) as INavItem,
       navItems: JSON.parse(JSON.stringify(navRoots)) as INavItem[],
     },
-    revalidate: 60,
   };
 };

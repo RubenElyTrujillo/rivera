@@ -4,10 +4,11 @@ import {
   useAdminAuth, Field, AdminInput, AdminTextarea, SaveButton, useToast, AdminPageSkeleton,
 } from "@/components/admin/adminUtils"
 import { ImageUploadField } from "@/components/admin/forms/ImageUploadField"
-import { Trash2, Plus, Layers, Image as ImageIcon, ChevronDown } from "lucide-react"
+import { Trash2, Plus, Layers, Image as ImageIcon, ChevronDown, Link2 } from "lucide-react"
 import type { ICategoria, ISubcategoria } from "@/domain/types"
+import { toSlug } from "@/lib/toSlug"
 
-const EMPTY = (): Partial<ISubcategoria> => ({ categoriaId: 0, name: "", coverImage: null, description: null, order: 0 })
+const EMPTY = (): Partial<ISubcategoria> => ({ categoriaId: 0, name: "", coverImage: null, description: null })
 
 export default function AdminSubcategoriasPage() {
   const { checking } = useAdminAuth()
@@ -34,12 +35,12 @@ export default function AdminSubcategoriasPage() {
 
   function selectItem(sub: ISubcategoria) {
     setSelected(sub)
-    setForm({ categoriaId: sub.categoriaId, name: sub.name, coverImage: sub.coverImage, description: sub.description, order: sub.order })
+    setForm({ categoriaId: sub.categoriaId, name: sub.name, coverImage: sub.coverImage, description: sub.description })
   }
 
   function selectNew() {
     setSelected("__new__")
-    setForm({ ...EMPTY(), categoriaId: filterCat || 0, order: items.length })
+    setForm({ ...EMPTY(), categoriaId: filterCat || 0 })
   }
 
   async function save() {
@@ -191,13 +192,22 @@ export default function AdminSubcategoriasPage() {
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(0,0%,50%)] pointer-events-none" />
                 </div>
               </Field>
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_120px] gap-4 mb-4">
+              <div className="mb-4">
                 <Field label="Nombre *">
                   <AdminInput value={form.name ?? ""} onChange={v => setForm(p => ({ ...p, name: v }))} placeholder="Splash!" />
                 </Field>
-                <Field label="Orden">
-                  <AdminInput value={String(form.order ?? 0)} onChange={v => setForm(p => ({ ...p, order: Number(v) }))} placeholder="0" />
-                </Field>
+                {/* Slug preview */}
+                {form.name && (
+                  <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-[hsl(0,0%,96%)] rounded-lg border border-[hsl(0,0%,88%)]">
+                    <Link2 size={13} className="text-[hsl(0,0%,50%)] flex-shrink-0" />
+                    <span className="text-xs text-[hsl(0,0%,45%)]">URL pública:</span>
+                    <span className="text-xs font-mono text-[hsl(20,60%,42%)] font-semibold">
+                      /{categorias.find(c => c.id === form.categoriaId)
+                        ? toSlug(categorias.find(c => c.id === form.categoriaId)!.name)
+                        : "categoria"}/{toSlug(form.name)}
+                    </span>
+                  </div>
+                )}
               </div>
               <Field label="Descripción (opcional)">
                 <AdminTextarea

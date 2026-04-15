@@ -4,10 +4,11 @@ import {
   useAdminAuth, Field, AdminInput, AdminTextarea, SaveButton, useToast, AdminPageSkeleton,
 } from "@/components/admin/adminUtils"
 import { ImageUploadField } from "@/components/admin/forms/ImageUploadField"
-import { Trash2, Plus, FolderOpen, Image as ImageIcon } from "lucide-react"
+import { Trash2, Plus, FolderOpen, Image as ImageIcon, Link2 } from "lucide-react"
 import type { ICategoria } from "@/domain/types"
+import { toSlug } from "@/lib/toSlug"
 
-const EMPTY = (): Partial<ICategoria> => ({ name: "", coverImage: null, description: null, order: 0 })
+const EMPTY = (): Partial<ICategoria> => ({ name: "", coverImage: null, description: null })
 
 export default function AdminCategoriasPage() {
   const { checking } = useAdminAuth()
@@ -25,12 +26,12 @@ export default function AdminCategoriasPage() {
 
   function selectItem(cat: ICategoria) {
     setSelected(cat)
-    setForm({ name: cat.name, coverImage: cat.coverImage, description: cat.description, order: cat.order })
+    setForm({ name: cat.name, coverImage: cat.coverImage, description: cat.description })
   }
 
   function selectNew() {
     setSelected("__new__")
-    setForm({ ...EMPTY(), order: items.length })
+    setForm(EMPTY())
   }
 
   async function save() {
@@ -153,13 +154,18 @@ export default function AdminCategoriasPage() {
               <h2 className="text-base font-bold text-[hsl(0,0%,15%)] mb-5">
                 {selected === "__new__" ? "Nueva categoría" : `Editar — ${(selected as ICategoria).name}`}
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-[1fr_120px] gap-4 mb-4">
+              <div className="mb-4">
                 <Field label="Nombre *">
                   <AdminInput value={form.name ?? ""} onChange={v => setForm(p => ({ ...p, name: v }))} placeholder="Pisos Laminados" />
                 </Field>
-                <Field label="Orden">
-                  <AdminInput value={String(form.order ?? 0)} onChange={v => setForm(p => ({ ...p, order: Number(v) }))} placeholder="0" />
-                </Field>
+                {/* Slug preview */}
+                {form.name && (
+                  <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-[hsl(0,0%,96%)] rounded-lg border border-[hsl(0,0%,88%)]">
+                    <Link2 size={13} className="text-[hsl(0,0%,50%)] flex-shrink-0" />
+                    <span className="text-xs text-[hsl(0,0%,45%)]">URL pública:</span>
+                    <span className="text-xs font-mono text-[hsl(20,60%,42%)] font-semibold">/{toSlug(form.name)}</span>
+                  </div>
+                )}
               </div>
               <Field label="Descripción (opcional)">
                 <AdminTextarea

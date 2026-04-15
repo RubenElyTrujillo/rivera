@@ -55,9 +55,15 @@ export default function SubcategoriaPage({ subcategoria }: Props) {
         {(subcategoria as unknown as { productos: IProducto[] }).productos.length === 0 ? (
           <p className="text-[hsl(0,0%,55%)] text-center py-12">Próximamente…</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className={`grid gap-6 ${
+            subcategoria.gridCols === 2
+              ? "grid-cols-1 sm:grid-cols-2"
+              : subcategoria.gridCols === 3
+              ? "grid-cols-2 md:grid-cols-3"
+              : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          }`}>
             {(subcategoria as unknown as { productos: IProducto[] }).productos.map(producto => (
-              <ProductoCard key={producto.id} producto={producto} />
+              <ProductoCard key={producto.id} producto={producto} cols={subcategoria.gridCols ?? 3} />
             ))}
           </div>
         )}
@@ -66,14 +72,14 @@ export default function SubcategoriaPage({ subcategoria }: Props) {
   )
 }
 
-function ProductoCard({ producto }: { producto: IProducto }) {
+function ProductoCard({ producto, cols }: { producto: IProducto; cols: number }) {
   return (
     <Link
       href={`/producto/${producto.slug}`}
       className="group block rounded-xl overflow-hidden border border-[hsl(0,0%,90%)] hover:shadow-lg transition-all duration-300"
     >
       {/* Image with hover effect */}
-      <div className="aspect-square bg-[hsl(0,0%,90%)] overflow-hidden relative">
+      <div className={`bg-[hsl(0,0%,90%)] overflow-hidden relative ${cols === 2 ? "aspect-[4/3]" : "aspect-square"}`}>
         {producto.coverImage ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}

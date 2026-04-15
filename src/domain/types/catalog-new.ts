@@ -14,6 +14,7 @@ export interface ISubcategoria {
   slug: string
   coverImage: string | null
   description: string | null
+  gridCols: number
   categoria?: Pick<ICategoria, "id" | "name" | "slug">
   _count?: { productos: number }
 }

@@ -37,6 +37,7 @@ export const subcategoriaRepository = {
         slug:        toSlug(input.name),
         coverImage:  input.coverImage ?? null,
         description: input.description ?? null,
+        gridCols:    input.gridCols ?? 3,
       },
     }) as unknown as ISubcategoria
   },
@@ -49,6 +50,7 @@ export const subcategoriaRepository = {
         ...(input.name        !== undefined && { name: input.name, slug: toSlug(input.name) }),
         ...(input.coverImage  !== undefined && { coverImage: input.coverImage }),
         ...(input.description !== undefined && { description: input.description }),
+        ...(input.gridCols    !== undefined && { gridCols: input.gridCols }),
       },
     }) as unknown as ISubcategoria
   },

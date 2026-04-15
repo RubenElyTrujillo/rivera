@@ -71,7 +71,61 @@ function GridColsPicker({ value, onChange }: { value: number; onChange: (v: numb
   )
 }
 
-const EMPTY = (): Partial<ICategoria> => ({ name: "", coverImage: null, description: null, gridCols: 3 })
+const EMPTY = (): Partial<ICategoria> => ({ name: "", coverImage: null, description: null, gridCols: 3, cardAspect: "cuadrada" })
+
+// ─── Visual card aspect picker ────────────────────────────────────────────────
+
+const ASPECT_OPTIONS = [
+  {
+    value: "cuadrada",
+    label: "Cuadrada",
+    hint: "1:1 · Pisos y azulejos",
+    cls: "aspect-square",
+  },
+  {
+    value: "paisaje",
+    label: "Paisaje",
+    hint: "4:3 · Ambientes y espacios",
+    cls: "aspect-[4/3]",
+  },
+  {
+    value: "retrato",
+    label: "Retrato",
+    hint: "3:4 · Productos verticales",
+    cls: "aspect-[3/4]",
+  },
+] as const
+
+function CardAspectPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {ASPECT_OPTIONS.map(opt => {
+        const active = value === opt.value
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={`rounded-xl border-2 p-3 flex flex-col items-center gap-2 transition-all ${
+              active
+                ? "border-[hsl(20,60%,45%)] bg-[hsl(20,60%,97%)]"
+                : "border-[hsl(0,0%,85%)] bg-white hover:border-[hsl(20,60%,60%)]"
+            }`}
+          >
+            {/* Proporción visual */}
+            <div className="w-full flex justify-center">
+              <div className={`w-10 ${opt.cls} rounded bg-[hsl(0,0%,80%)] ${active ? "bg-[hsl(20,60%,70%)]" : ""}`} />
+            </div>
+            <span className={`text-xs font-semibold ${active ? "text-[hsl(20,60%,40%)]" : "text-[hsl(0,0%,35%)]"}`}>
+              {opt.label}
+            </span>
+            <span className="text-[10px] text-[hsl(0,0%,55%)] text-center leading-tight">{opt.hint}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 export default function AdminCategoriasPage() {
   const { checking } = useAdminAuth()
@@ -90,7 +144,7 @@ export default function AdminCategoriasPage() {
 
   function selectItem(cat: ICategoria) {
     setSelected(cat)
-    setForm({ name: cat.name, coverImage: cat.coverImage, description: cat.description, gridCols: cat.gridCols ?? 3 })
+    setForm({ name: cat.name, coverImage: cat.coverImage, description: cat.description, gridCols: cat.gridCols ?? 3, cardAspect: cat.cardAspect ?? "cuadrada" })
   }
 
   function selectNew() {
@@ -245,6 +299,15 @@ export default function AdminCategoriasPage() {
                 />
                 <p className="text-xs text-[hsl(0,0%,55%)] mt-2">
                   Controla cuántas columnas se muestran al listar subcategorías en la página pública.
+                </p>
+              </Field>
+              <Field label="Forma de las tarjetas">
+                <CardAspectPicker
+                  value={form.cardAspect ?? "cuadrada"}
+                  onChange={v => setForm(p => ({ ...p, cardAspect: v }))}
+                />
+                <p className="text-xs text-[hsl(0,0%,55%)] mt-2">
+                  Proporción de las imágenes en las tarjetas de subcategorías.
                 </p>
               </Field>
               <Field label="Imagen de portada">

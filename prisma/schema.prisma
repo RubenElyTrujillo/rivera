@@ -45,6 +45,7 @@ model Categoria {
   coverImage    String?
   description   String?
   gridCols      Int            @default(3)
+  cardAspect    String         @default("cuadrada")
   subcategorias Subcategoria[]
 }
 
@@ -57,6 +58,7 @@ model Subcategoria {
   coverImage  String?
   description String?
   gridCols    Int        @default(3)
+  cardAspect  String     @default("cuadrada")
   productos   Producto[]
 
   @@index([categoriaId])

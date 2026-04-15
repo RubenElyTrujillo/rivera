@@ -32,6 +32,7 @@ export const categoriaRepository = {
         coverImage:  input.coverImage ?? null,
         description: input.description ?? null,
         gridCols:    input.gridCols ?? 3,
+        cardAspect:  input.cardAspect ?? "cuadrada",
       },
     }) as unknown as ICategoria
   },
@@ -44,6 +45,7 @@ export const categoriaRepository = {
         ...(input.coverImage  !== undefined && { coverImage: input.coverImage }),
         ...(input.description !== undefined && { description: input.description }),
         ...(input.gridCols    !== undefined && { gridCols: input.gridCols }),
+        ...(input.cardAspect  !== undefined && { cardAspect: input.cardAspect }),
       },
     }) as unknown as ICategoria
   },

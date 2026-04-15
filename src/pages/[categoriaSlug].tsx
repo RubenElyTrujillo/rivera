@@ -64,7 +64,11 @@ export default function CategoriaPage({ categoria }: Props) {
                 href={`/${categoria.slug}/${sub.slug}`}
                 className="group block rounded-xl overflow-hidden border border-[hsl(0,0%,90%)] hover:shadow-lg transition-all duration-300"
               >
-                <div className="aspect-video bg-[hsl(0,0%,90%)] overflow-hidden">
+                <div className={`overflow-hidden ${
+                  categoria.cardAspect === "paisaje" ? "aspect-[4/3]"
+                  : categoria.cardAspect === "retrato" ? "aspect-[3/4]"
+                  : "aspect-square"
+                } bg-[hsl(0,0%,90%)]`}>
                   {sub.coverImage ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img

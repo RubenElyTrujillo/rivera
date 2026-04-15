@@ -5,6 +5,7 @@ export interface ICategoria {
   coverImage: string | null
   description: string | null
   gridCols: number
+  cardAspect: string
   _count?: { subcategorias: number }
 }
 
@@ -16,6 +17,7 @@ export interface ISubcategoria {
   coverImage: string | null
   description: string | null
   gridCols: number
+  cardAspect: string
   categoria?: Pick<ICategoria, "id" | "name" | "slug">
   _count?: { productos: number }
 }

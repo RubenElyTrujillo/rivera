@@ -63,7 +63,7 @@ export default function SubcategoriaPage({ subcategoria }: Props) {
               : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           }`}>
             {(subcategoria as unknown as { productos: IProducto[] }).productos.map(producto => (
-              <ProductoCard key={producto.id} producto={producto} cols={subcategoria.gridCols ?? 3} />
+              <ProductoCard key={producto.id} producto={producto} cardAspect={subcategoria.cardAspect ?? "cuadrada"} />
             ))}
           </div>
         )}
@@ -72,14 +72,18 @@ export default function SubcategoriaPage({ subcategoria }: Props) {
   )
 }
 
-function ProductoCard({ producto, cols }: { producto: IProducto; cols: number }) {
+function ProductoCard({ producto, cardAspect }: { producto: IProducto; cardAspect: string }) {
   return (
     <Link
       href={`/producto/${producto.slug}`}
       className="group block rounded-xl overflow-hidden border border-[hsl(0,0%,90%)] hover:shadow-lg transition-all duration-300"
     >
       {/* Image with hover effect */}
-      <div className={`bg-[hsl(0,0%,90%)] overflow-hidden relative ${cols === 2 ? "aspect-[4/3]" : "aspect-square"}`}>
+      <div className={`bg-[hsl(0,0%,90%)] overflow-hidden relative ${
+        cardAspect === "paisaje" ? "aspect-[4/3]"
+        : cardAspect === "retrato" ? "aspect-[3/4]"
+        : "aspect-square"
+      }`}>
         {producto.coverImage ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}

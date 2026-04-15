@@ -7,7 +7,6 @@ export const ProductoSchema = z.object({
   hoverImage:     z.string().max(1000).nullable().default(null),
   shortDesc:      z.string().max(500).nullable().default(null),
   htmlContent:    z.string().nullable().default(null),
-  order:          z.number().int().min(0).default(0),
 })
 
 export type ProductoInput = z.infer<typeof ProductoSchema>

@@ -6,7 +6,7 @@ import type { CategoriaInput } from "@/domain/schemas/categoria.schema"
 export const categoriaRepository = {
   async findAll(): Promise<ICategoria[]> {
     return db.categoria.findMany({
-      orderBy: { order: "asc" },
+      orderBy: { id: "asc" },
       include: { _count: { select: { subcategorias: true } } },
     }) as unknown as ICategoria[]
   },
@@ -16,7 +16,7 @@ export const categoriaRepository = {
       where: { slug },
       include: {
         subcategorias: {
-          orderBy: { order: "asc" },
+          orderBy: { id: "asc" },
           include: { _count: { select: { productos: true } } },
         },
       },
@@ -31,7 +31,6 @@ export const categoriaRepository = {
         slug:        toSlug(input.name),
         coverImage:  input.coverImage ?? null,
         description: input.description ?? null,
-        order:       input.order ?? 0,
       },
     }) as unknown as ICategoria
   },
@@ -43,7 +42,6 @@ export const categoriaRepository = {
         ...(input.name        !== undefined && { name: input.name, slug: toSlug(input.name) }),
         ...(input.coverImage  !== undefined && { coverImage: input.coverImage }),
         ...(input.description !== undefined && { description: input.description }),
-        ...(input.order       !== undefined && { order: input.order }),
       },
     }) as unknown as ICategoria
   },

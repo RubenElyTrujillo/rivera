@@ -17,7 +17,7 @@ const WysiwygEditor = dynamic(() => import("@/components/admin/WysiwygEditor"), 
 const EMPTY_PRODUCTO = {
   subcategoriaId: 0, name: "", coverImage: null as string | null,
   hoverImage: null as string | null, shortDesc: null as string | null,
-  htmlContent: null as string | null, order: 0,
+  htmlContent: null as string | null,
 }
 
 export default function AdminProductoDetailPage() {
@@ -68,7 +68,6 @@ export default function AdminProductoDetailPage() {
         hoverImage: p.hoverImage,
         shortDesc: p.shortDesc,
         htmlContent: p.htmlContent,
-        order: p.order,
       })
       setImagenes(p.imagenes ?? [])
     }).catch(() => null)
@@ -159,14 +158,9 @@ export default function AdminProductoDetailPage() {
             </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Nombre *">
+          <Field label="Nombre *">
               <AdminInput value={form.name} onChange={v => setForm(p => ({ ...p, name: v }))} placeholder="Arctic Oak Splash" />
             </Field>
-            <Field label="Orden">
-              <AdminInput value={String(form.order)} onChange={v => setForm(p => ({ ...p, order: Number(v) }))} placeholder="0" />
-            </Field>
-          </div>
 
           <Field label="Descripción corta">
             <AdminTextarea value={form.shortDesc ?? ""} onChange={v => setForm(p => ({ ...p, shortDesc: v || null }))} rows={2} />

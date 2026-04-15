@@ -17,7 +17,7 @@ export const productoRepository = {
   async findAll(subcategoriaId?: number): Promise<IProducto[]> {
     return db.producto.findMany({
       where: subcategoriaId ? { subcategoriaId } : undefined,
-      orderBy: { order: "asc" },
+      orderBy: { id: "asc" },
       include: WITH_FULL,
     }) as unknown as IProducto[]
   },
@@ -40,7 +40,6 @@ export const productoRepository = {
         hoverImage:     input.hoverImage ?? null,
         shortDesc:      input.shortDesc ?? null,
         htmlContent:    input.htmlContent ?? null,
-        order:          input.order ?? 0,
       },
       include: WITH_FULL,
     }) as unknown as IProducto
@@ -56,7 +55,6 @@ export const productoRepository = {
         ...(input.hoverImage     !== undefined && { hoverImage: input.hoverImage }),
         ...(input.shortDesc      !== undefined && { shortDesc: input.shortDesc }),
         ...(input.htmlContent    !== undefined && { htmlContent: input.htmlContent }),
-        ...(input.order          !== undefined && { order: input.order }),
       },
       include: WITH_FULL,
     }) as unknown as IProducto

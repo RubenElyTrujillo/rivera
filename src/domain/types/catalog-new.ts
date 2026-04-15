@@ -4,7 +4,6 @@ export interface ICategoria {
   slug: string
   coverImage: string | null
   description: string | null
-  order: number
   _count?: { subcategorias: number }
 }
 
@@ -15,7 +14,6 @@ export interface ISubcategoria {
   slug: string
   coverImage: string | null
   description: string | null
-  order: number
   categoria?: Pick<ICategoria, "id" | "name" | "slug">
   _count?: { productos: number }
 }
@@ -29,7 +27,6 @@ export interface IProducto {
   hoverImage: string | null
   shortDesc: string | null
   htmlContent: string | null
-  order: number
   subcategoria?: Pick<ISubcategoria, "id" | "name" | "slug"> & {
     categoria?: Pick<ICategoria, "id" | "name" | "slug">
   }

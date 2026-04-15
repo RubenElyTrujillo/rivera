@@ -7,7 +7,7 @@ export const subcategoriaRepository = {
   async findAll(categoriaId?: number): Promise<ISubcategoria[]> {
     return db.subcategoria.findMany({
       where: categoriaId ? { categoriaId } : undefined,
-      orderBy: { order: "asc" },
+      orderBy: { id: "asc" },
       include: {
         categoria: { select: { id: true, name: true, slug: true } },
         _count: { select: { productos: true } },
@@ -21,8 +21,8 @@ export const subcategoriaRepository = {
       include: {
         categoria: { select: { id: true, name: true, slug: true } },
         productos: {
-          orderBy: { order: "asc" },
-          select: { id: true, name: true, slug: true, coverImage: true, hoverImage: true, shortDesc: true, order: true, subcategoriaId: true, htmlContent: true },
+          orderBy: { id: "asc" },
+          select: { id: true, name: true, slug: true, coverImage: true, hoverImage: true, shortDesc: true, subcategoriaId: true, htmlContent: true },
         },
       },
     })
@@ -37,7 +37,6 @@ export const subcategoriaRepository = {
         slug:        toSlug(input.name),
         coverImage:  input.coverImage ?? null,
         description: input.description ?? null,
-        order:       input.order ?? 0,
       },
     }) as unknown as ISubcategoria
   },
@@ -50,7 +49,6 @@ export const subcategoriaRepository = {
         ...(input.name        !== undefined && { name: input.name, slug: toSlug(input.name) }),
         ...(input.coverImage  !== undefined && { coverImage: input.coverImage }),
         ...(input.description !== undefined && { description: input.description }),
-        ...(input.order       !== undefined && { order: input.order }),
       },
     }) as unknown as ISubcategoria
   },

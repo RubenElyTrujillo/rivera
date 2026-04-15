@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -8,7 +8,8 @@ import {
   AdminInput, AdminTextarea, SaveButton, useToast, AdminPageSkeleton,
 } from "@/components/admin/adminUtils"
 import { ImageUploadField } from "@/components/admin/forms/ImageUploadField"
-import { Trash2, Plus } from "lucide-react"
+import { GalleryDropzone } from "@/components/admin/forms/GalleryDropzone"
+import { Trash2 } from "lucide-react"
 import type { ICategoria, ISubcategoria, IProducto, IProductoImagen } from "@/domain/types"
 
 // Load WYSIWYG only client-side
@@ -34,8 +35,17 @@ export default function AdminProductoDetailPage() {
   const [form, setForm] = useState({ ...EMPTY_PRODUCTO })
   const [imagenes, setImagenes] = useState<IProductoImagen[]>([])
   const [saving, setSaving] = useState(false)
-  const [imgUploading, setImgUploading] = useState(false)
-  const [newImgUrl, setNewImgUrl] = useState("")
+
+  const addImagen = useCallback(async (url: string) => {
+    if (!numId) return
+    const res = await fetch("/api/catalog/imagenes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productoId: numId, url, order: 0 }),
+    })
+    const img: IProductoImagen = await res.json()
+    setImagenes(prev => [...prev, img])
+  }, [numId])
 
   // Load categorias
   useEffect(() => {
@@ -96,21 +106,6 @@ export default function AdminProductoDetailPage() {
       show("¡Guardado!")
     }
     setSaving(false)
-  }
-
-  async function addImagen() {
-    if (!newImgUrl || !numId) return
-    setImgUploading(true)
-    const res = await fetch("/api/catalog/imagenes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productoId: numId, url: newImgUrl, order: imagenes.length }),
-    })
-    const img: IProductoImagen = await res.json()
-    setImagenes(prev => [...prev, img])
-    setNewImgUrl("")
-    setImgUploading(false)
-    show("Imagen agregada")
   }
 
   async function deleteImagen(imgId: number) {
@@ -190,38 +185,29 @@ export default function AdminProductoDetailPage() {
         {/* Gallery — only show when editing existing product */}
         {!isNew && (
           <FormCard>
-            <p className="text-xs font-bold uppercase tracking-wider text-[hsl(0,0%,50%)] mb-4">Galería de imágenes</p>
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              {imagenes.map(img => (
-                <div key={img.id} className="relative group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.url} alt={img.caption ?? ""} className="w-full aspect-square object-cover rounded-lg" />
-                  <button
-                    type="button"
-                    onClick={() => deleteImagen(img.id)}
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 size={10} />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <Field label="Agregar imagen a la galería">
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <ImageUploadField value={newImgUrl} onChange={setNewImgUrl} aspect="square" />
-                </div>
-                <button
-                  type="button"
-                  onClick={addImagen}
-                  disabled={!newImgUrl || imgUploading}
-                  className="self-end flex items-center gap-1 text-sm font-semibold bg-[hsl(20,60%,45%)] text-white px-3 py-2 rounded hover:bg-[hsl(20,60%,35%)] transition-colors disabled:opacity-50"
-                >
-                  <Plus size={14} />
-                  {imgUploading ? "Subiendo…" : "Agregar"}
-                </button>
+            <p className="text-xs font-bold uppercase tracking-wider text-[hsl(0,0%,50%)] mb-4">
+              Galería de imágenes {imagenes.length > 0 && <span className="normal-case font-normal">({imagenes.length})</span>}
+            </p>
+
+            {imagenes.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+                {imagenes.map(img => (
+                  <div key={img.id} className="relative group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img.url} alt={img.caption ?? ""} className="w-full aspect-square object-cover rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => deleteImagen(img.id)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 size={10} />
+                    </button>
+                  </div>
+                ))}
               </div>
-            </Field>
+            )}
+
+            <GalleryDropzone onUploaded={addImagen} />
           </FormCard>
         )}
       </div>

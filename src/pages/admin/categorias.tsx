@@ -17,6 +17,7 @@ export default function AdminCategoriasPage() {
   const [selected, setSelected] = useState<ICategoria | "__new__" | null>(null)
   const [form, setForm] = useState<Partial<ICategoria>>(EMPTY())
   const [saving, setSaving] = useState(false)
+  const [imgUploading, setImgUploading] = useState(false)
 
   useEffect(() => {
     fetch("/api/catalog/categorias").then(r => r.json()).then((d: ICategoria[]) => {
@@ -178,11 +179,15 @@ export default function AdminCategoriasPage() {
                 <ImageUploadField
                   value={form.coverImage ?? ""}
                   onChange={v => setForm(p => ({ ...p, coverImage: v || null }))}
+                  onUploadingChange={setImgUploading}
                   aspect="landscape"
                 />
               </Field>
               <div className="mt-5 flex justify-end">
-                <SaveButton saving={saving} onClick={save} />
+                {imgUploading && (
+                  <span className="text-xs text-[hsl(20,60%,45%)] mr-3 self-center font-medium">Esperando imagen…</span>
+                )}
+                <SaveButton saving={saving || imgUploading} onClick={save} />
               </div>
             </div>
           )}

@@ -80,7 +80,7 @@ export default function CategoriaPage({ categoria }: Props) {
                     <div className="w-full h-full bg-gradient-to-br from-[hsl(20,30%,85%)] to-[hsl(20,20%,75%)]" />
                   )}
                 </div>
-                <div className="p-4">
+                <div className="p-4 text-center">
                   <h2 className="font-semibold text-[hsl(0,0%,13%)] group-hover:text-[hsl(20,60%,45%)] transition-colors">
                     {sub.name}
                   </h2>

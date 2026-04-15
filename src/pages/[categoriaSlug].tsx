@@ -51,7 +51,13 @@ export default function CategoriaPage({ categoria }: Props) {
         {categoria.subcategorias.length === 0 ? (
           <p className="text-[hsl(0,0%,55%)] text-center py-12">Próximamente…</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className={`grid gap-6 ${
+            categoria.gridCols === 2
+              ? "grid-cols-1 sm:grid-cols-2"
+              : categoria.gridCols === 3
+              ? "grid-cols-2 md:grid-cols-3"
+              : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          }`}>
             {categoria.subcategorias.map(sub => (
               <Link
                 key={sub.id}

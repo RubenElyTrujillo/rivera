@@ -4,6 +4,7 @@ export interface ICategoria {
   slug: string
   coverImage: string | null
   description: string | null
+  gridCols: number
   _count?: { subcategorias: number }
 }
 

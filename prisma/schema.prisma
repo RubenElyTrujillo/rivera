@@ -44,6 +44,7 @@ model Categoria {
   slug          String         @unique
   coverImage    String?
   description   String?
+  gridCols      Int            @default(3)
   subcategorias Subcategoria[]
 }
 

@@ -8,7 +8,70 @@ import { Trash2, Plus, FolderOpen, Image as ImageIcon, Link2 } from "lucide-reac
 import type { ICategoria } from "@/domain/types"
 import { toSlug } from "@/lib/toSlug"
 
-const EMPTY = (): Partial<ICategoria> => ({ name: "", coverImage: null, description: null })
+// ─── Visual grid column picker ────────────────────────────────────────────────
+
+const GRID_OPTIONS = [
+  {
+    cols: 2,
+    label: "2 columnas",
+    hint: "Imágenes grandes, muy visual",
+    preview: (
+      <div className="grid grid-cols-2 gap-1 w-full">
+        {[0,1,2,3].map(i => <div key={i} className="aspect-[4/3] rounded bg-current opacity-25" />)}
+      </div>
+    ),
+  },
+  {
+    cols: 3,
+    label: "3 columnas",
+    hint: "Balance ideal",
+    preview: (
+      <div className="grid grid-cols-3 gap-1 w-full">
+        {[0,1,2,3,4,5].map(i => <div key={i} className="aspect-[4/3] rounded bg-current opacity-25" />)}
+      </div>
+    ),
+  },
+  {
+    cols: 4,
+    label: "4 columnas",
+    hint: "Muchas subcategorías",
+    preview: (
+      <div className="grid grid-cols-4 gap-1 w-full">
+        {[0,1,2,3,4,5,6,7].map(i => <div key={i} className="aspect-[4/3] rounded bg-current opacity-25" />)}
+      </div>
+    ),
+  },
+] as const
+
+function GridColsPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {GRID_OPTIONS.map(opt => {
+        const active = value === opt.cols
+        return (
+          <button
+            key={opt.cols}
+            type="button"
+            onClick={() => onChange(opt.cols)}
+            className={`rounded-xl border-2 p-3 flex flex-col items-center gap-2 transition-all text-[hsl(0,0%,30%)] ${
+              active
+                ? "border-[hsl(20,60%,45%)] bg-[hsl(20,60%,97%)] text-[hsl(20,60%,40%)]"
+                : "border-[hsl(0,0%,85%)] bg-white hover:border-[hsl(20,60%,60%)]"
+            }`}
+          >
+            <div className="w-full">{opt.preview}</div>
+            <span className={`text-xs font-semibold ${active ? "text-[hsl(20,60%,40%)]" : "text-[hsl(0,0%,35%)]"}`}>
+              {opt.label}
+            </span>
+            <span className="text-[10px] text-[hsl(0,0%,55%)] text-center leading-tight">{opt.hint}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+const EMPTY = (): Partial<ICategoria> => ({ name: "", coverImage: null, description: null, gridCols: 3 })
 
 export default function AdminCategoriasPage() {
   const { checking } = useAdminAuth()
@@ -27,7 +90,7 @@ export default function AdminCategoriasPage() {
 
   function selectItem(cat: ICategoria) {
     setSelected(cat)
-    setForm({ name: cat.name, coverImage: cat.coverImage, description: cat.description })
+    setForm({ name: cat.name, coverImage: cat.coverImage, description: cat.description, gridCols: cat.gridCols ?? 3 })
   }
 
   function selectNew() {
@@ -174,6 +237,15 @@ export default function AdminCategoriasPage() {
                   onChange={v => setForm(p => ({ ...p, description: v || null }))}
                   placeholder="Breve descripción de esta categoría…"
                 />
+              </Field>
+              <Field label="Cuadrícula de subcategorías">
+                <GridColsPicker
+                  value={form.gridCols ?? 3}
+                  onChange={v => setForm(p => ({ ...p, gridCols: v }))}
+                />
+                <p className="text-xs text-[hsl(0,0%,55%)] mt-2">
+                  Controla cuántas columnas se muestran al listar subcategorías en la página pública.
+                </p>
               </Field>
               <Field label="Imagen de portada">
                 <ImageUploadField

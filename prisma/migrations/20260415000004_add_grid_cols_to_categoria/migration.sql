@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Categoria" ADD COLUMN "gridCols" INTEGER NOT NULL DEFAULT 3;

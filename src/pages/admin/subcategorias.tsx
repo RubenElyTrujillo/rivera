@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react"
 import Head from "next/head"
 import {
-  useAdminAuth, PageHeader, FormCard, Field,
-  AdminInput, AdminTextarea, SaveButton, useToast, AdminPageSkeleton,
+  useAdminAuth, Field, AdminInput, AdminTextarea, SaveButton, useToast, AdminPageSkeleton,
 } from "@/components/admin/adminUtils"
 import { ImageUploadField } from "@/components/admin/forms/ImageUploadField"
-import { Trash2, Plus } from "lucide-react"
+import { Trash2, Plus, Layers, Image as ImageIcon, ChevronDown } from "lucide-react"
 import type { ICategoria, ISubcategoria } from "@/domain/types"
 
-const EMPTY: Partial<ISubcategoria> = { categoriaId: 0, name: "", coverImage: null, description: null, order: 0 }
+const EMPTY = (): Partial<ISubcategoria> => ({ categoriaId: 0, name: "", coverImage: null, description: null, order: 0 })
 
 export default function AdminSubcategoriasPage() {
   const { checking } = useAdminAuth()
@@ -16,9 +15,9 @@ export default function AdminSubcategoriasPage() {
   const [categorias, setCategorias] = useState<ICategoria[]>([])
   const [items, setItems] = useState<ISubcategoria[]>([])
   const [filterCat, setFilterCat] = useState<number | "">("")
-  const [savingId, setSavingId] = useState<number | null>(null)
-  const [addSaving, setAddSaving] = useState(false)
-  const [newItem, setNewItem] = useState({ ...EMPTY })
+  const [selected, setSelected] = useState<ISubcategoria | "__new__" | null>(null)
+  const [form, setForm] = useState<Partial<ISubcategoria>>(EMPTY())
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     fetch("/api/catalog/categorias").then(r => r.json()).then((d: ICategoria[]) => {
@@ -33,47 +32,55 @@ export default function AdminSubcategoriasPage() {
     }).catch(() => null)
   }, [filterCat])
 
-  function update(idx: number, key: keyof ISubcategoria, value: unknown) {
-    setItems(prev => prev.map((s, i) => i === idx ? { ...s, [key]: value } : s))
+  function selectItem(sub: ISubcategoria) {
+    setSelected(sub)
+    setForm({ categoriaId: sub.categoriaId, name: sub.name, coverImage: sub.coverImage, description: sub.description, order: sub.order })
   }
 
-  async function saveOne(sub: ISubcategoria) {
-    setSavingId(sub.id)
-    const res = await fetch(`/api/catalog/subcategorias?id=${sub.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoriaId: sub.categoriaId, name: sub.name, coverImage: sub.coverImage, description: sub.description, order: sub.order }),
-    })
-    if (!res.ok) { show("Error al guardar"); setSavingId(null); return }
-    const url = filterCat ? `/api/catalog/subcategorias?categoriaId=${filterCat}` : "/api/catalog/subcategorias"
-    const updated: ISubcategoria[] = await fetch(url).then(r => r.json())
-    if (Array.isArray(updated)) setItems(updated)
-    setSavingId(null)
-    show("¡Guardado!")
+  function selectNew() {
+    setSelected("__new__")
+    setForm({ ...EMPTY(), categoriaId: filterCat || 0, order: items.length })
   }
 
-  async function remove(sub: ISubcategoria) {
-    if (!confirm(`¿Eliminar "${sub.name}"?\n\nSe eliminarán también sus productos.`)) return
+  async function save() {
+    if (!form.name || !form.categoriaId) return
+    setSaving(true)
+    try {
+      if (selected === "__new__") {
+        const res = await fetch("/api/catalog/subcategorias", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
+        })
+        const created: ISubcategoria = await res.json()
+        const url = filterCat ? `/api/catalog/subcategorias?categoriaId=${filterCat}` : "/api/catalog/subcategorias"
+        const updated: ISubcategoria[] = await fetch(url).then(r => r.json())
+        if (Array.isArray(updated)) setItems(updated)
+        setSelected(updated.find(s => s.id === created.id) ?? null)
+        show("Subcategoría creada ✓")
+      } else if (selected) {
+        const res = await fetch(`/api/catalog/subcategorias?id=${(selected as ISubcategoria).id}`, {
+          method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
+        })
+        if (!res.ok) { show("Error al guardar"); return }
+        const url = filterCat ? `/api/catalog/subcategorias?categoriaId=${filterCat}` : "/api/catalog/subcategorias"
+        const updated: ISubcategoria[] = await fetch(url).then(r => r.json())
+        if (Array.isArray(updated)) {
+          setItems(updated)
+          const refreshed = updated.find(s => s.id === (selected as ISubcategoria).id)
+          if (refreshed) setSelected(refreshed)
+        }
+        show("Guardado ✓")
+      }
+    } finally { setSaving(false) }
+  }
+
+  async function remove(sub: ISubcategoria, e: React.MouseEvent) {
+    e.stopPropagation()
+    if (!confirm(`¿Eliminar "${sub.name}"?\nSe eliminarán también sus productos.`)) return
     await fetch(`/api/catalog/subcategorias?id=${sub.id}`, { method: "DELETE" })
-    setItems(prev => prev.filter(s => s.id !== sub.id))
+    const updated = items.filter(s => s.id !== sub.id)
+    setItems(updated)
+    if (selected !== "__new__" && (selected as ISubcategoria)?.id === sub.id) setSelected(null)
     show("Eliminada")
-  }
-
-  async function addItem() {
-    if (!newItem.name || !newItem.categoriaId) return
-    setAddSaving(true)
-    const res = await fetch("/api/catalog/subcategorias", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newItem),
-    })
-    const created: ISubcategoria = await res.json()
-    if (!filterCat || created.categoriaId === filterCat) {
-      setItems(prev => [...prev, created])
-    }
-    setNewItem({ ...EMPTY, categoriaId: newItem.categoriaId, order: items.length + 1 })
-    setAddSaving(false)
-    show("Subcategoría creada")
   }
 
   if (checking) return <AdminPageSkeleton />
@@ -81,89 +88,137 @@ export default function AdminSubcategoriasPage() {
   return (
     <>
       <Head><title>Subcategorías — Admin Rivera</title></Head>
-      <PageHeader title="Subcategorías" subtitle="Nivel 2 del catálogo (Splash!, Clásico…). URL: /[categoría]/[slug]" />
-
-      {/* Filter */}
-      <div className="mb-4">
-        <select
-          value={filterCat}
-          onChange={e => setFilterCat(e.target.value === "" ? "" : Number(e.target.value))}
-          className="border border-input rounded px-3 py-2 text-sm bg-background"
-        >
-          <option value="">Todas las categorías</option>
-          {categorias.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+      <div className="flex flex-col gap-1 mb-6">
+        <h1 className="text-2xl font-bold text-[hsl(0,0%,10%)]">Subcategorías</h1>
+        <p className="text-sm text-[hsl(0,0%,55%)]">Nivel 2 · URL pública: /<span className="font-mono">categoria</span>/<span className="font-mono">slug</span></p>
       </div>
 
-      <div className="space-y-4">
-        {items.map((sub, idx) => (
-          <FormCard key={sub.id}>
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-[hsl(20,60%,45%)]">
-                {sub.categoria?.slug ?? "?"}/{sub.slug} · {(sub._count?.productos ?? 0)} productos
-              </span>
-              <button onClick={() => remove(sub)} className="text-red-400 hover:text-red-600 transition-colors" title="Eliminar">
-                <Trash2 size={16} />
-              </button>
-            </div>
-            <Field label="Categoría padre *">
-              <select
-                value={sub.categoriaId}
-                onChange={e => update(idx, "categoriaId", Number(e.target.value))}
-                className="w-full border border-[hsl(0,0%,80%)] rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)]"
-              >
-                {categorias.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </Field>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Nombre *">
-                <AdminInput value={sub.name} onChange={v => update(idx, "name", v)} placeholder="Splash!" />
-              </Field>
-              <Field label="Orden">
-                <AdminInput value={String(sub.order)} onChange={v => update(idx, "order", Number(v))} placeholder="0" />
-              </Field>
-            </div>
-            <Field label="Descripción (opcional)">
-              <AdminTextarea value={sub.description ?? ""} onChange={v => update(idx, "description", v || null)} />
-            </Field>
-            <Field label="Imagen de portada">
-              <ImageUploadField value={sub.coverImage ?? ""} onChange={v => update(idx, "coverImage", v || null)} aspect="landscape" />
-            </Field>
-            <SaveButton saving={savingId === sub.id} onClick={() => saveOne(sub)} />
-          </FormCard>
-        ))}
-
-        <FormCard>
-          <p className="text-sm font-bold text-[hsl(20,60%,45%)] mb-4">+ Nueva subcategoría</p>
-          <Field label="Categoría padre *">
+      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 min-h-[500px]">
+        {/* Left: list */}
+        <div className="flex flex-col gap-2">
+          {/* Category filter */}
+          <div className="relative">
             <select
-              value={newItem.categoriaId ?? ""}
-              onChange={e => setNewItem(p => ({ ...p, categoriaId: Number(e.target.value) }))}
-              className="w-full border border-[hsl(0,0%,80%)] rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)]"
+              value={filterCat}
+              onChange={e => { setFilterCat(e.target.value === "" ? "" : Number(e.target.value)); setSelected(null) }}
+              className="w-full appearance-none border border-[hsl(0,0%,80%)] rounded-xl px-4 py-2.5 text-sm bg-white pr-9 focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)] cursor-pointer"
             >
-              <option value="">— Selecciona una categoría —</option>
+              <option value="">Todas las categorías</option>
               {categorias.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-          </Field>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Nombre *">
-              <AdminInput value={newItem.name ?? ""} onChange={v => setNewItem(p => ({ ...p, name: v }))} placeholder="Splash!" />
-            </Field>
-            <Field label="Orden">
-              <AdminInput value={String(newItem.order ?? 0)} onChange={v => setNewItem(p => ({ ...p, order: Number(v) }))} placeholder="0" />
-            </Field>
+            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(0,0%,50%)] pointer-events-none" />
           </div>
-          <Field label="Descripción (opcional)">
-            <AdminTextarea value={newItem.description ?? ""} onChange={v => setNewItem(p => ({ ...p, description: v || null }))} />
-          </Field>
-          <Field label="Imagen de portada">
-            <ImageUploadField value={newItem.coverImage ?? ""} onChange={v => setNewItem(p => ({ ...p, coverImage: v || null }))} aspect="landscape" />
-          </Field>
-          <button onClick={addItem} disabled={addSaving || !newItem.name || !newItem.categoriaId} className="mt-3 flex items-center gap-2 text-sm font-semibold bg-[hsl(20,60%,45%)] text-white px-4 py-2 rounded hover:bg-[hsl(20,60%,35%)] transition-colors disabled:opacity-50">
-            <Plus size={14} />
-            {addSaving ? "Creando..." : "Crear subcategoría"}
+
+          <button
+            onClick={selectNew}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed text-sm font-semibold transition-all ${
+              selected === "__new__"
+                ? "border-[hsl(20,60%,45%)] bg-[hsl(20,60%,97%)] text-[hsl(20,60%,40%)]"
+                : "border-[hsl(0,0%,80%)] text-[hsl(0,0%,45%)] hover:border-[hsl(20,60%,45%)] hover:text-[hsl(20,60%,45%)]"
+            }`}
+          >
+            <Plus size={16} /> Nueva subcategoría
           </button>
-        </FormCard>
+
+          {items.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-[hsl(0,0%,70%)] text-sm">
+              <Layers size={32} className="mb-2" />
+              {filterCat ? "Sin subcategorías en esta categoría" : "Sin subcategorías aún"}
+            </div>
+          )}
+
+          {items.map(sub => {
+            const isActive = selected !== "__new__" && (selected as ISubcategoria)?.id === sub.id
+            const catName = categorias.find(c => c.id === sub.categoriaId)?.name ?? ""
+            return (
+              <button
+                key={sub.id}
+                onClick={() => selectItem(sub)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${
+                  isActive
+                    ? "border-[hsl(20,60%,45%)] bg-[hsl(20,60%,97%)] shadow-sm"
+                    : "border-[hsl(0,0%,88%)] bg-white hover:border-[hsl(20,60%,60%)] hover:bg-[hsl(20,60%,99%)]"
+                }`}
+              >
+                <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-[hsl(0,0%,92%)] flex items-center justify-center">
+                  {sub.coverImage
+                    ? <img src={sub.coverImage} alt="" className="w-full h-full object-cover" />
+                    : <ImageIcon size={18} className="text-[hsl(0,0%,70%)]" />
+                  }
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-[hsl(0,0%,10%)] truncate">{sub.name}</p>
+                  {!filterCat && catName && (
+                    <p className="text-xs text-[hsl(20,60%,45%)] font-medium truncate">{catName}</p>
+                  )}
+                  <p className="text-xs text-[hsl(0,0%,55%)] font-mono truncate">/{sub.slug}</p>
+                  <p className="text-xs text-[hsl(0,0%,55%)] mt-0.5">{sub._count?.productos ?? 0} productos</p>
+                </div>
+                <button
+                  onClick={e => remove(sub, e)}
+                  className="p-1.5 rounded text-[hsl(0,0%,60%)] hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0"
+                  title="Eliminar"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Right: form */}
+        <div>
+          {!selected ? (
+            <div className="flex flex-col items-center justify-center h-full min-h-[300px] rounded-2xl border-2 border-dashed border-[hsl(0,0%,85%)] text-[hsl(0,0%,65%)] text-sm">
+              <Layers size={40} className="mb-3 opacity-50" />
+              <p>Selecciona una subcategoría o crea una nueva</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-[hsl(0,0%,88%)] shadow-sm p-6">
+              <h2 className="text-base font-bold text-[hsl(0,0%,15%)] mb-5">
+                {selected === "__new__" ? "Nueva subcategoría" : `Editar — ${(selected as ISubcategoria).name}`}
+              </h2>
+              <Field label="Categoría padre *">
+                <div className="relative">
+                  <select
+                    value={form.categoriaId ?? ""}
+                    onChange={e => setForm(p => ({ ...p, categoriaId: Number(e.target.value) }))}
+                    className="w-full appearance-none border border-[hsl(0,0%,80%)] rounded-lg px-3 py-2 text-sm bg-white pr-9 focus:outline-none focus:ring-2 focus:ring-[hsl(20,60%,45%)]"
+                  >
+                    <option value="">— Selecciona una categoría —</option>
+                    {categorias.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(0,0%,50%)] pointer-events-none" />
+                </div>
+              </Field>
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_120px] gap-4 mb-4">
+                <Field label="Nombre *">
+                  <AdminInput value={form.name ?? ""} onChange={v => setForm(p => ({ ...p, name: v }))} placeholder="Splash!" />
+                </Field>
+                <Field label="Orden">
+                  <AdminInput value={String(form.order ?? 0)} onChange={v => setForm(p => ({ ...p, order: Number(v) }))} placeholder="0" />
+                </Field>
+              </div>
+              <Field label="Descripción (opcional)">
+                <AdminTextarea
+                  value={form.description ?? ""}
+                  onChange={v => setForm(p => ({ ...p, description: v || null }))}
+                  placeholder="Breve descripción de esta subcategoría…"
+                />
+              </Field>
+              <Field label="Imagen de portada">
+                <ImageUploadField
+                  value={form.coverImage ?? ""}
+                  onChange={v => setForm(p => ({ ...p, coverImage: v || null }))}
+                  aspect="landscape"
+                />
+              </Field>
+              <div className="mt-5 flex justify-end">
+                <SaveButton saving={saving} onClick={save} />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       {ToastComponent}
     </>

@@ -77,7 +77,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </p>
               );
             }
-            const active = router.pathname === item.href || router.pathname.startsWith(item.href + "/");
+            const active =
+              item.href === "/admin"
+                ? router.pathname === "/admin"
+                : router.pathname === item.href || router.pathname.startsWith(item.href + "/");
             const Icon = item.icon;
             return (
               <Link

@@ -13,7 +13,6 @@ import {
   Search,
   LogOut,
   Upload,
-  Settings,
   Layers,
   Navigation,
   LayoutList,
@@ -46,7 +45,6 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/footer", label: "Footer", icon: Layout },
   { href: "/admin/seo", label: "SEO", icon: Search },
   { href: "/admin/media", label: "Medios", icon: Upload },
-  { href: "/admin/site", label: "Configuración del sitio", icon: Settings },
 ];
 
 async function handleLogout() {

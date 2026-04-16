@@ -15,7 +15,6 @@ import {
   Navigation,
   Layers,
   LayoutList,
-  Settings,
 } from "lucide-react";
 
 type Section = { href: string; label: string; desc: string; icon: React.ElementType };
@@ -52,7 +51,6 @@ const GROUPS: { label: string; items: Section[] }[] = [
       { href: "/admin/footer", label: "Footer", desc: "Tagline y columnas del pie de página", icon: Layout },
       { href: "/admin/seo", label: "SEO", desc: "Título, descripción y palabras clave", icon: Search },
       { href: "/admin/media", label: "Medios", desc: "Subir y gestionar imágenes y PDFs", icon: Upload },
-      { href: "/admin/site", label: "Configuración del sitio", desc: "Nombre, logo y ajustes generales", icon: Settings },
     ],
   },
 ];

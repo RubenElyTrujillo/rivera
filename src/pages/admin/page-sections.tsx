@@ -52,17 +52,22 @@ function SortableRow({ section, onToggle }: { section: IPageSection; onToggle: (
         </p>
         <p className="text-xs text-[hsl(0,0%,55%)]">Orden: {section.order}</p>
       </div>
-      <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={section.visible}
-          onChange={(e) => onToggle(section.id, e.target.checked)}
-          className="w-4 h-4 accent-[hsl(20,60%,45%)]"
+      <button
+        type="button"
+        role="switch"
+        aria-checked={section.visible}
+        onClick={() => onToggle(section.id, !section.visible)}
+        className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none shrink-0 ${
+          section.visible ? "bg-[hsl(20,60%,45%)]" : "bg-[hsl(0,0%,78%)]"
+        }`}
+        title={section.visible ? "Visible — clic para ocultar" : "Oculta — clic para mostrar"}
+      >
+        <span
+          className={`inline-block w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 my-0.5 ${
+            section.visible ? "translate-x-5" : "translate-x-0.5"
+          }`}
         />
-        <span className={section.visible ? "text-green-700 font-semibold" : "text-[hsl(0,0%,55%)]"}>
-          {section.visible ? "Visible" : "Oculta"}
-        </span>
-      </label>
+      </button>
     </div>
   );
 }

@@ -20,7 +20,7 @@ export default function CategoriaPage({ categoria }: Props) {
       </Head>
 
       {/* Hero */}
-      <div className="relative w-full h-64 md:h-80 bg-[hsl(0,0%,15%)] overflow-hidden">
+      <div className="relative w-full h-80 md:h-[420px] bg-[hsl(0,0%,15%)] overflow-hidden">
         {categoria.coverImage && (
           // eslint-disable-next-line @next/next/no-img-element
           <img

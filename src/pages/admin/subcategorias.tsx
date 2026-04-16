@@ -71,7 +71,7 @@ function GridColsPicker({ value, onChange }: { value: number; onChange: (v: numb
   )
 }
 
-const EMPTY = (): Partial<ISubcategoria> => ({ categoriaId: 0, name: "", coverImage: null, description: null, gridCols: 3, cardAspect: "cuadrada" })
+const EMPTY = (): Partial<ISubcategoria> => ({ categoriaId: 0, name: "", coverImage: null, bannerImage: null, description: null, gridCols: 3, cardAspect: "cuadrada" })
 
 // ─── Visual card aspect picker ────────────────────────────────────────────────
 
@@ -121,6 +121,7 @@ export default function AdminSubcategoriasPage() {
   const [form, setForm] = useState<Partial<ISubcategoria>>(EMPTY())
   const [saving, setSaving] = useState(false)
   const [imgUploading, setImgUploading] = useState(false)
+  const [bannerUploading, setBannerUploading] = useState(false)
   useEffect(() => {
     fetch("/api/catalog/categorias").then(r => r.json()).then((d: ICategoria[]) => {
       if (Array.isArray(d)) setCategorias(d)
@@ -136,7 +137,7 @@ export default function AdminSubcategoriasPage() {
 
   function selectItem(sub: ISubcategoria) {
     setSelected(sub)
-    setForm({ categoriaId: sub.categoriaId, name: sub.name, coverImage: sub.coverImage, description: sub.description, gridCols: sub.gridCols ?? 3, cardAspect: sub.cardAspect ?? "cuadrada" })
+    setForm({ categoriaId: sub.categoriaId, name: sub.name, coverImage: sub.coverImage, bannerImage: sub.bannerImage, description: sub.description, gridCols: sub.gridCols ?? 3, cardAspect: sub.cardAspect ?? "cuadrada" })
   }
 
   function selectNew() {
@@ -335,7 +336,8 @@ export default function AdminSubcategoriasPage() {
                   Proporción de las imágenes en las tarjetas de productos.
                 </p>
               </Field>
-              <Field label="Imagen de portada">
+              <Field label="Imagen de carátula">
+                <p className="text-xs text-[hsl(0,0%,55%)] mb-2">Se muestra en la tarjeta dentro de la página de categoría.</p>
                 <ImageUploadField
                   value={form.coverImage ?? ""}
                   onChange={v => setForm(p => ({ ...p, coverImage: v || null }))}
@@ -343,11 +345,20 @@ export default function AdminSubcategoriasPage() {
                   aspect="landscape"
                 />
               </Field>
+              <Field label="Imagen de portada">
+                <p className="text-xs text-[hsl(0,0%,55%)] mb-2">Banner grande en la parte superior de la página de esta subcategoría. Si no se sube, se usa la carátula.</p>
+                <ImageUploadField
+                  value={form.bannerImage ?? ""}
+                  onChange={v => setForm(p => ({ ...p, bannerImage: v || null }))}
+                  onUploadingChange={setBannerUploading}
+                  aspect="landscape"
+                />
+              </Field>
               <div className="mt-5 flex justify-end">
-                {imgUploading && (
+                {(imgUploading || bannerUploading) && (
                   <span className="text-xs text-[hsl(20,60%,45%)] mr-3 self-center font-medium">Esperando imagen…</span>
                 )}
-                <SaveButton saving={saving || imgUploading} onClick={save} />
+                <SaveButton saving={saving || imgUploading || bannerUploading} onClick={save} />
               </div>
             </div>
           )}

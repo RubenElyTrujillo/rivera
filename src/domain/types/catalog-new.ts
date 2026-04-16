@@ -15,6 +15,7 @@ export interface ISubcategoria {
   name: string
   slug: string
   coverImage: string | null
+  bannerImage: string | null
   description: string | null
   gridCols: number
   cardAspect: string

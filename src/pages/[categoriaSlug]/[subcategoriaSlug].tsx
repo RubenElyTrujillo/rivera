@@ -22,11 +22,11 @@ export default function SubcategoriaPage({ subcategoria }: Props) {
       </Head>
 
       {/* Hero */}
-      <div className="relative w-full h-56 md:h-72 bg-[hsl(0,0%,15%)] overflow-hidden">
-        {subcategoria.coverImage && (
+      <div className="relative w-full h-64 md:h-80 bg-[hsl(0,0%,15%)] overflow-hidden">
+        {(subcategoria.bannerImage ?? subcategoria.coverImage) && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={subcategoria.coverImage}
+            src={(subcategoria.bannerImage ?? subcategoria.coverImage)!}
             alt={subcategoria.name}
             className="absolute inset-0 w-full h-full object-cover opacity-60"
           />

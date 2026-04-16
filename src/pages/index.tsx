@@ -5,20 +5,18 @@ import ServicesSection from "@/components/sections/ServicesSection";
 import ProductsSection from "@/components/sections/ShowroomSection";
 import FeaturedProjectsSection from "@/components/sections/FeaturedProjectsSection";
 import CTASection from "@/components/sections/CTASection";
-import SpacesSection from "@/components/sections/SpacesSection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
 import PageBuilder, { type PageBuilderData } from "@/components/PageBuilder";
-import type { IPageData, ISpaceCategory, ISpaceProject, IPageSection, INavItem } from "@/domain/types";
+import type { IPageData, IPageSection, INavItem } from "@/domain/types";
 import type { IProyecto } from "@/domain/types/catalog-new";
 import { db } from "@/lib/db";
 import { siteConfigRepository, type ISiteConfig } from "@/repositories/siteConfig.repository";
-import { spaceCategoryRepository } from "@/repositories/spaceCategory.repository";
-import { spaceRepository } from "@/repositories/space.repository";
 import { pageSectionRepository } from "@/repositories/pageSection.repository";
 import { navItemRepository } from "@/repositories/navItem.repository";
 import { proyectoRepository } from "@/repositories/proyecto.repository";
+
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -32,14 +30,12 @@ const IMAGES = {
 export const getServerSideProps: GetServerSideProps<{
   pageData: IPageData;
   siteConfig: ISiteConfig;
-  spaceCategories: ISpaceCategory[];
-  featuredProjects: ISpaceProject[];
   featuredProyectos: IProyecto[];
   pageSections: IPageSection[];
   whatsappPhone: string;
   navItems: INavItem[];
 }> = async () => {
-  const [hero, services, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects, pageSections, navItems, featuredProyectos] = await Promise.all([
+  const [hero, services, catalog, contact, footer, seo, siteConfig, pageSections, navItems, featuredProyectos] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
     db.catalogContent.findFirst(),
@@ -47,8 +43,6 @@ export const getServerSideProps: GetServerSideProps<{
     db.footerContent.findFirst(),
     db.seoSettings.findFirst(),
     siteConfigRepository.get(),
-    spaceCategoryRepository.findAll(),
-    spaceRepository.findAll(),
     pageSectionRepository.findVisible(),
     navItemRepository.findRoots(),
     proyectoRepository.findFeatured(),
@@ -97,8 +91,6 @@ export const getServerSideProps: GetServerSideProps<{
     props: {
       pageData,
       siteConfig,
-      spaceCategories,
-      featuredProjects: allProjects.slice(0, 4),
       featuredProyectos: JSON.parse(JSON.stringify(featuredProyectos)) as IProyecto[],
       pageSections: pageSections as unknown as IPageSection[],
       whatsappPhone: (pageData.contact as { whatsappPhone?: string })?.whatsappPhone ?? "",
@@ -134,16 +126,12 @@ const SEO_KEYWORDS = [
 export default function Home({
   pageData,
   siteConfig,
-  spaceCategories,
-  featuredProjects,
   featuredProyectos,
   pageSections,
   whatsappPhone: _wp,
 }: {
   pageData: IPageData;
   siteConfig: ISiteConfig;
-  spaceCategories: ISpaceCategory[];
-  featuredProjects: ISpaceProject[];
   featuredProyectos: IProyecto[];
   pageSections: IPageSection[];
   whatsappPhone: string;
@@ -287,8 +275,6 @@ export default function Home({
           data={{
             pageData,
             showShowroom: siteConfig.showShowroom,
-            spaceCategories,
-            featuredProjects,
             featuredProyectos,
             heroImageUrl: IMAGES.hero,
             textureImageUrl: IMAGES.texture,
@@ -301,7 +287,6 @@ export default function Home({
           <ServicesSection services={services} />
           <FeaturedProjectsSection proyectos={featuredProyectos} />
           <CTASection whatsappPhone={contact.whatsappPhone} />
-          <SpacesSection categories={spaceCategories} />
           <CatalogSection textureImage={IMAGES.texture} content={catalog} />
           <ContactSection contact={contact} />
         </>

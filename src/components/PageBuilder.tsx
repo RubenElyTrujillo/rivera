@@ -1,19 +1,16 @@
-import type { IPageSection, IPageData, ISpaceCategory, ISpaceProject, HeroPageConfig } from "@/domain/types";
+import type { IPageSection, IPageData, HeroPageConfig } from "@/domain/types";
 import type { IProyecto } from "@/domain/types/catalog-new";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import ProductsSection from "@/components/sections/ShowroomSection";
 import FeaturedProjectsSection from "@/components/sections/FeaturedProjectsSection";
 import CTASection from "@/components/sections/CTASection";
-import SpacesSection from "@/components/sections/SpacesSection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 
 export interface PageBuilderData {
   pageData: IPageData;
   showShowroom: boolean;
-  spaceCategories: ISpaceCategory[];
-  featuredProjects: ISpaceProject[];
   featuredProyectos?: IProyecto[];
   heroImageUrl: string;
   textureImageUrl: string;
@@ -30,7 +27,7 @@ interface PageBuilderProps {
  * Unknown or unrecognised section types are silently skipped.
  */
 export default function PageBuilder({ sections, data }: PageBuilderProps) {
-  const { pageData, showShowroom, spaceCategories, featuredProyectos = [], heroImageUrl, textureImageUrl } = data;
+  const { pageData, showShowroom, featuredProyectos = [], heroImageUrl, textureImageUrl } = data;
   const { hero, services, catalog, contact } = pageData;
 
   return (
@@ -66,9 +63,8 @@ export default function PageBuilder({ sections, data }: PageBuilderProps) {
               <ProductsSection key={section.id} />
             ) : null;
           case "SPACES":
-            return (
-              <SpacesSection key={section.id} categories={spaceCategories} />
-            );
+            // SpacesSection removed from home — legacy entries silently skipped
+            return null;
           case "CATALOG":
             return (
               <CatalogSection

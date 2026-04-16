@@ -25,12 +25,13 @@ import type { IPageSection } from "@/domain/types";
 
 const SECTION_LABELS: Record<string, string> = {
   HERO:     "Hero / Carrusel",
-  SERVICES: "Ventas",
-  PRODUCTS: "Materiales / Showroom",
-  SPACES:   "Espacios y proyectos",
+  VENTAS:   "Ventas",
+  SHOWROOM: "Materiales / Showroom",
+  FEATURED: "Proyectos Recientes (Nuestro Trabajo)",
+  SPACES:   "Espacios — legacy (oculto)",
   CATALOG:  "Catálogo PDF",
   CONTACT:  "Contacto",
-  FOOTER:   "Footer",
+  CTA:      "Llamada a la acción",
 };
 
 function SortableRow({ section, onToggle }: { section: IPageSection; onToggle: (id: number, visible: boolean) => void }) {

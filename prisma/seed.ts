@@ -153,7 +153,7 @@ async function main() {
         { type: "SHOWROOM", order: 2, visible: true,  config: "{}" },
         { type: "FEATURED", order: 3, visible: true,  config: "{}" },
         { type: "CTA",      order: 4, visible: true,  config: "{}" },
-        { type: "SPACES",   order: 5, visible: true,  config: "{}" },
+        { type: "SPACES",   order: 5, visible: false, config: "{}" },
         { type: "CATALOG",  order: 6, visible: true,  config: "{}" },
         { type: "CONTACT",  order: 7, visible: true,  config: "{}" },
       ],

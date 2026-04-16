@@ -61,6 +61,7 @@ model Subcategoria {
   gridCols    Int        @default(3)
   cardAspect  String     @default("cuadrada")
   productos   Producto[]
+  proyectos   Proyecto[]
 
   @@index([categoriaId])
 }
@@ -195,4 +196,41 @@ model Media {
   mimeType  String
   size      Int
   createdAt DateTime @default(now())
+}
+
+// ─── Proyectos ────────────────────────────────────────────────────────────────
+
+model Proyecto {
+  id             Int              @id @default(autoincrement())
+  title          String
+  slug           String           @unique
+  city           String           @default("")
+  colonia        String           @default("")
+  description    String           @default("")
+  htmlContent    String?          @db.Text
+  coverImage     String?
+  featured       Boolean          @default(false)
+  order          Int              @default(0)
+  visible        Boolean          @default(true)
+  ambientes      String           @default("[]")
+  area           Int?
+  subcategoriaId Int?
+  subcategoria   Subcategoria?    @relation(fields: [subcategoriaId], references: [id], onDelete: SetNull)
+  materialLabel  String?
+  imagenes       ProyectoImagen[]
+  createdAt      DateTime         @default(now())
+
+  @@index([featured, order])
+  @@index([subcategoriaId])
+}
+
+model ProyectoImagen {
+  id         Int      @id @default(autoincrement())
+  proyectoId Int
+  proyecto   Proyecto @relation(fields: [proyectoId], references: [id], onDelete: Cascade)
+  url        String
+  caption    String?
+  order      Int      @default(0)
+
+  @@index([proyectoId])
 }

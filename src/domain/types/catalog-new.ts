@@ -45,3 +45,32 @@ export interface IProductoImagen {
   caption: string | null
   order: number
 }
+
+export interface IProyecto {
+  id: number
+  title: string
+  slug: string
+  city: string
+  colonia: string
+  description: string
+  htmlContent: string | null
+  coverImage: string | null
+  featured: boolean
+  order: number
+  visible: boolean
+  ambientes: string[]
+  area: number | null
+  subcategoriaId: number | null
+  materialLabel: string | null
+  createdAt: Date
+  subcategoria?: Pick<ISubcategoria, "id" | "name" | "slug"> | null
+  imagenes?: IProyectoImagen[]
+}
+
+export interface IProyectoImagen {
+  id: number
+  proyectoId: number
+  url: string
+  caption: string | null
+  order: number
+}

@@ -1,4 +1,5 @@
 import type { IPageSection, IPageData, ISpaceCategory, ISpaceProject, HeroPageConfig } from "@/domain/types";
+import type { IProyecto } from "@/domain/types/catalog-new";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import ProductsSection from "@/components/sections/ShowroomSection";
@@ -13,6 +14,7 @@ export interface PageBuilderData {
   showShowroom: boolean;
   spaceCategories: ISpaceCategory[];
   featuredProjects: ISpaceProject[];
+  featuredProyectos?: IProyecto[];
   heroImageUrl: string;
   textureImageUrl: string;
 }
@@ -28,7 +30,7 @@ interface PageBuilderProps {
  * Unknown or unrecognised section types are silently skipped.
  */
 export default function PageBuilder({ sections, data }: PageBuilderProps) {
-  const { pageData, showShowroom, spaceCategories, featuredProjects, heroImageUrl, textureImageUrl } = data;
+  const { pageData, showShowroom, spaceCategories, featuredProyectos = [], heroImageUrl, textureImageUrl } = data;
   const { hero, services, catalog, contact } = pageData;
 
   return (
@@ -88,8 +90,7 @@ export default function PageBuilder({ sections, data }: PageBuilderProps) {
             return (
               <FeaturedProjectsSection
                 key={section.id}
-                projects={featuredProjects}
-                categories={spaceCategories}
+                proyectos={featuredProyectos}
               />
             );
           default:

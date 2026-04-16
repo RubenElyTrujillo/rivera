@@ -11,12 +11,14 @@ import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
 import PageBuilder, { type PageBuilderData } from "@/components/PageBuilder";
 import type { IPageData, ISpaceCategory, ISpaceProject, IPageSection, INavItem } from "@/domain/types";
+import type { IProyecto } from "@/domain/types/catalog-new";
 import { db } from "@/lib/db";
 import { siteConfigRepository, type ISiteConfig } from "@/repositories/siteConfig.repository";
 import { spaceCategoryRepository } from "@/repositories/spaceCategory.repository";
 import { spaceRepository } from "@/repositories/space.repository";
 import { pageSectionRepository } from "@/repositories/pageSection.repository";
 import { navItemRepository } from "@/repositories/navItem.repository";
+import { proyectoRepository } from "@/repositories/proyecto.repository";
 
 const IMAGES = {
   hero: '/images/5ab8b3a15_generated_f21e3e55.png',
@@ -32,11 +34,12 @@ export const getServerSideProps: GetServerSideProps<{
   siteConfig: ISiteConfig;
   spaceCategories: ISpaceCategory[];
   featuredProjects: ISpaceProject[];
+  featuredProyectos: IProyecto[];
   pageSections: IPageSection[];
   whatsappPhone: string;
   navItems: INavItem[];
 }> = async () => {
-  const [hero, services, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects, pageSections, navItems] = await Promise.all([
+  const [hero, services, catalog, contact, footer, seo, siteConfig, spaceCategories, allProjects, pageSections, navItems, featuredProyectos] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
     db.catalogContent.findFirst(),
@@ -48,6 +51,7 @@ export const getServerSideProps: GetServerSideProps<{
     spaceRepository.findAll(),
     pageSectionRepository.findVisible(),
     navItemRepository.findRoots(),
+    proyectoRepository.findFeatured(),
   ]);
 
   const pageData: IPageData = {
@@ -95,6 +99,7 @@ export const getServerSideProps: GetServerSideProps<{
       siteConfig,
       spaceCategories,
       featuredProjects: allProjects.slice(0, 4),
+      featuredProyectos: JSON.parse(JSON.stringify(featuredProyectos)) as IProyecto[],
       pageSections: pageSections as unknown as IPageSection[],
       whatsappPhone: (pageData.contact as { whatsappPhone?: string })?.whatsappPhone ?? "",
       navItems,
@@ -131,6 +136,7 @@ export default function Home({
   siteConfig,
   spaceCategories,
   featuredProjects,
+  featuredProyectos,
   pageSections,
   whatsappPhone: _wp,
 }: {
@@ -138,6 +144,7 @@ export default function Home({
   siteConfig: ISiteConfig;
   spaceCategories: ISpaceCategory[];
   featuredProjects: ISpaceProject[];
+  featuredProyectos: IProyecto[];
   pageSections: IPageSection[];
   whatsappPhone: string;
 }) {
@@ -282,6 +289,7 @@ export default function Home({
             showShowroom: siteConfig.showShowroom,
             spaceCategories,
             featuredProjects,
+            featuredProyectos,
             heroImageUrl: IMAGES.hero,
             textureImageUrl: IMAGES.texture,
           } satisfies PageBuilderData}
@@ -291,7 +299,7 @@ export default function Home({
           <HeroSection heroImage={IMAGES.hero} content={hero} />
           {siteConfig.showShowroom && <ProductsSection />}
           <ServicesSection services={services} />
-          <FeaturedProjectsSection projects={featuredProjects} categories={spaceCategories} />
+          <FeaturedProjectsSection proyectos={featuredProyectos} />
           <CTASection whatsappPhone={contact.whatsappPhone} />
           <SpacesSection categories={spaceCategories} />
           <CatalogSection textureImage={IMAGES.texture} content={catalog} />

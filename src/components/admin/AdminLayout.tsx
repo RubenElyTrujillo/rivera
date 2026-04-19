@@ -16,6 +16,7 @@ import {
   Layers,
   Navigation,
   LayoutList,
+  FileText,
 } from "lucide-react";
 
 type NavItem =
@@ -30,6 +31,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/services", label: "Servicios", icon: Wrench },
   { href: "/admin/catalog", label: "Catálogo", icon: BookOpen },
   { href: "/admin/page-sections", label: "Secciones del home", icon: LayoutList },
+  { href: "/admin/paginas", label: "Páginas", icon: FileText },
 
   { type: "sep", label: "Catálogo de materiales" },
   { href: "/admin/categorias", label: "Categorías", icon: FolderOpen },

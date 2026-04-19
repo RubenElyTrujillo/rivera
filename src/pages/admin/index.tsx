@@ -15,6 +15,7 @@ import {
   Navigation,
   Layers,
   LayoutList,
+  FileText,
 } from "lucide-react";
 
 type Section = { href: string; label: string; desc: string; icon: React.ElementType };
@@ -27,6 +28,7 @@ const GROUPS: { label: string; items: Section[] }[] = [
       { href: "/admin/services", label: "Servicios", desc: "Tarjetas de ventas / servicios destacados", icon: Wrench },
       { href: "/admin/catalog", label: "Catálogo", desc: "Texto descriptivo y PDF descargable del catálogo", icon: BookOpen },
       { href: "/admin/page-sections", label: "Secciones del home", desc: "Orden y visibilidad de secciones del home", icon: LayoutList },
+      { href: "/admin/paginas", label: "Páginas", desc: "Páginas propias como Nosotros, Servicios, etc.", icon: FileText },
     ],
   },
   {

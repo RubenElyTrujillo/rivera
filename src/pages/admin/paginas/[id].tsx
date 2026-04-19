@@ -54,7 +54,8 @@ export default function AdminPaginaEditorPage() {
     );
   }, [numId, show]);
 
-  useEffect(() => { if (!checking) loadPage(); }, [checking, loadPage]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (!checking) void loadPage(); }, [checking, loadPage]);
 
   async function saveMetadata() {
     setSaving(true);

@@ -28,12 +28,14 @@ model HeroContent {
 }
 
 model Service {
-  id       Int    @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   icon     String
   title    String
   subtitle String
   desc     String
-  order    Int    @default(0)
+  order    Int     @default(0)
+  linkType String  @default("none")
+  linkHref String?
 }
 
 // ─── Catálogo 3 niveles ───────────────────────────────────────────────────────
@@ -233,4 +235,31 @@ model ProyectoImagen {
   order      Int      @default(0)
 
   @@index([proyectoId])
+}
+
+// ─── Páginas propias ──────────────────────────────────────────────────────────
+
+model Pagina {
+  id              Int            @id @default(autoincrement())
+  title           String
+  slug            String         @unique
+  published       Boolean        @default(false)
+  seoTitle        String?
+  seoDescription  String?
+  ogImage         String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  bloques         PaginaBloque[]
+}
+
+model PaginaBloque {
+  id        Int      @id @default(autoincrement())
+  paginaId  Int
+  pagina    Pagina   @relation(fields: [paginaId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  type      String
+  config    String   @default("{}")
+  visible   Boolean  @default(true)
+
+  @@index([paginaId, order])
 }

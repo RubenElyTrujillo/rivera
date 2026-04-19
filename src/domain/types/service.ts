@@ -11,4 +11,8 @@ export interface IService {
   desc: string;
   /** Posición en la lista. Determina el orden de renderizado. */
   order: number;
+  /** Tipo de enlace: "none", "internal" o "external". */
+  linkType: string;
+  /** URL de destino (null si linkType es "none"). */
+  linkHref: string | null;
 }

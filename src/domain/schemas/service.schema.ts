@@ -10,6 +10,8 @@ export const ServiceSchema = z.object({
   subtitle: z.string().max(300),
   desc:     z.string().max(2000),
   order:    z.number().int().min(0),
+  linkType: z.enum(["none", "internal", "external"]).default("none"),
+  linkHref: z.string().max(500).nullable().optional(),
 });
 
 /** Schema para actualización completa de la lista de servicios. */

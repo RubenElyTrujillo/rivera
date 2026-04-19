@@ -1,4 +1,5 @@
 import * as motion from "motion/react-client";
+import Link from "next/link";
 import { Layers, Wrench, Palette, Columns3, Zap, Hammer, Star, Home, Package, Shield } from "lucide-react";
 import type { IService } from "@/domain/types";
 
@@ -10,11 +11,11 @@ const ICON_MAP: Record<
 };
 
 const DEFAULT_SERVICES: IService[] = [
-  { id: 1, icon: "Layers", title: "PISOS Y RECUBRIMIENTOS", subtitle: "Venta e instalación profesional", desc: "Madera sólida, ingeniería, laminados, vinílicos SPC y deck sintético para interiores y exteriores.", order: 0 },
-  { id: 2, icon: "Wrench", title: "RESTAURACIÓN", subtitle: "Madera, granito, mármol y decks", desc: "Recuperamos la vida de sus superficies existentes. Pulido, lijado, barnizado y mantenimiento profesional.", order: 1 },
-  { id: 3, icon: "Palette", title: "DECORACIÓN", subtitle: "Persianas, follaje y tapices", desc: "Soluciones decorativas que aportan confort, privacidad y naturaleza a sus espacios.", order: 2 },
-  { id: 4, icon: "Columns3", title: "MOLDURAS Y ACABADOS", subtitle: "MDF y madera sólida", desc: "Fabricamos la moldura exacta que tu proyecto necesita. Personalización total en medidas y colores.", order: 3 },
-  { id: 5, icon: "Zap", title: "TECNOLOGÍA Y CONFORT", subtitle: "Repisas y puertos ocultos", desc: "Integramos tecnología en tu mobiliario: multicontactos empotrados, consolas traseras y más.", order: 4 },
+  { id: 1, icon: "Layers", title: "PISOS Y RECUBRIMIENTOS", subtitle: "Venta e instalación profesional", desc: "Madera sólida, ingeniería, laminados, vinílicos SPC y deck sintético para interiores y exteriores.", order: 0, linkType: "none", linkHref: null },
+  { id: 2, icon: "Wrench", title: "RESTAURACIÓN", subtitle: "Madera, granito, mármol y decks", desc: "Recuperamos la vida de sus superficies existentes. Pulido, lijado, barnizado y mantenimiento profesional.", order: 1, linkType: "none", linkHref: null },
+  { id: 3, icon: "Palette", title: "DECORACIÓN", subtitle: "Persianas, follaje y tapices", desc: "Soluciones decorativas que aportan confort, privacidad y naturaleza a sus espacios.", order: 2, linkType: "none", linkHref: null },
+  { id: 4, icon: "Columns3", title: "MOLDURAS Y ACABADOS", subtitle: "MDF y madera sólida", desc: "Fabricamos la moldura exacta que tu proyecto necesita. Personalización total en medidas y colores.", order: 3, linkType: "none", linkHref: null },
+  { id: 5, icon: "Zap", title: "TECNOLOGÍA Y CONFORT", subtitle: "Repisas y puertos ocultos", desc: "Integramos tecnología en tu mobiliario: multicontactos empotrados, consolas traseras y más.", order: 4, linkType: "none", linkHref: null },
 ];
 
 /**
@@ -30,14 +31,17 @@ const ServicesSection = ({ services }: { services?: IService[] | null }) => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-border">
         {list.map((service, i) => {
           const Icon = ICON_MAP[service.icon] ?? Layers;
-          return (
+          const hasLink = service.linkType && service.linkType !== "none" && service.linkHref;
+          const isInternal = service.linkType === "internal";
+
+          const cardContent = (
             <motion.div
               key={service.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.07 }}
-              className="bg-background px-6 py-8 md:px-8 md:py-10 group hover:bg-foreground transition-colors duration-500"
+              className={`bg-background px-6 py-8 md:px-8 md:py-10 group hover:bg-foreground transition-colors duration-500${hasLink ? " cursor-pointer" : ""}`}
             >
               <Icon
                 size={22}
@@ -52,6 +56,14 @@ const ServicesSection = ({ services }: { services?: IService[] | null }) => {
               </p>
             </motion.div>
           );
+
+          if (hasLink && isInternal) {
+            return <Link key={service.id} href={service.linkHref!} className="contents">{cardContent}</Link>;
+          }
+          if (hasLink) {
+            return <a key={service.id} href={service.linkHref!} target="_blank" rel="noopener noreferrer" className="contents">{cardContent}</a>;
+          }
+          return cardContent;
         })}
       </div>
     </section>

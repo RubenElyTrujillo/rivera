@@ -28,12 +28,14 @@ const SECTION_LABELS: Record<string, string> = {
   VENTAS:   "Ventas",
   SHOWROOM: "Materiales / Showroom",
   FEATURED: "Proyectos Recientes (Nuestro Trabajo)",
-  SPACES:   "Espacios — legacy (oculto)",
   CATALOG:  "Catálogo PDF",
   CONTACT:  "Contacto",
   CTA:      "Llamada a la acción",
   CAROUSEL: "Carrusel de Materiales",
 };
+
+/** Secciones obsoletas que ya no se renderizan en el home y se ocultan del listado. */
+const HIDDEN_TYPES = new Set(["SPACES"]);
 
 function SortableRow({ section, onToggle }: { section: IPageSection; onToggle: (id: number, visible: boolean) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: section.id });
@@ -50,7 +52,7 @@ function SortableRow({ section, onToggle }: { section: IPageSection; onToggle: (
       </button>
       <div className="flex-1">
         <p className="font-semibold text-sm text-[hsl(0,0%,13%)]">
-          {SECTION_LABELS[section.type] ?? section.type}
+          {SECTION_LABELS[section.type] ?? `${section.type} (desconocida)`}
         </p>
         <p className="text-xs text-[hsl(0,0%,55%)]">Orden: {section.order}</p>
       </div>
@@ -88,7 +90,13 @@ export default function AdminPageSectionsPage() {
   useEffect(() => {
     fetch("/api/content/page-sections")
       .then((r) => r.json())
-      .then((data: IPageSection[]) => setSections([...data].sort((a, b) => a.order - b.order)))
+      .then((data: IPageSection[]) =>
+        setSections(
+          [...data]
+            .filter((s) => !HIDDEN_TYPES.has(s.type))
+            .sort((a, b) => a.order - b.order)
+        )
+      )
       .catch(() => null);
   }, []);
 

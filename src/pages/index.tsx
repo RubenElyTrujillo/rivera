@@ -9,13 +9,14 @@ import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import FooterSection from "@/components/sections/FooterSection";
 import PageBuilder, { type PageBuilderData } from "@/components/PageBuilder";
-import type { IPageData, IPageSection, INavItem } from "@/domain/types";
+import type { IPageData, IPageSection, INavItem, ICarouselItem } from "@/domain/types";
 import type { IProyecto } from "@/domain/types/catalog-new";
 import { db } from "@/lib/db";
 import { siteConfigRepository, type ISiteConfig } from "@/repositories/siteConfig.repository";
 import { pageSectionRepository } from "@/repositories/pageSection.repository";
 import { navItemRepository } from "@/repositories/navItem.repository";
 import { proyectoRepository } from "@/repositories/proyecto.repository";
+import { carouselItemRepository } from "@/repositories/carouselItem.repository";
 
 
 const IMAGES = {
@@ -34,8 +35,9 @@ export const getServerSideProps: GetServerSideProps<{
   pageSections: IPageSection[];
   whatsappPhone: string;
   navItems: INavItem[];
+  carouselItems: ICarouselItem[];
 }> = async () => {
-  const [hero, services, catalog, contact, footer, seo, siteConfig, pageSections, navItems, featuredProyectos] = await Promise.all([
+  const [hero, services, catalog, contact, footer, seo, siteConfig, pageSections, navItems, featuredProyectos, carouselItems] = await Promise.all([
     db.heroContent.findFirst(),
     db.service.findMany({ orderBy: { order: "asc" } }),
     db.catalogContent.findFirst(),
@@ -46,6 +48,7 @@ export const getServerSideProps: GetServerSideProps<{
     pageSectionRepository.findVisible(),
     navItemRepository.findRoots(),
     proyectoRepository.findFeatured(),
+    carouselItemRepository.findAll(),
   ]);
 
   const pageData: IPageData = {
@@ -95,6 +98,7 @@ export const getServerSideProps: GetServerSideProps<{
       pageSections: pageSections as unknown as IPageSection[],
       whatsappPhone: (pageData.contact as { whatsappPhone?: string })?.whatsappPhone ?? "",
       navItems,
+      carouselItems,
     },
   };
 };
@@ -129,12 +133,14 @@ export default function Home({
   featuredProyectos,
   pageSections,
   whatsappPhone: _wp,
+  carouselItems,
 }: {
   pageData: IPageData;
   siteConfig: ISiteConfig;
   featuredProyectos: IProyecto[];
   pageSections: IPageSection[];
   whatsappPhone: string;
+  carouselItems: ICarouselItem[];
 }) {
   const { hero, services, catalog, contact, footer, seo } = pageData;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
@@ -278,6 +284,7 @@ export default function Home({
             featuredProyectos,
             heroImageUrl: IMAGES.hero,
             textureImageUrl: IMAGES.texture,
+            carouselItems,
           } satisfies PageBuilderData}
         />
       ) : (

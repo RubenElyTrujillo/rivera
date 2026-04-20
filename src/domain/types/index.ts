@@ -21,3 +21,4 @@ export type { ISeoSettings } from "./seo";
 export type { IMedia } from "./media";
 export type { JwtPayload } from "./auth";
 export type { IPageData } from "./page";
+export type { ICarouselItem } from "./carouselItem";

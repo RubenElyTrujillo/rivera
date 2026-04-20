@@ -17,6 +17,7 @@ import {
   Navigation,
   LayoutList,
   FileText,
+  GalleryHorizontal,
 } from "lucide-react";
 
 type NavItem =
@@ -28,6 +29,7 @@ const NAV_ITEMS: NavItem[] = [
 
   { type: "sep", label: "Contenido" },
   { href: "/admin/hero-slides", label: "Hero Carrusel", icon: ImageIcon },
+  { href: "/admin/carousel", label: "Carrusel de Materiales", icon: GalleryHorizontal },
   { href: "/admin/services", label: "Servicios", icon: Wrench },
   { href: "/admin/catalog", label: "Catálogo", icon: BookOpen },
   { href: "/admin/page-sections", label: "Secciones del home", icon: LayoutList },

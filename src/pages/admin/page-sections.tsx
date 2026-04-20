@@ -32,6 +32,7 @@ const SECTION_LABELS: Record<string, string> = {
   CATALOG:  "Catálogo PDF",
   CONTACT:  "Contacto",
   CTA:      "Llamada a la acción",
+  CAROUSEL: "Carrusel de Materiales",
 };
 
 function SortableRow({ section, onToggle }: { section: IPageSection; onToggle: (id: number, visible: boolean) => void }) {

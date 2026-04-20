@@ -16,6 +16,7 @@ import {
   Layers,
   LayoutList,
   FileText,
+  GalleryHorizontal,
 } from "lucide-react";
 
 type Section = { href: string; label: string; desc: string; icon: React.ElementType };
@@ -25,6 +26,7 @@ const GROUPS: { label: string; items: Section[] }[] = [
     label: "Contenido",
     items: [
       { href: "/admin/hero-slides", label: "Hero Carrusel", desc: "Diapositivas, textos y botones del hero principal", icon: ImageIcon },
+      { href: "/admin/carousel", label: "Carrusel de Materiales", desc: "Tarjetas con imagen, título y descripción en hover", icon: GalleryHorizontal },
       { href: "/admin/services", label: "Servicios", desc: "Tarjetas de ventas / servicios destacados", icon: Wrench },
       { href: "/admin/catalog", label: "Catálogo", desc: "Texto descriptivo y PDF descargable del catálogo", icon: BookOpen },
       { href: "/admin/page-sections", label: "Secciones del home", desc: "Orden y visibilidad de secciones del home", icon: LayoutList },

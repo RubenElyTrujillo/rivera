@@ -1,4 +1,4 @@
-import type { IPageSection, IPageData, HeroPageConfig } from "@/domain/types";
+import type { IPageSection, IPageData, HeroPageConfig, ICarouselItem } from "@/domain/types";
 import type { IProyecto } from "@/domain/types/catalog-new";
 import HeroSection from "@/components/sections/HeroSection";
 import ServicesSection from "@/components/sections/ServicesSection";
@@ -7,6 +7,7 @@ import FeaturedProjectsSection from "@/components/sections/FeaturedProjectsSecti
 import CTASection from "@/components/sections/CTASection";
 import CatalogSection from "@/components/sections/CatalogSection";
 import ContactSection from "@/components/sections/ContactSection";
+import CarouselSection from "@/components/sections/CarouselSection";
 
 export interface PageBuilderData {
   pageData: IPageData;
@@ -14,6 +15,7 @@ export interface PageBuilderData {
   featuredProyectos?: IProyecto[];
   heroImageUrl: string;
   textureImageUrl: string;
+  carouselItems?: ICarouselItem[];
 }
 
 interface PageBuilderProps {
@@ -27,7 +29,7 @@ interface PageBuilderProps {
  * Unknown or unrecognised section types are silently skipped.
  */
 export default function PageBuilder({ sections, data }: PageBuilderProps) {
-  const { pageData, showShowroom, featuredProyectos = [], heroImageUrl, textureImageUrl } = data;
+  const { pageData, showShowroom, featuredProyectos = [], heroImageUrl, textureImageUrl, carouselItems = [] } = data;
   const { hero, services, catalog, contact } = pageData;
 
   return (
@@ -89,6 +91,8 @@ export default function PageBuilder({ sections, data }: PageBuilderProps) {
                 proyectos={featuredProyectos}
               />
             );
+          case "CAROUSEL":
+            return <CarouselSection key={section.id} items={carouselItems} />;
           default:
             return null;
         }

@@ -9,6 +9,7 @@ const PAGE_SECTION_TYPES = [
   "CONTACT",
   "CTA",
   "FEATURED",
+  "CAROUSEL",
 ] as const
 
 /**

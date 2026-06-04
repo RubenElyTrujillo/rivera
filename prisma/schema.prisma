@@ -186,9 +186,10 @@ model SeoSettings {
 }
 
 model SiteConfig {
-  id            Int     @id @default(autoincrement())
-  showMaterials Boolean @default(true)
-  showShowroom  Boolean @default(true)
+  id            Int      @id @default(autoincrement())
+  showMaterials Boolean  @default(true)
+  showShowroom  Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
 }
 
 model Media {

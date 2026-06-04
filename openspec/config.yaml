@@ -1,0 +1,46 @@
+# OpenSpec Configuration — rivera
+schema: spec-driven
+
+context: |
+  Tech stack: Next.js 16.2.1, React 19.2.4, TypeScript 5, Prisma 7.5, PostgreSQL, Tailwind CSS 4.2.2, Tiptap 3.22.3
+  Architecture: Next.js App Router with Prisma ORM, Radix UI components, dnd-kit for drag-and-drop
+  Testing: Jest 30.3.0 with @testing-library (react, jest-dom), jsdom environment
+  Style: ESLint 9 + eslint-config-next, Prettier via Tailwind CSS
+  Package manager: Bun
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns
+  verify:
+    - Run `bun test` for unit tests
+    - Run `bun run build` for type check and build
+
+testing:
+  runner: jest
+  runner_version: "30.3.0"
+  environment: jsdom
+  setup_file: jest.setup.ts
+  setup_content: import "@testing-library/jest-dom"
+  match_patterns:
+    - "**/__tests__/**/*.{ts,tsx}"
+    - "**/*.{test,spec}.{ts,tsx}"
+  module_name_mapper:
+    "^@/(.*)$": "<rootDir>/src/$1"
+  coverage_command: "bun test --coverage"
+  coverage_threshold: 0
+  libraries:
+    - "@testing-library/jest-dom"
+    - "@testing-library/react"
+    - "@testing-library/user-event"
+  strict_tdd: true

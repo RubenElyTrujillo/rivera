@@ -7,7 +7,17 @@ export interface ISiteConfig {
   showMaterials: boolean;
   /** Si es `false`, la sección "Showroom" se oculta en el home. */
   showShowroom: boolean;
+  /** Última modificación de la configuración. */
+  updatedAt: Date;
 }
+
+// Prisma SiteConfig type with updatedAt
+type SiteConfigWithUpdatedAt = {
+  id: number;
+  showMaterials: boolean;
+  showShowroom: boolean;
+  updatedAt: Date;
+};
 
 /**
  * Repositorio para la configuración global del sitio.
@@ -22,8 +32,11 @@ export const siteConfigRepository = {
    */
   async get(): Promise<ISiteConfig> {
     const existing = await db.siteConfig.findFirst();
-    if (existing) return existing;
-    return db.siteConfig.create({ data: {} });
+    if (existing) {
+      return existing as unknown as SiteConfigWithUpdatedAt;
+    }
+    const created = await db.siteConfig.create({ data: {} });
+    return created as unknown as SiteConfigWithUpdatedAt;
   },
 
   /**
@@ -36,8 +49,10 @@ export const siteConfigRepository = {
   async update(data: Partial<Omit<ISiteConfig, "id">>): Promise<ISiteConfig> {
     const existing = await db.siteConfig.findFirst();
     if (existing) {
-      return db.siteConfig.update({ where: { id: existing.id }, data });
+      const updated = await db.siteConfig.update({ where: { id: existing.id }, data });
+      return updated as unknown as SiteConfigWithUpdatedAt;
     }
-    return db.siteConfig.create({ data: { ...data } });
+    const created = await db.siteConfig.create({ data: { ...data } });
+    return created as unknown as SiteConfigWithUpdatedAt;
   },
 };

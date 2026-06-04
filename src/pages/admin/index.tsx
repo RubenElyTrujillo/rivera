@@ -48,7 +48,7 @@ export default function AdminDashboard() {
               description="Ver el sitio público"
               href="/"
               icon="FileText"
-              color="gray"
+              color="amber"
             />
           </div>
         </section>
